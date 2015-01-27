@@ -1,0 +1,40 @@
+name: Cloudflow-Test
+description: Snptest-Pipeline by Lukas, Seb
+version: 2.0.0
+website: http://genepi.i-med.ac.at
+category: GWAS
+
+cluster:
+
+  image: us-east-1/ami-7341831a
+  type: m1.large
+  ports: 80,50030,50070
+  user: ec2-user
+  creationOnly: false
+  installMapred: true
+  service: hadoop
+ 
+mapred:
+
+  steps:
+
+  - name: Running test
+    jar: snptest-2.0.jar
+    params: $input $output
+
+  inputs:
+
+     - id: input
+       description: Input
+       type: hdfs-folder
+     
+  outputs:
+
+    - id: output
+      description: Output
+      type: hdfs-folder
+      download: true
+      temp: false
+      mergeOutput: true
+      temp: false
+      removeHeader: false
