@@ -1,9 +1,7 @@
 package cloudflow.hadoop.test;
 
 import java.io.IOException;
-import java.util.Vector;
-
-import cloudflow.hadoop.old.Binary;
+import cloudflow.hadoop.old.DistributedFile;
 import cloudflow.hadoop.old.IForEachChunk;
 import cloudflow.hadoop.old.ISplitter;
 
@@ -13,9 +11,9 @@ public class Pipeline {
 
 	private String output;
 
-	private SerializableSteps<IMapStep> mapSteps;
+	private SerializableSteps<MapStep> mapSteps;
 
-	private SerializableSteps<IReduceStep> reduceSteps;
+	private SerializableSteps<ReduceStep> reduceSteps;
 
 	private String name;
 
@@ -26,8 +24,8 @@ public class Pipeline {
 	public Pipeline(String name, Class driverClass) {
 		this.driverClass = driverClass;
 		this.name = name;
-		mapSteps = new SerializableSteps<IMapStep>();
-		reduceSteps = new SerializableSteps<IReduceStep>();
+		mapSteps = new SerializableSteps<MapStep>();
+		reduceSteps = new SerializableSteps<ReduceStep>();
 	}
 
 	public void load(String hdfs, ILoader loader) {
@@ -43,16 +41,55 @@ public class Pipeline {
 
 	}
 
-	public void distribute(Binary binary) {
+	public void distribute(String key, DistributedFile file) {
 
 	}
 
-	public void addMapStep(Class step) {
+	protected void addMapStep(Class<? extends MapStep> step) {
 		mapSteps.addStep(step);
 	}
 
-	public void addReduceStep(Class step) {
+	protected void addReduceStep(Class<? extends ReduceStep> step) {
 		reduceSteps.addStep(step);
+	}
+
+	public MapBuilder perform(Class<? extends MapStep> step) {
+		addMapStep(step);
+		return new MapBuilder(this);
+	}
+
+	public class MapBuilder {
+
+		private Pipeline pipeline;
+
+		public MapBuilder(Pipeline pipeline) {
+			this.pipeline = pipeline;
+		}
+
+		public MapBuilder perform(Class<? extends MapStep> step) {
+			addMapStep(step);
+			return new MapBuilder(pipeline);
+		}
+
+		public ReduceBuilder groupByKey() {
+			return new ReduceBuilder(pipeline);
+		}
+
+	}
+
+	public class ReduceBuilder {
+
+		private Pipeline pipeline;
+
+		public ReduceBuilder(Pipeline pipeline) {
+			this.pipeline = pipeline;
+		}
+
+		public ReduceBuilder perform(Class<? extends ReduceStep> step) {
+			addReduceStep(step);
+			return new ReduceBuilder(pipeline);
+		}
+
 	}
 
 	public void save(String hdfs) {

@@ -9,7 +9,7 @@ import org.apache.hadoop.mapreduce.Reducer;
 
 public class GenericReducer extends Reducer<Text, Text, Text, Text> {
 
-	private SerializableSteps<IReduceStep> steps;
+	private SerializableSteps<ReduceStep> steps;
 
 	private Text newKey = new Text();
 
@@ -22,7 +22,7 @@ public class GenericReducer extends Reducer<Text, Text, Text, Text> {
 		// read reduce steps
 		String data = context.getConfiguration().get("cloudflow.steps.reduce");
 		try {
-			steps = new SerializableSteps<IReduceStep>();
+			steps = new SerializableSteps<ReduceStep>();
 			steps.load(data);
 		} catch (ClassNotFoundException e) {
 			throw new IOException(e);
@@ -42,7 +42,7 @@ public class GenericReducer extends Reducer<Text, Text, Text, Text> {
 		try {
 			// execute steps
 			for (int i = 0; i < steps.getSize(); i++) {
-				IReduceStep step = steps.getStepInstance(i);
+				ReduceStep step = steps.getStepInstance(i);
 				records = step.process(records);
 			}
 		} catch (InstantiationException | IllegalAccessException e) {

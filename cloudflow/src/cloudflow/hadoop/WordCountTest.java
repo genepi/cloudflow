@@ -4,22 +4,25 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Vector;
 
-import cloudflow.hadoop.test.IMapStep;
-import cloudflow.hadoop.test.IReduceStep;
+import cloudflow.hadoop.old.DistributedBinary;
+import cloudflow.hadoop.test.MapStep;
+import cloudflow.hadoop.test.ReduceStep;
 import cloudflow.hadoop.test.Pipeline;
 import cloudflow.hadoop.test.Record;
 import cloudflow.hadoop.test.TextLoader;
 
 public class WordCountTest {
 
-	static public class SplitWords implements IMapStep {
+	static public class SplitWords extends MapStep {
 
 		@Override
 		public List<Record> process(List<Record> records) {
+
 			List<Record> words = new Vector<Record>();
 			for (Record record : records) {
 				String[] tiles = record.getValue().split(" ");
 				for (String tile : tiles) {
+
 					words.add(new Record(tile, "1"));
 				}
 			}
@@ -28,7 +31,7 @@ public class WordCountTest {
 
 	}
 
-	static public class RemoveEmptyKeys implements IMapStep {
+	static public class RemoveEmptyKeys extends MapStep {
 
 		@Override
 		public List<Record> process(List<Record> records) {
@@ -43,7 +46,7 @@ public class WordCountTest {
 
 	}
 
-	static public class CountWords implements IReduceStep {
+	static public class CountWords extends ReduceStep {
 
 		@Override
 		public List<Record> process(List<Record> records) {
@@ -59,7 +62,7 @@ public class WordCountTest {
 
 	}
 
-	static public class FilterWords implements IReduceStep {
+	static public class FilterWords extends ReduceStep {
 
 		@Override
 		public List<Record> process(List<Record> records) {
@@ -80,14 +83,17 @@ public class WordCountTest {
 		String input = args[0];
 		String output = args[1];
 
+		DistributedBinary snptest = new DistributedBinary("snptest");
+
 		Pipeline pipeline = new Pipeline("Wordcount", WordCountTest.class);
+		pipeline.distribute("snptest", snptest);
+
 		pipeline.load(input, new TextLoader());
 
-		pipeline.addMapStep(SplitWords.class);
-		pipeline.addMapStep(RemoveEmptyKeys.class);
+		pipeline.perform(SplitWords.class).perform(RemoveEmptyKeys.class)
+				.groupByKey().perform(CountWords.class)
+				.perform(FilterWords.class);
 
-		pipeline.addReduceStep(CountWords.class);
-		pipeline.addReduceStep(FilterWords.class);
 		pipeline.save(output);
 
 		boolean result = pipeline.run();

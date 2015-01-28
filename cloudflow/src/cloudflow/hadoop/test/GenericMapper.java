@@ -9,7 +9,7 @@ import org.apache.hadoop.io.Text;
 public class GenericMapper extends
 		org.apache.hadoop.mapreduce.Mapper<Object, Text, Text, Text> {
 
-	private SerializableSteps<IMapStep> steps;
+	private SerializableSteps<MapStep> steps;
 
 	private Text newKey = new Text();
 	private Text newValue = new Text();
@@ -21,7 +21,7 @@ public class GenericMapper extends
 		// read mapper steps
 		String data = context.getConfiguration().get("cloudflow.steps.map");
 		try {
-			steps = new SerializableSteps<IMapStep>();
+			steps = new SerializableSteps<MapStep>();
 			steps.load(data);
 		} catch (ClassNotFoundException e) {
 			throw new IOException(e);
@@ -38,7 +38,7 @@ public class GenericMapper extends
 		try {
 			// execute steps
 			for (int i = 0; i < steps.getSize(); i++) {
-				IMapStep step = steps.getStepInstance(i);
+				MapStep step = steps.getStepInstance(i);
 				records = step.process(records);
 			}
 		} catch (InstantiationException | IllegalAccessException e) {

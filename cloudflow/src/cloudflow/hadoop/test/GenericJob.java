@@ -1,5 +1,6 @@
 package cloudflow.hadoop.test;
 
+import genepi.hadoop.CacheStore;
 import genepi.hadoop.HadoopJob;
 
 import java.io.IOException;
@@ -32,16 +33,23 @@ public class GenericJob extends HadoopJob {
 		job.setReducerClass(GenericReducer.class);
 
 	}
+	
+	@Override
+	protected void setupDistributedCache(CacheStore cache) throws IOException {
+	
+		//cache.
+		
+	}
 
 	public GenericJob(String name) throws IOException {
 		super(name);
 	}
 
-	public void setMapSteps(SerializableSteps<IMapStep> steps){
+	public void setMapSteps(SerializableSteps<MapStep> steps){
 		set("cloudflow.steps.map", steps.serialize());
 	}
 	
-	public void setReduceSteps(SerializableSteps<IReduceStep> steps){
+	public void setReduceSteps(SerializableSteps<ReduceStep> steps){
 		set("cloudflow.steps.reduce", steps.serialize());
 	}
 
