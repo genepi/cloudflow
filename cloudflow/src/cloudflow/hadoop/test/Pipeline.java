@@ -13,19 +13,23 @@ public class Pipeline {
 
 	private SerializableSteps<MapStep> mapSteps;
 
+	private SerializableSteps<MapStep> mapSteps2;
+	
 	private SerializableSteps<ReduceStep> reduceSteps;
 
 	private String name;
 
 	private ILoader loader;
 
-	private Class driverClass;
+	private Class<?> driverClass;
 
-	public Pipeline(String name, Class driverClass) {
+	public Pipeline(String name, Class<?> driverClass) {
 		this.driverClass = driverClass;
 		this.name = name;
 		mapSteps = new SerializableSteps<MapStep>();
 		reduceSteps = new SerializableSteps<ReduceStep>();
+		mapSteps2 = new SerializableSteps<MapStep>();
+
 	}
 
 	public void load(String hdfs, ILoader loader) {
@@ -47,6 +51,11 @@ public class Pipeline {
 
 	protected void addMapStep(Class<? extends MapStep> step) {
 		mapSteps.addStep(step);
+	}
+	
+
+	protected void addMap2Step(Class<? extends MapStep> step) {
+		mapSteps2.addStep(step);
 	}
 
 	protected void addReduceStep(Class<? extends ReduceStep> step) {
@@ -85,9 +94,24 @@ public class Pipeline {
 			this.pipeline = pipeline;
 		}
 
-		public ReduceBuilder perform(Class<? extends ReduceStep> step) {
+		public MapBuilder2 perform(Class<? extends ReduceStep> step) {
 			addReduceStep(step);
-			return new ReduceBuilder(pipeline);
+			return new MapBuilder2(pipeline);
+		}
+
+	}
+	
+	public class MapBuilder2 {
+
+		private Pipeline pipeline;
+
+		public MapBuilder2(Pipeline pipeline) {
+			this.pipeline = pipeline;
+		}
+
+		public MapBuilder2 perform(Class<? extends MapStep> step) {
+			addMap2Step(step);
+			return new MapBuilder2(pipeline);
 		}
 
 	}
@@ -104,6 +128,7 @@ public class Pipeline {
 		job.setDriverClass(driverClass);
 		job.setInputFormat(loader.getInputFormat());
 		job.setMapSteps(mapSteps);
+		job.setMap2Steps(mapSteps2);
 		job.setReduceSteps(reduceSteps);
 		return job.execute();
 	}

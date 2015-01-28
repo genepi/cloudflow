@@ -6,16 +6,23 @@ import java.util.Vector;
 
 import org.apache.hadoop.io.Text;
 
+import cloudflow.hadoop.records.Record;
+import cloudflow.hadoop.records.RecordList;
+import cloudflow.hadoop.records.RecordToContextWriter;
+
 public class GenericMapper extends
 		org.apache.hadoop.mapreduce.Mapper<Object, Text, Text, Text> {
 
 	private SerializableSteps<MapStep> steps;
 
-	private Text newKey = new Text();
-	private Text newValue = new Text();
+	private List<MapStep> instances = new Vector<>();
+
+	private RecordList inputRecords = new RecordList();
+
+	private Record record = new Record();
 
 	@Override
-	protected void setup(Context context) throws IOException,
+	protected void setup(final Context context) throws IOException,
 			InterruptedException {
 
 		// read mapper steps
@@ -23,7 +30,25 @@ public class GenericMapper extends
 		try {
 			steps = new SerializableSteps<MapStep>();
 			steps.load(data);
-		} catch (ClassNotFoundException e) {
+
+			instances = steps.createInstances();
+
+			// fist step consumes input records
+			inputRecords.addConsumer(instances.get(0));
+
+			// step n + 1 consumes records produced by n
+			for (int i = 0; i < instances.size() - 1; i++) {
+				MapStep step = instances.get(i);
+				MapStep nextStep = instances.get(i + 1);
+				step.getOutputRecords().addConsumer(nextStep);
+			}
+
+			// last step writes records to context
+			instances.get(instances.size() - 1).getOutputRecords()
+					.addConsumer(new RecordToContextWriter(context));
+
+		} catch (ClassNotFoundException | InstantiationException
+				| IllegalAccessException e) {
 			throw new IOException(e);
 		}
 	}
@@ -32,24 +57,11 @@ public class GenericMapper extends
 	protected void map(Object key, Text value, Context context)
 			throws IOException, InterruptedException {
 
-		List<Record> records = new Vector<>();
-		records.add(new Record(key.toString(), value.toString()));
+		record.setKey(key.toString());
+		record.setValue(value.toString());
 
-		try {
-			// execute steps
-			for (int i = 0; i < steps.getSize(); i++) {
-				MapStep step = steps.getStepInstance(i);
-				records = step.process(records);
-			}
-		} catch (InstantiationException | IllegalAccessException e) {
-			throw new IOException(e);
-		}
+		inputRecords.add(record);
 
-		for (Record record : records) {
-			newKey.set(record.getKey());
-			newValue.set(record.getValue());
-			context.write(newKey, newValue);
-		}
 	}
 
 }

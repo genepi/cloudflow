@@ -1,14 +1,14 @@
 package cloudflow.hadoop;
 
 import java.io.IOException;
-import java.util.List;
-import java.util.Vector;
 
 import cloudflow.hadoop.old.DistributedBinary;
+import cloudflow.hadoop.records.Record;
+import cloudflow.hadoop.records.RecordValues;
 import cloudflow.hadoop.test.MapStep;
-import cloudflow.hadoop.test.ReduceStep;
 import cloudflow.hadoop.test.Pipeline;
-import cloudflow.hadoop.test.Record;
+import cloudflow.hadoop.test.RecordFilter;
+import cloudflow.hadoop.test.ReduceStep;
 import cloudflow.hadoop.test.TextLoader;
 
 public class WordCountTest {
@@ -16,32 +16,22 @@ public class WordCountTest {
 	static public class SplitWords extends MapStep {
 
 		@Override
-		public List<Record> process(List<Record> records) {
+		public void process(Record record) {
 
-			List<Record> words = new Vector<Record>();
-			for (Record record : records) {
-				String[] tiles = record.getValue().split(" ");
-				for (String tile : tiles) {
-
-					words.add(new Record(tile, "1"));
-				}
+			String[] tiles = record.getValue().split(" ");
+			for (String tile : tiles) {
+				createRecord(tile, "1");
 			}
-			return words;
+
 		}
 
 	}
 
-	static public class RemoveEmptyKeys extends MapStep {
+	static public class RemoveEmptyKeys extends RecordFilter {
 
 		@Override
-		public List<Record> process(List<Record> records) {
-			List<Record> count = new Vector<Record>();
-			for (Record record : records) {
-				if (!record.getKey().trim().isEmpty()) {
-					count.add(record);
-				}
-			}
-			return count;
+		public boolean filter(Record record) {
+			return record.getKey().trim().isEmpty();
 		}
 
 	}
@@ -49,31 +39,24 @@ public class WordCountTest {
 	static public class CountWords extends ReduceStep {
 
 		@Override
-		public List<Record> process(List<Record> records) {
-			List<Record> count = new Vector<Record>();
+		public void process(String key, RecordValues values) {
+
 			int sum = 0;
-			for (Record record : records) {
-				int intValue = Integer.parseInt(record.getValue());
+			while (values.next()) {
+				int intValue = Integer.parseInt(values.value());
 				sum += intValue;
 			}
-			count.add(new Record(records.get(0).getKey(), sum + ""));
-			return count;
+			createRecord(key, sum + "");
 		}
 
 	}
 
-	static public class FilterWords extends ReduceStep {
+	static public class FilterWords extends RecordFilter {
 
 		@Override
-		public List<Record> process(List<Record> records) {
-			List<Record> count = new Vector<Record>();
-			for (Record record : records) {
-				int sum = Integer.parseInt(record.getValue());
-				if (sum > 100) {
-					count.add(record);
-				}
-			}
-			return count;
+		public boolean filter(Record record) {
+			int sum = Integer.parseInt(record.getValue());
+			return sum < 100;
 		}
 
 	}
@@ -86,7 +69,6 @@ public class WordCountTest {
 		DistributedBinary snptest = new DistributedBinary("snptest");
 
 		Pipeline pipeline = new Pipeline("Wordcount", WordCountTest.class);
-		pipeline.distribute("snptest", snptest);
 
 		pipeline.load(input, new TextLoader());
 

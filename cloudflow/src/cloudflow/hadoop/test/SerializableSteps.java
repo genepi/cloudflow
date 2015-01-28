@@ -41,4 +41,14 @@ public class SerializableSteps<c> {
 		}
 	}
 
+	public List<c> createInstances() throws InstantiationException,
+			IllegalAccessException {
+
+		List<c> instances = new Vector<c>();
+		for (int i = 0; i < steps.size(); i++) {
+			instances.add((c) steps.get(i).newInstance());
+		}
+		return instances;
+	}
+
 }

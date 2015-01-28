@@ -1,12 +1,13 @@
 package cloudflow.hadoop;
 
 import java.io.IOException;
-import java.util.List;
 
+import cloudflow.hadoop.records.Record;
+import cloudflow.hadoop.records.RecordValues;
 import cloudflow.hadoop.test.MapStep;
-import cloudflow.hadoop.test.ReduceStep;
 import cloudflow.hadoop.test.Pipeline;
-import cloudflow.hadoop.test.Record;
+import cloudflow.hadoop.test.RecordFilter;
+import cloudflow.hadoop.test.ReduceStep;
 import cloudflow.hadoop.test.TextLoader;
 
 public class SnptestTest {
@@ -14,11 +15,9 @@ public class SnptestTest {
 	static public class CreateChunks extends MapStep {
 
 		@Override
-		public List<Record> process(List<Record> records) {
+		public void process(Record record) {
 
 			// create chunks based on position (?)
-
-			return null;
 
 		}
 
@@ -27,7 +26,7 @@ public class SnptestTest {
 	static public class ExecuteSnpTest extends ReduceStep {
 
 		@Override
-		public List<Record> process(List<Record> records) {
+		public void process(String key, RecordValues values) {
 
 			// write records to input file (one record, one line)
 
@@ -35,22 +34,19 @@ public class SnptestTest {
 
 			// create records from output file (one line, one record)
 
-			return null;
-
 		}
 
 	}
 
-	static public class FilterResults extends ReduceStep {
+	static public class FilterResults extends RecordFilter {
 
 		@Override
-		public List<Record> process(List<Record> records) {
+		public boolean filter(Record record) {
 
 			// filter records with 25 columns or -1 in last column
 			// filter header
 
-			return null;
-
+			return true;
 		}
 
 	}

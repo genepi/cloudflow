@@ -7,24 +7,74 @@ import java.util.Vector;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Reducer;
 
+import cloudflow.hadoop.records.RecordToContextWriter;
+import cloudflow.hadoop.records.RecordValues;
+
 public class GenericReducer extends Reducer<Text, Text, Text, Text> {
 
-	private SerializableSteps<ReduceStep> steps;
+	private SerializableSteps<ReduceStep> reduceSteps;
 
-	private Text newKey = new Text();
+	private SerializableSteps<MapStep> filterSteps;
 
-	private Text newValue = new Text();
+	private ReduceStep reduceStep;
+
+	private RecordValues recordValues = new RecordValues();
+
+	private List<MapStep> instancesFilter = new Vector<MapStep>();
 
 	@Override
-	protected void setup(Context context) throws IOException,
+	protected void setup(final Context context) throws IOException,
 			InterruptedException {
 
-		// read reduce steps
-		String data = context.getConfiguration().get("cloudflow.steps.reduce");
 		try {
-			steps = new SerializableSteps<ReduceStep>();
-			steps.load(data);
-		} catch (ClassNotFoundException e) {
+
+			// read reduce step
+			String data = context.getConfiguration().get(
+					"cloudflow.steps.reduce");
+			reduceSteps = new SerializableSteps<ReduceStep>();
+			reduceSteps.load(data);
+
+			List<ReduceStep> instancesReduce = reduceSteps.createInstances();
+			reduceStep = instancesReduce.get(0);
+
+			// read filter steps
+			String dataMap = context.getConfiguration().get(
+					"cloudflow.steps.map2");
+
+			filterSteps = new SerializableSteps<MapStep>();
+			if (dataMap != null) {
+				filterSteps.load(dataMap);
+			}
+
+			if (filterSteps.getSize() > 0) {
+
+				instancesFilter = filterSteps.createInstances();
+
+				// fist step consumes reduce step output records
+				reduceStep.getOutputRecords().addConsumer(
+						instancesFilter.get(0));
+
+				// step n + 1 consumes records produced by n
+				for (int i = 0; i < instancesFilter.size() - 1; i++) {
+					MapStep step = instancesFilter.get(i);
+					MapStep nextStep = instancesFilter.get(i + 1);
+					step.getOutputRecords().addConsumer(nextStep);
+				}
+
+				// last step writes records to context
+				instancesFilter.get(instancesFilter.size() - 1)
+						.getOutputRecords()
+						.addConsumer(new RecordToContextWriter(context));
+			} else {
+
+				// reduce step writes records to context
+				reduceStep.getOutputRecords().addConsumer(
+						new RecordToContextWriter(context));
+
+			}
+
+		} catch (ClassNotFoundException | InstantiationException
+				| IllegalAccessException e) {
 			throw new IOException(e);
 		}
 
@@ -34,26 +84,8 @@ public class GenericReducer extends Reducer<Text, Text, Text, Text> {
 	protected void reduce(Text key, Iterable<Text> values, Context context)
 			throws IOException, InterruptedException {
 
-		List<Record> records = new Vector<>();
-		for (Text value : values) {
-			records.add(new Record(key.toString(), value.toString()));
-		}
-
-		try {
-			// execute steps
-			for (int i = 0; i < steps.getSize(); i++) {
-				ReduceStep step = steps.getStepInstance(i);
-				records = step.process(records);
-			}
-		} catch (InstantiationException | IllegalAccessException e) {
-			throw new IOException(e);
-		}
-
-		for (Record record : records) {
-			newKey.set(record.getKey());
-			newValue.set(record.getValue());
-			context.write(newKey, newValue);
-		}
+		recordValues.setValues(values);
+		reduceStep.process(key.toString(), recordValues);
 
 	}
 

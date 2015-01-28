@@ -1,6 +1,5 @@
-package cloudflow.hadoop.test;
+package cloudflow.hadoop.records;
 
-import org.apache.hadoop.io.Text;
 
 public class Record {
 
@@ -8,6 +7,9 @@ public class Record {
 
 	private String value;
 
+	public Record(){
+	}
+	
 	public Record(String key, String value){
 		this.key = key;
 		this.value = value;
