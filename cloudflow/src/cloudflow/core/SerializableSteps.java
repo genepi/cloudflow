@@ -1,4 +1,4 @@
-package cloudflow.hadoop.test;
+package cloudflow.core;
 
 import java.util.List;
 import java.util.Vector;

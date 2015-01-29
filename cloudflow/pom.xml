@@ -55,7 +55,7 @@
 							<transformers>
 								<transformer
 									implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
-									<mainClass>cloudflow.hadoop.WordCountTest</mainClass>
+									<mainClass>cloudflow.examples.BioWordCount</mainClass>
 								</transformer>
 							</transformers>
 
@@ -89,7 +89,7 @@
 		<dependency>
 			<groupId>genepi-hadoop</groupId>
 			<artifactId>genepi-hadoop</artifactId>
-			<version>0.7.3</version>
+			<version>0.7.6</version>
 		</dependency>
 
 		<dependency>

@@ -1,9 +1,11 @@
-package cloudflow.hadoop.records;
+package cloudflow.core.hadoop;
 
 import java.util.List;
 import java.util.Vector;
 
-public class GroupedRecordList {
+import cloudflow.core.records.Record;
+
+public class RecordList {
 
 	private List<IRecordConsumer> consumers = new Vector<IRecordConsumer>();
 

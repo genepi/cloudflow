@@ -1,4 +1,4 @@
-package cloudflow.hadoop.examples;
+package cloudflow.examples;
 
 import java.math.BigInteger;
 import java.util.ArrayList;

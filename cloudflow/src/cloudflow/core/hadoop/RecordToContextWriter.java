@@ -1,16 +1,17 @@
-package cloudflow.hadoop.records;
+package cloudflow.core.hadoop;
 
 import java.io.IOException;
 
-import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.TaskInputOutputContext;
 
-public class RecordToContextWriter implements IRecordConsumer {
+import cloudflow.core.records.Record;
 
-	private Text newKey = new Text();
+public class RecordToContextWriter implements IRecordConsumer<Record<?, ?>> {
 
-	private Text newValue = new Text();
+	private HadoopRecordValue value = new HadoopRecordValue();
 
+	private HadoopRecordKey key = new HadoopRecordKey();
+	
 	private TaskInputOutputContext context;
 
 	public RecordToContextWriter(TaskInputOutputContext context) {
@@ -18,12 +19,12 @@ public class RecordToContextWriter implements IRecordConsumer {
 	}
 
 	@Override
-	public void consume(Record record) {
+	public void consume(Record<?, ?> record) {
 
-		newKey.set(record.getKey());
-		newValue.set(record.getValue());
 		try {
-			context.write(newKey, newValue);
+			value.set(record.getWritableValue());
+			key.set(record.getWritableKey());
+			context.write(key, value);
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
