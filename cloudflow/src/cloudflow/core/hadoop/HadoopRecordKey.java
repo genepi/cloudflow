@@ -7,8 +7,11 @@ import java.io.PrintWriter;
 
 import org.apache.hadoop.conf.Configurable;
 import org.apache.hadoop.conf.Configuration;
+import org.apache.hadoop.io.Text;
 import org.apache.hadoop.io.Writable;
 import org.apache.hadoop.io.WritableComparable;
+import org.apache.hadoop.io.WritableComparator;
+import org.apache.hadoop.io.Text.Comparator;
 
 public class HadoopRecordKey implements WritableComparable<HadoopRecordKey>,
 		Configurable {
@@ -61,4 +64,10 @@ public class HadoopRecordKey implements WritableComparable<HadoopRecordKey>,
 	public int compareTo(HadoopRecordKey o) {
 		return instance.compareTo(o.instance);
 	}
+
+	static {
+		WritableComparator.define(HadoopRecordKey.class,
+				new HadoopRecordKeyComparator());
+	}
+
 }
