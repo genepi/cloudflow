@@ -21,20 +21,12 @@ public class HadoopRecordKeyComparator extends WritableComparator{
 	@Override
 	public void setConf(Configuration conf) {
 		super.setConf(conf);
-		System.out.println("Config in Comparator!!");
-
-		try {
-			Configuration.dumpConfiguration(conf, new  PrintWriter(System.out));
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-		System.out.println();
-		
+		System.out.println("Config in Comparator!!");	
 	}
 	
 	public int compare(byte[] b1, int s1, int l1, byte[] b2, int s2, int l2) {
 		
-		if (key1 == null){
+		if (key1 == null){		
 			key1 = new HadoopRecordKey();
 			key1.setConf(getConf());
 		}
