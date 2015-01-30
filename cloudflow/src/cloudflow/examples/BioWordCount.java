@@ -33,7 +33,7 @@ public class BioWordCount {
 			for (String titv : vcfLine.getTiTv()) {
 				outRecord.setKey(titv);
 				outRecord.setValue(1);
-				createRecord(outRecord);
+				emit(outRecord);
 			}
 
 		}
@@ -54,7 +54,7 @@ public class BioWordCount {
 			}
 			outRecord.setKey(key);
 			outRecord.setValue(sum);
-			createRecord(outRecord);
+			emit(outRecord);
 		}
 
 	}
@@ -67,9 +67,9 @@ public class BioWordCount {
 		Pipeline pipeline = new Pipeline("BioWordCount", BioWordCount.class);
 
 		pipeline.load(input, new TextLoader())
-				.perform(RemoveHeader.class, TextRecord.class)
-				.perform(SplitTiTv.class, IntegerRecord.class).groupByKey()
-				.perform(CountTiTv.class).save(output);
+				.apply(RemoveHeader.class, TextRecord.class)
+				.apply(SplitTiTv.class, IntegerRecord.class).groupByKey()
+				.apply(CountTiTv.class).save(output);
 
 		boolean result = pipeline.run();
 		if (!result) {

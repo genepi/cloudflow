@@ -26,7 +26,7 @@ public class VcfChunkTest {
 			info.setKey(key);
 			info.setValue(noSnps + " SNPS in chunk.");
 
-			createRecord(info);
+			emit(info);
 
 		}
 
@@ -40,7 +40,7 @@ public class VcfChunkTest {
 		BioPipeline pipeline = new BioPipeline("VCF Chunk test",
 				VcfChunkTest.class);
 
-		pipeline.loadVcf(input).createChunks().perform(ChunkInfos.class)
+		pipeline.loadVcf(input).createChunks().apply(ChunkInfos.class)
 				.save(output);
 
 		boolean result = pipeline.run();

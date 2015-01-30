@@ -22,7 +22,7 @@ public class BamQualityCheck {
 			for (int pos = 0; pos < record.getValue().getReadLength(); pos++) {
 				outRecord.setKey(pos);
 				outRecord.setValue(record.getValue().getBaseQualities()[pos]);
-				createRecord(outRecord);
+				emit(outRecord);
 			}
 
 		}
@@ -46,7 +46,7 @@ public class BamQualityCheck {
 			}
 			outRecord.setKey(Integer.parseInt(key));
 			outRecord.setValue(sum / (float) count);
-			createRecord(outRecord);
+			emit(outRecord);
 		}
 
 	}
@@ -59,8 +59,8 @@ public class BamQualityCheck {
 		BioPipeline pipeline = new BioPipeline("Bam Quality Check",
 				BamQualityCheck.class);
 
-		pipeline.loadBam(input).perform(SplitByPos.class, IntIntRecord.class)
-				.groupByKey().perform(Mean.class).save(output);
+		pipeline.loadBam(input).apply(SplitByPos.class, IntIntRecord.class)
+				.groupByKey().apply(Mean.class).save(output);
 
 		boolean result = pipeline.run();
 		if (!result) {

@@ -65,7 +65,7 @@ public class Pipeline {
 			this.pipeline = pipeline;
 		}
 
-		public MapBuilder perform(Class<? extends MapStep<?, ?>> step,
+		public MapBuilder apply(Class<? extends MapStep<?, ?>> step,
 				Class<? extends Record<?, ?>> mapperOutputRecordClass2) {
 
 			addMapStep(step);
@@ -94,7 +94,7 @@ public class Pipeline {
 			this.pipeline = pipeline;
 		}
 
-		public AfterReduceBuilder perform(Class<? extends ReduceStep<?, ?>> step) {
+		public AfterReduceBuilder apply(Class<? extends ReduceStep<?, ?>> step) {
 			addReduceStep(step);
 			return new AfterReduceBuilder(pipeline);
 		}

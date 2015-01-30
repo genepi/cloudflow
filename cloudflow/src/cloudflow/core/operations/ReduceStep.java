@@ -10,7 +10,7 @@ public abstract class ReduceStep<IN extends Record<?,?>, OUT extends Record<?,?>
  
 	public abstract void process(String key, RecordValues<IN> values);
 
-	public void createRecord(OUT record) {
+	public void emit(OUT record) {
 		records.add(record);
 	}
 

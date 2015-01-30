@@ -24,7 +24,7 @@ public class BioPipeline extends Pipeline {
 		}
 
 		public ReduceBuilder createChunks() {
-			return perform(VcfChunker.class, VcfChunk.class).groupByKey();
+			return apply(VcfChunker.class, VcfChunk.class).groupByKey();
 		}
 
 	}

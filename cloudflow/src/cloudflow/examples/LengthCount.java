@@ -50,7 +50,7 @@ public class LengthCount {
 			for (String tile : tiles) {
 				outRecord.setKey(tile.length());
 				outRecord.setValue(1);
-				createRecord(outRecord);
+				emit(outRecord);
 			}
 
 		}
@@ -71,7 +71,7 @@ public class LengthCount {
 			}
 			outRecord.setKey(Integer.parseInt(key));
 			outRecord.setValue(sum);
-			createRecord(outRecord);
+			emit(outRecord);
 		}
 
 	}
@@ -84,8 +84,8 @@ public class LengthCount {
 		Pipeline pipeline = new Pipeline("Wordcount-Length!", LengthCount.class);
 
 		pipeline.load(input, new TextLoader())
-				.perform(SplitByWordLength.class, MyRecord.class).groupByKey()
-				.perform(CountWordLength.class).save(output);
+				.apply(SplitByWordLength.class, MyRecord.class).groupByKey()
+				.apply(CountWordLength.class).save(output);
 
 		boolean result = pipeline.run();
 		if (!result) {

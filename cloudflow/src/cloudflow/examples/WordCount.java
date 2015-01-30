@@ -24,7 +24,7 @@ public class WordCount {
 			for (String tile : tiles) {
 				outRecord.setKey(tile);
 				outRecord.setValue(1);
-				createRecord(outRecord);
+				emit(outRecord);
 			}
 
 		}
@@ -55,7 +55,7 @@ public class WordCount {
 			}
 			outRecord.setKey(key);
 			outRecord.setValue(sum);
-			createRecord(outRecord);
+			emit(outRecord);
 		}
 
 	}
@@ -77,10 +77,10 @@ public class WordCount {
 		Pipeline pipeline = new Pipeline("Wordcount", WordCount.class);
 
 		pipeline.load(input, new TextLoader())
-				.perform(SplitWords.class, IntegerRecord.class)
-				.perform(RemoveEmptyKeys.class, IntegerRecord.class)
-				.groupByKey().perform(CountWords.class)
-				.perform(FilterWords.class).save(output);
+				.apply(SplitWords.class, IntegerRecord.class)
+				.apply(RemoveEmptyKeys.class, IntegerRecord.class).groupByKey()
+				.apply(CountWords.class).perform(FilterWords.class)
+				.save(output);
 
 		boolean result = pipeline.run();
 		if (!result) {

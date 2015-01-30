@@ -11,7 +11,7 @@ public abstract class MapStep<IN extends Record<?, ?>, OUT extends Record<?, ?>>
 
 	public abstract void process(IN record);
 
-	public void createRecord(OUT record) {
+	public void emit(OUT record) {
 		records.add(record);
 	}
 

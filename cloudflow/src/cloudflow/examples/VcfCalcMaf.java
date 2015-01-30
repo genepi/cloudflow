@@ -24,7 +24,7 @@ public class VcfCalcMaf {
 
 			outRecord.setKey(snp.getChr() + ":" + snp.getStart());
 			outRecord.setValue(maf);
-			createRecord(outRecord);
+			emit(outRecord);
 
 		}
 
@@ -57,8 +57,8 @@ public class VcfCalcMaf {
 
 		BioPipeline pipeline = new BioPipeline("Calc MAF", VcfCalcMaf.class);
 
-		pipeline.loadVcf(input).perform(CalcMaf.class, StringFloatRecord.class)
-				.perform(FilterCommonSnps.class, StringFloatRecord.class)
+		pipeline.loadVcf(input).apply(CalcMaf.class, StringFloatRecord.class)
+				.apply(FilterCommonSnps.class, StringFloatRecord.class)
 				.save(output);
 
 		boolean result = pipeline.run();

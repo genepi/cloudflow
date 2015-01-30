@@ -18,7 +18,7 @@ public class VcfChunker extends MapStep<VcfRecord, VcfChunk> {
 		chunk.setEnd(((chunkNr + 1) * CHUNK_SIZE) - 1);
 		chunk.setValue(record.getValue());
 
-		createRecord(chunk);
+		emit(chunk);
 	}
 
 }
