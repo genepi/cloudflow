@@ -5,7 +5,6 @@ import org.apache.hadoop.io.Writable;
 import org.apache.hadoop.mapreduce.lib.input.TextInputFormat;
 
 import cloudflow.core.records.TextRecord;
-import cloudflow.core.ILoader;
 
 public class TextLoader implements ILoader {
 

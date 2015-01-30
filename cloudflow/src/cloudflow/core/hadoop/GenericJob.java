@@ -18,6 +18,8 @@ public class GenericJob extends HadoopJob {
 
 	private Class<?> driverClass;
 
+	private boolean needReducer = false;
+
 	public void setInputFormat(Class<InputFormat<?, ?>> inputFormat) {
 		this.inputFormat = inputFormat;
 	}
@@ -34,7 +36,12 @@ public class GenericJob extends HadoopJob {
 		job.setMapperClass(GenericMapper.class);
 		job.setMapOutputKeyClass(HadoopRecordKey.class);
 		job.setMapOutputValueClass(HadoopRecordValue.class);
-		job.setReducerClass(GenericReducer.class);
+		if (needReducer) {
+			job.setReducerClass(GenericReducer.class);
+		} else {
+			// map only
+			job.setNumReduceTasks(0);
+		}
 		job.setSortComparatorClass(HadoopRecordKeyComparator.class);
 	}
 
@@ -58,7 +65,10 @@ public class GenericJob extends HadoopJob {
 	}
 
 	public void setReduceSteps(SerializableSteps<ReduceStep<?, ?>> steps) {
-		set("cloudflow.steps.reduce", steps.serialize());
+		if (steps.getSize() > 0) {
+			needReducer = true;
+			set("cloudflow.steps.reduce", steps.serialize());
+		}
 	}
 
 	public void setMapperOutputRecords(Class<?> mapperOutputRecordClass) {

@@ -4,7 +4,7 @@ import java.io.IOException;
 
 import org.apache.hadoop.io.IntWritable;
 
-import cloudflow.Pipeline;
+import cloudflow.core.Pipeline;
 import cloudflow.core.hadoop.RecordValues;
 import cloudflow.core.io.TextLoader;
 import cloudflow.core.operations.MapStep;
@@ -14,8 +14,8 @@ import cloudflow.core.records.TextRecord;
 
 public class LengthCount {
 
-	static public class MyRecord extends Record<IntWritable, IntWritable>{
-		
+	static public class MyRecord extends Record<IntWritable, IntWritable> {
+
 		public MyRecord() {
 			setWritableKey(new IntWritable());
 			setWritableValue(new IntWritable());
@@ -36,9 +36,9 @@ public class LengthCount {
 		public void setKey(int key) {
 			getWritableKey().set(key);
 		}
-		
+
 	}
-	
+
 	static public class SplitByWordLength extends MapStep<TextRecord, MyRecord> {
 
 		private MyRecord outRecord = new MyRecord();
@@ -57,8 +57,7 @@ public class LengthCount {
 
 	}
 
-	static public class CountWordLength extends
-			ReduceStep<MyRecord, MyRecord> {
+	static public class CountWordLength extends ReduceStep<MyRecord, MyRecord> {
 
 		private MyRecord outRecord = new MyRecord();
 
@@ -84,13 +83,9 @@ public class LengthCount {
 
 		Pipeline pipeline = new Pipeline("Wordcount-Length!", LengthCount.class);
 
-		pipeline.load(input, new TextLoader());
-
-		pipeline.perform(SplitByWordLength.class, MyRecord.class)
-				.groupByKey()
-				.perform(CountWordLength.class);
-
-		pipeline.save(output);
+		pipeline.load(input, new TextLoader())
+				.perform(SplitByWordLength.class, MyRecord.class).groupByKey()
+				.perform(CountWordLength.class).save(output);
 
 		boolean result = pipeline.run();
 		if (!result) {

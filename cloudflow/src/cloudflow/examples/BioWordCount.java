@@ -2,7 +2,7 @@ package cloudflow.examples;
 
 import java.io.IOException;
 
-import cloudflow.Pipeline;
+import cloudflow.core.Pipeline;
 import cloudflow.core.hadoop.RecordValues;
 import cloudflow.core.io.TextLoader;
 import cloudflow.core.operations.Filter;
@@ -66,13 +66,10 @@ public class BioWordCount {
 
 		Pipeline pipeline = new Pipeline("BioWordCount", BioWordCount.class);
 
-		pipeline.load(input, new TextLoader());
-
-		pipeline.perform(RemoveHeader.class, TextRecord.class)
+		pipeline.load(input, new TextLoader())
+				.perform(RemoveHeader.class, TextRecord.class)
 				.perform(SplitTiTv.class, IntegerRecord.class).groupByKey()
-				.perform(CountTiTv.class);
-
-		pipeline.save(output);
+				.perform(CountTiTv.class).save(output);
 
 		boolean result = pipeline.run();
 		if (!result) {
