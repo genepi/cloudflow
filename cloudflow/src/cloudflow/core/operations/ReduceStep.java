@@ -8,6 +8,15 @@ public abstract class ReduceStep<IN extends Record<?,?>, OUT extends Record<?,?>
 
 	private RecordList records = new RecordList();
  
+	private Class<IN> inputRecordClass;
+
+	private Class<OUT> outputRecordClass;
+
+	public ReduceStep(Class<IN> inputRecordClass, Class<OUT> outputRecordClass) {
+		this.inputRecordClass = inputRecordClass;
+		this.outputRecordClass = outputRecordClass;
+	}
+	
 	public abstract void process(String key, RecordValues<IN> values);
 
 	public void emit(OUT record) {
@@ -16,6 +25,15 @@ public abstract class ReduceStep<IN extends Record<?,?>, OUT extends Record<?,?>
 
 	public RecordList getOutputRecords() {
 		return records;
+	}
+	
+
+	public Class<OUT> getOutputRecordClass() {
+		return outputRecordClass;
+	}
+
+	public Class<IN> getInputRecordClass() {
+		return inputRecordClass;
 	}
 
 }

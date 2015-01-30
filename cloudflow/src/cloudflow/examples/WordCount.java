@@ -17,6 +17,10 @@ public class WordCount {
 
 		private IntegerRecord outRecord = new IntegerRecord();
 
+		public SplitWords() {
+			super(TextRecord.class, IntegerRecord.class);
+		}
+
 		@Override
 		public void process(TextRecord record) {
 
@@ -33,6 +37,10 @@ public class WordCount {
 
 	static public class RemoveEmptyKeys extends Filter<IntegerRecord> {
 
+		public RemoveEmptyKeys() {
+			super(IntegerRecord.class);
+		}
+
 		@Override
 		public boolean filter(IntegerRecord record) {
 			return record.getKey().trim().isEmpty();
@@ -44,6 +52,10 @@ public class WordCount {
 			ReduceStep<IntegerRecord, IntegerRecord> {
 
 		private IntegerRecord outRecord = new IntegerRecord();
+
+		public CountWords() {
+			super(IntegerRecord.class, IntegerRecord.class);
+		}
 
 		@Override
 		public void process(String key, RecordValues<IntegerRecord> values) {
@@ -62,6 +74,10 @@ public class WordCount {
 
 	static public class FilterWords extends Filter<IntegerRecord> {
 
+		public FilterWords() {
+			super(IntegerRecord.class);
+		}
+
 		@Override
 		public boolean filter(IntegerRecord record) {
 			return record.getValue() < 100;
@@ -76,9 +92,8 @@ public class WordCount {
 
 		Pipeline pipeline = new Pipeline("Wordcount", WordCount.class);
 
-		pipeline.load(input, new TextLoader())
-				.apply(SplitWords.class, IntegerRecord.class)
-				.apply(RemoveEmptyKeys.class, IntegerRecord.class).groupByKey()
+		pipeline.load(input, new TextLoader()).apply(SplitWords.class)
+				.apply(RemoveEmptyKeys.class).groupByKey()
 				.apply(CountWords.class).perform(FilterWords.class)
 				.save(output);
 

@@ -16,6 +16,10 @@ public class VcfCalcMaf {
 
 		StringFloatRecord outRecord = new StringFloatRecord();
 
+		public CalcMaf() {
+			super(VcfRecord.class, StringFloatRecord.class);
+		}
+
 		@Override
 		public void process(VcfRecord record) {
 
@@ -43,6 +47,10 @@ public class VcfCalcMaf {
 
 	static public class FilterCommonSnps extends Filter<StringFloatRecord> {
 
+		public FilterCommonSnps() {
+			super(StringFloatRecord.class);
+		}
+
 		@Override
 		public boolean filter(StringFloatRecord record) {
 			return record.getValue() > 0.05 || record.getValue() == 0;
@@ -57,9 +65,8 @@ public class VcfCalcMaf {
 
 		BioPipeline pipeline = new BioPipeline("Calc MAF", VcfCalcMaf.class);
 
-		pipeline.loadVcf(input).apply(CalcMaf.class, StringFloatRecord.class)
-				.apply(FilterCommonSnps.class, StringFloatRecord.class)
-				.save(output);
+		pipeline.loadVcf(input).apply(CalcMaf.class)
+				.apply(FilterCommonSnps.class).save(output);
 
 		boolean result = pipeline.run();
 		if (!result) {

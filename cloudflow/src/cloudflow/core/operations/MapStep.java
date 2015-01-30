@@ -9,6 +9,15 @@ public abstract class MapStep<IN extends Record<?, ?>, OUT extends Record<?, ?>>
 
 	private RecordList records = new RecordList();
 
+	private Class<IN> inputRecordClass;
+
+	private Class<OUT> outputRecordClass;
+
+	public MapStep(Class<IN> inputRecordClass, Class<OUT> outputRecordClass) {
+		this.inputRecordClass = inputRecordClass;
+		this.outputRecordClass = outputRecordClass;
+	}
+
 	public abstract void process(IN record);
 
 	public void emit(OUT record) {
@@ -22,6 +31,14 @@ public abstract class MapStep<IN extends Record<?, ?>, OUT extends Record<?, ?>>
 
 	public RecordList getOutputRecords() {
 		return records;
+	}
+
+	public Class<OUT> getOutputRecordClass() {
+		return outputRecordClass;
+	}
+
+	public Class<IN> getInputRecordClass() {
+		return inputRecordClass;
 	}
 
 }

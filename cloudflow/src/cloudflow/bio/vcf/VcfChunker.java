@@ -8,6 +8,10 @@ public class VcfChunker extends MapStep<VcfRecord, VcfChunk> {
 
 	public static int CHUNK_SIZE = 10000000;
 
+	public VcfChunker() {
+		super(VcfRecord.class, VcfChunk.class);
+	}
+
 	@Override
 	public void process(VcfRecord record) {
 

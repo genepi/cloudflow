@@ -1,10 +1,12 @@
 package cloudflow.core;
 
 import java.io.IOException;
+import java.util.List;
 
 import cloudflow.core.hadoop.GenericJob;
 import cloudflow.core.io.ILoader;
 import cloudflow.core.operations.MapStep;
+import cloudflow.core.operations.Mean;
 import cloudflow.core.operations.ReduceStep;
 import cloudflow.core.records.Record;
 
@@ -20,11 +22,11 @@ public class Pipeline {
 
 	private SerializableSteps<ReduceStep<?, ?>> reduceSteps;
 
-	private Class<?> mapperOutputRecordClass;
-
 	private String name;
 
 	private ILoader loader;
+
+	private Class<?> mapperOutputRecordClass = null;
 
 	private Class<?> driverClass;
 
@@ -65,15 +67,14 @@ public class Pipeline {
 			this.pipeline = pipeline;
 		}
 
-		public MapBuilder apply(Class<? extends MapStep<?, ?>> step,
-				Class<? extends Record<?, ?>> mapperOutputRecordClass2) {
+		public MapBuilder apply(Class<? extends MapStep<?, ?>> step) {
 
 			addMapStep(step);
-
-			// TODO: remove mapperOutputRecordClass -> detect it auto.
-			mapperOutputRecordClass = mapperOutputRecordClass2;
-
 			return new MapBuilder(pipeline);
+		}
+
+		public AfterReduceBuilder mean() {
+			return groupByKey().apply(Mean.class);
 		}
 
 		public ReduceBuilder groupByKey() {
@@ -123,10 +124,86 @@ public class Pipeline {
 		}
 	}
 
+	public boolean check() {
+
+		System.out.println("Execution Plan: ");
+
+		System.out.println("  Input: ");
+
+		System.out.println("    " + loader.getClass().getName());
+		System.out.println("      hdfs: " + input);
+		System.out.println("      records: "
+				+ loader.getRecordClass().getName());
+
+		System.out.println("  Mapper: ");
+		try {
+			List<MapStep<?, ?>> steps = mapSteps.createInstances();
+			for (int i = 0; i < steps.size(); i++) {
+				MapStep<?, ?> step = steps.get(i);
+				System.out.println("    (" + (i + 1) + ") "
+						+ step.getClass().getName());
+				System.out
+						.println("      input: " + step.getInputRecordClass());
+				System.out.println("      output: "
+						+ step.getOutputRecordClass());
+
+				mapperOutputRecordClass = step.getOutputRecordClass();
+
+			}
+		} catch (InstantiationException | IllegalAccessException e) {
+			System.out.println("Pipeline is not executable:");
+			e.printStackTrace();
+			return false;
+		}
+		if (reduceSteps.getSize() > 0) {
+
+			System.out.println("  Reducer: ");
+			try {
+				List<ReduceStep<?, ?>> reducer = reduceSteps.createInstances();
+				System.out.println("    (1) "
+						+ reducer.get(0).getClass().getName());
+				System.out.println("      input: "
+						+ reducer.get(0).getInputRecordClass());
+				System.out.println("      output: "
+						+ reducer.get(0).getOutputRecordClass());
+				List<MapStep<?, ?>> steps = mapSteps2.createInstances();
+				for (int i = 0; i < steps.size(); i++) {
+					MapStep<?, ?> step = steps.get(i);
+					System.out.println("    (" + (i + 2) + ") "
+							+ step.getClass().getName());
+					System.out.println("      input: "
+							+ step.getInputRecordClass());
+					System.out.println("      output: "
+							+ step.getOutputRecordClass());
+				}
+			} catch (InstantiationException | IllegalAccessException e) {
+				System.out.println("Pipeline is not executable:");
+				e.printStackTrace();
+				return false;
+			}
+		}
+
+		System.out.println("  Output: ");
+		System.out.println("      hdfs: " + output);
+
+		if (mapperOutputRecordClass == null) {
+			System.out
+					.println("Pipeline is not executable: No mapper output record class found!");
+			return false;
+		}
+
+		return true;
+
+	}
+
 	public boolean run() throws IOException {
 
 		// TODO: check compatibility: output record step n = input record step n
 		// +1
+
+		if (!check()) {
+			return false;
+		}
 
 		GenericJob job = new GenericJob(name);
 		job.setInput(input);

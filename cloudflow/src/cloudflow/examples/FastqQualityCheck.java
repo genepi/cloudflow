@@ -2,27 +2,31 @@ package cloudflow.examples;
 
 import java.io.IOException;
 
+import org.apache.hadoop.io.Text;
+
 import cloudflow.bio.BioPipeline;
-import cloudflow.bio.bam.BamRecord;
+import cloudflow.bio.fastq.FastqRecord;
 import cloudflow.core.operations.MapStep;
 import cloudflow.core.records.IntIntRecord;
 
-public class BamQualityCheck {
+public class FastqQualityCheck {
 
-	static public class SplitByPos extends MapStep<BamRecord, IntIntRecord> {
+	static public class SplitByPos extends MapStep<FastqRecord, IntIntRecord> {
 
 		IntIntRecord outRecord = new IntIntRecord();
 
 		public SplitByPos() {
-			super(BamRecord.class, IntIntRecord.class);
+			super(FastqRecord.class, IntIntRecord.class);
 		}
 
 		@Override
-		public void process(BamRecord record) {
+		public void process(FastqRecord record) {
 
-			for (int pos = 0; pos < record.getValue().getReadLength(); pos++) {
+			Text qualities = record.getValue().getQuality();
+
+			for (int pos = 0; pos < qualities.getLength(); pos++) {
 				outRecord.setKey(pos);
-				outRecord.setValue(record.getValue().getBaseQualities()[pos]);
+				outRecord.setValue(qualities.charAt(pos));
 				emit(outRecord);
 			}
 
@@ -36,9 +40,9 @@ public class BamQualityCheck {
 		String output = args[1];
 
 		BioPipeline pipeline = new BioPipeline("Bam Quality Check",
-				BamQualityCheck.class);
+				FastqQualityCheck.class);
 
-		pipeline.loadBam(input).apply(SplitByPos.class).mean().save(output);
+		pipeline.loadFastq(input).apply(SplitByPos.class).mean().save(output);
 
 		boolean result = pipeline.run();
 		if (!result) {

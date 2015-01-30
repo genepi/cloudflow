@@ -2,46 +2,24 @@ package cloudflow.examples;
 
 import java.io.IOException;
 
-import org.apache.hadoop.io.IntWritable;
-
 import cloudflow.core.Pipeline;
 import cloudflow.core.hadoop.RecordValues;
 import cloudflow.core.io.TextLoader;
 import cloudflow.core.operations.MapStep;
 import cloudflow.core.operations.ReduceStep;
-import cloudflow.core.records.Record;
+import cloudflow.core.records.IntIntRecord;
 import cloudflow.core.records.TextRecord;
 
 public class LengthCount {
 
-	static public class MyRecord extends Record<IntWritable, IntWritable> {
+	static public class SplitByWordLength extends
+			MapStep<TextRecord, IntIntRecord> {
 
-		public MyRecord() {
-			setWritableKey(new IntWritable());
-			setWritableValue(new IntWritable());
+		private IntIntRecord outRecord = new IntIntRecord();
+
+		public SplitByWordLength() {
+			super(TextRecord.class, IntIntRecord.class);
 		}
-
-		public int getValue() {
-			return getWritableValue().get();
-		}
-
-		public void setValue(int value) {
-			getWritableValue().set(value);
-		}
-
-		public int getKey() {
-			return getWritableKey().get();
-		}
-
-		public void setKey(int key) {
-			getWritableKey().set(key);
-		}
-
-	}
-
-	static public class SplitByWordLength extends MapStep<TextRecord, MyRecord> {
-
-		private MyRecord outRecord = new MyRecord();
 
 		@Override
 		public void process(TextRecord record) {
@@ -57,12 +35,17 @@ public class LengthCount {
 
 	}
 
-	static public class CountWordLength extends ReduceStep<MyRecord, MyRecord> {
+	static public class CountWordLength extends
+			ReduceStep<IntIntRecord, IntIntRecord> {
 
-		private MyRecord outRecord = new MyRecord();
+		private IntIntRecord outRecord = new IntIntRecord();
+
+		public CountWordLength() {
+			super(IntIntRecord.class, IntIntRecord.class);
+		}
 
 		@Override
-		public void process(String key, RecordValues<MyRecord> values) {
+		public void process(String key, RecordValues<IntIntRecord> values) {
 
 			int sum = 0;
 			while (values.hasNextRecord()) {
@@ -83,9 +66,8 @@ public class LengthCount {
 
 		Pipeline pipeline = new Pipeline("Wordcount-Length!", LengthCount.class);
 
-		pipeline.load(input, new TextLoader())
-				.apply(SplitByWordLength.class, MyRecord.class).groupByKey()
-				.apply(CountWordLength.class).save(output);
+		pipeline.load(input, new TextLoader()).apply(SplitByWordLength.class)
+				.groupByKey().apply(CountWordLength.class).save(output);
 
 		boolean result = pipeline.run();
 		if (!result) {

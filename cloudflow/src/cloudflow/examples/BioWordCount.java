@@ -15,6 +15,10 @@ public class BioWordCount {
 
 	static public class RemoveHeader extends Filter<TextRecord> {
 
+		public RemoveHeader() {
+			super(TextRecord.class);
+		}
+
 		@Override
 		public boolean filter(TextRecord record) {
 			return record.getValue().startsWith("#");
@@ -25,6 +29,10 @@ public class BioWordCount {
 	static public class SplitTiTv extends MapStep<TextRecord, IntegerRecord> {
 
 		IntegerRecord outRecord = new IntegerRecord();
+
+		public SplitTiTv() {
+			super(TextRecord.class, IntegerRecord.class);
+		}
 
 		@Override
 		public void process(TextRecord record) {
@@ -44,6 +52,10 @@ public class BioWordCount {
 			ReduceStep<IntegerRecord, IntegerRecord> {
 
 		private IntegerRecord outRecord = new IntegerRecord();
+
+		public CountTiTv() {
+			super(IntegerRecord.class, IntegerRecord.class);
+		}
 
 		@Override
 		public void process(String key, RecordValues<IntegerRecord> values) {
@@ -66,10 +78,9 @@ public class BioWordCount {
 
 		Pipeline pipeline = new Pipeline("BioWordCount", BioWordCount.class);
 
-		pipeline.load(input, new TextLoader())
-				.apply(RemoveHeader.class, TextRecord.class)
-				.apply(SplitTiTv.class, IntegerRecord.class).groupByKey()
-				.apply(CountTiTv.class).save(output);
+		pipeline.load(input, new TextLoader()).apply(RemoveHeader.class)
+				.apply(SplitTiTv.class).groupByKey().apply(CountTiTv.class)
+				.save(output);
 
 		boolean result = pipeline.run();
 		if (!result) {

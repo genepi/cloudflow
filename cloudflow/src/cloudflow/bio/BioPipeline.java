@@ -1,6 +1,7 @@
 package cloudflow.bio;
 
 import cloudflow.bio.bam.BamLoader;
+import cloudflow.bio.fastq.FastqLoader;
 import cloudflow.bio.vcf.VcfChunk;
 import cloudflow.bio.vcf.VcfChunker;
 import cloudflow.bio.vcf.VcfLoader;
@@ -11,6 +12,8 @@ public class BioPipeline extends Pipeline {
 	public BioPipeline(String name, Class<?> driverClass) {
 		super(name, driverClass);
 	}
+
+	// --- VCF ---
 
 	public VcfMapBuilder loadVcf(String hdfs) {
 		load(hdfs, new VcfLoader());
@@ -24,10 +27,12 @@ public class BioPipeline extends Pipeline {
 		}
 
 		public ReduceBuilder createChunks() {
-			return apply(VcfChunker.class, VcfChunk.class).groupByKey();
+			return apply(VcfChunker.class).groupByKey();
 		}
 
 	}
+
+	// --- BAM --
 
 	public BamMapBuilder loadBam(String hdfs) {
 		load(hdfs, new BamLoader());
@@ -40,6 +45,21 @@ public class BioPipeline extends Pipeline {
 			super(pipeline);
 		}
 
+	}
+
+	// -- FastQ --
+	public FastqMapBuilder loadFastq(String hdfs) {
+		load(hdfs, new FastqLoader());
+		return new FastqMapBuilder(this);
+	}
+
+	public class FastqMapBuilder extends MapBuilder {
+
+		public FastqMapBuilder(Pipeline pipeline) {
+			super(pipeline);
+		}
+
+		// paired reads? mapper seppi mtdna-server
 	}
 
 }

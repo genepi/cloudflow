@@ -14,6 +14,10 @@ public class VcfChunkTest {
 
 		private TextRecord info = new TextRecord();
 
+		public ChunkInfos() {
+			super(VcfChunk.class, TextRecord.class);
+		}
+		
 		@Override
 		public void process(String key, RecordValues<VcfChunk> values) {
 			int noSnps = 0;
