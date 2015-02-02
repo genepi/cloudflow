@@ -5,8 +5,6 @@ import genepi.hadoop.HdfsUtil;
 import java.io.IOException;
 import java.util.List;
 
-import org.apache.hadoop.fs.FileUtil;
-
 import cloudflow.core.hadoop.GenericJob;
 import cloudflow.core.io.ILoader;
 import cloudflow.core.io.TextLineLoader;
@@ -16,6 +14,7 @@ import cloudflow.core.operations.LineSplitter;
 import cloudflow.core.operations.MapStep;
 import cloudflow.core.operations.Mean;
 import cloudflow.core.operations.ReduceStep;
+import cloudflow.core.operations.Sum;
 import cloudflow.core.records.Record;
 
 public class Pipeline {
@@ -103,6 +102,10 @@ public class Pipeline {
 			return groupByKey().apply(Mean.class);
 		}
 
+		public AfterReduceBuilder sum() {
+			return groupByKey().apply(Sum.class);
+		}
+		
 		public ReduceBuilder groupByKey() {
 			return new ReduceBuilder(pipeline);
 		}

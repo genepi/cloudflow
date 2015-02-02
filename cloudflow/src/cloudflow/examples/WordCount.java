@@ -48,30 +48,6 @@ public class WordCount {
 
 	}
 
-	static public class CountWords extends
-			ReduceStep<IntegerRecord, IntegerRecord> {
-
-		private IntegerRecord outRecord = new IntegerRecord();
-
-		public CountWords() {
-			super(IntegerRecord.class, IntegerRecord.class);
-		}
-
-		@Override
-		public void process(String key, RecordValues<IntegerRecord> values) {
-
-			int sum = 0;
-			while (values.hasNextRecord()) {
-				int intValue = values.getRecord().getValue();
-				sum += intValue;
-			}
-			outRecord.setKey(key);
-			outRecord.setValue(sum);
-			emit(outRecord);
-		}
-
-	}
-
 	static public class FilterWords extends Filter<IntegerRecord> {
 
 		public FilterWords() {
@@ -93,8 +69,7 @@ public class WordCount {
 		Pipeline pipeline = new Pipeline("Wordcount", WordCount.class);
 
 		pipeline.load(input, new TextLoader()).apply(SplitWords.class)
-				.apply(RemoveEmptyKeys.class).groupByKey()
-				.apply(CountWords.class).apply(FilterWords.class)
+				.apply(RemoveEmptyKeys.class).sum().apply(FilterWords.class)
 				.save(output);
 
 		boolean result = pipeline.run();

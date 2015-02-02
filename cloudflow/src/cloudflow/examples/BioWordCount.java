@@ -3,11 +3,9 @@ package cloudflow.examples;
 import java.io.IOException;
 
 import cloudflow.core.Pipeline;
-import cloudflow.core.hadoop.RecordValues;
 import cloudflow.core.io.TextLoader;
 import cloudflow.core.operations.Filter;
 import cloudflow.core.operations.MapStep;
-import cloudflow.core.operations.ReduceStep;
 import cloudflow.core.records.IntegerRecord;
 import cloudflow.core.records.TextRecord;
 
@@ -48,29 +46,6 @@ public class BioWordCount {
 
 	}
 
-	static public class CountTiTv extends
-			ReduceStep<IntegerRecord, IntegerRecord> {
-
-		private IntegerRecord outRecord = new IntegerRecord();
-
-		public CountTiTv() {
-			super(IntegerRecord.class, IntegerRecord.class);
-		}
-
-		@Override
-		public void process(String key, RecordValues<IntegerRecord> values) {
-
-			int sum = 0;
-			while (values.hasNextRecord()) {
-				sum += values.getRecord().getValue();
-			}
-			outRecord.setKey(key);
-			outRecord.setValue(sum);
-			emit(outRecord);
-		}
-
-	}
-
 	public static void main(String[] args) throws IOException {
 
 		String input = args[0];
@@ -79,8 +54,7 @@ public class BioWordCount {
 		Pipeline pipeline = new Pipeline("BioWordCount", BioWordCount.class);
 
 		pipeline.load(input, new TextLoader()).apply(RemoveHeader.class)
-				.apply(SplitTiTv.class).groupByKey().apply(CountTiTv.class)
-				.save(output);
+				.apply(SplitTiTv.class).sum().save(output);
 
 		boolean result = pipeline.run();
 		if (!result) {
