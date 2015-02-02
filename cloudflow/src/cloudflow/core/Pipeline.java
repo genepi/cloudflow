@@ -9,7 +9,7 @@ import cloudflow.core.hadoop.GenericJob;
 import cloudflow.core.io.ILoader;
 import cloudflow.core.io.TextLineLoader;
 import cloudflow.core.io.TextLoader;
-import cloudflow.core.operations.BinaryExecutor;
+import cloudflow.core.operations.Executor;
 import cloudflow.core.operations.LineSplitter;
 import cloudflow.core.operations.MapStep;
 import cloudflow.core.operations.Mean;
@@ -129,7 +129,7 @@ public class Pipeline {
 			return new AfterReduceBuilder(pipeline);
 		}
 
-		public AfterReduceBuilder execute(Class<? extends BinaryExecutor> step) {
+		public AfterReduceBuilder execute(Class<? extends Executor> step) {
 			addReduceStep(step);
 			return new AfterReduceBuilder(pipeline);
 		}

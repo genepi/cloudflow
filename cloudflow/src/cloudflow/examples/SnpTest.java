@@ -6,7 +6,7 @@ import java.io.IOException;
 
 import cloudflow.core.Pipeline;
 import cloudflow.core.PipelineConf;
-import cloudflow.core.operations.BinaryExecutor;
+import cloudflow.core.operations.Executor;
 import cloudflow.core.operations.Filter;
 import cloudflow.core.records.TextRecord;
 import cloudflow.examples.snptest.SnpTestBinary;
@@ -15,7 +15,7 @@ public class SnpTest extends Tool {
 
 	// ------------- Execute Snptest
 
-	static public class SnpTestExecutor extends BinaryExecutor {
+	static public class SnpTestExecutor extends Executor {
 
 		private String binary;
 		private String phenotype;

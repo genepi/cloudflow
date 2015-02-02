@@ -5,11 +5,11 @@ import genepi.io.text.LineWriter;
 import cloudflow.core.hadoop.RecordValues;
 import cloudflow.core.records.TextRecord;
 
-public abstract class BinaryExecutor extends ReduceStep<TextRecord, TextRecord> {
+public abstract class Executor extends ReduceStep<TextRecord, TextRecord> {
 
 	private TextRecord outRecord;
 
-	public BinaryExecutor() {
+	public Executor() {
 		super(TextRecord.class, TextRecord.class);
 		outRecord = new TextRecord();
 	}
