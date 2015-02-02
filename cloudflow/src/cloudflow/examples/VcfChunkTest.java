@@ -44,7 +44,7 @@ public class VcfChunkTest {
 		BioPipeline pipeline = new BioPipeline("VCF Chunk test",
 				VcfChunkTest.class);
 
-		pipeline.loadVcf(input).createChunks().apply(ChunkInfos.class)
+		pipeline.loadVcf(input).createChunks(1000000).apply(ChunkInfos.class)
 				.save(output);
 
 		boolean result = pipeline.run();
