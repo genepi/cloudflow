@@ -1,5 +1,6 @@
 package cloudflow.bio.vcf;
 
+import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.io.LongWritable;
 import org.apache.hadoop.io.Writable;
 import org.seqdoop.hadoop_bam.VCFInputFormat;
@@ -27,6 +28,11 @@ public class VcfLoader implements ILoader {
 	@Override
 	public Class<?> getRecordClass() {
 		return VcfRecord.class;
+	}
+
+	@Override
+	public void configure(Configuration conf) {
+
 	}
 
 }

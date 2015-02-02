@@ -11,9 +11,11 @@ import org.apache.log4j.Logger;
 import cloudflow.core.operations.MapStep;
 import cloudflow.core.operations.ReduceStep;
 import cloudflow.core.records.Record;
+import cloudflow.core.PipelineConf;
 import cloudflow.core.SerializableSteps;
 
-public class GenericReducer extends
+public class GenericReducer
+		extends
 		Reducer<HadoopRecordKey, HadoopRecordValue, HadoopRecordKey, HadoopRecordValue> {
 
 	private SerializableSteps<ReduceStep<Record<?, ?>, Record<?, ?>>> reduceSteps;
@@ -26,8 +28,7 @@ public class GenericReducer extends
 
 	private List<MapStep<Record<?, ?>, Record<?, ?>>> instancesFilter = new Vector<MapStep<Record<?, ?>, Record<?, ?>>>();
 
-	private static final Logger log = Logger
-			.getLogger(GenericReducer.class);
+	private static final Logger log = Logger.getLogger(GenericReducer.class);
 
 	@Override
 	public void setup(final Context context) throws IOException,
@@ -36,19 +37,23 @@ public class GenericReducer extends
 		try {
 
 			log.info("Loading Reduce Step...");
-			
+
 			// read reduce step
 			String data = context.getConfiguration().get(
 					"cloudflow.steps.reduce");
 			reduceSteps = new SerializableSteps<ReduceStep<Record<?, ?>, Record<?, ?>>>();
 			reduceSteps.load(data);
 
+			PipelineConf conf = new PipelineConf();
+			conf.loadFromConfiguration(context.getConfiguration());
+
 			List<ReduceStep<Record<?, ?>, Record<?, ?>>> instancesReduce = reduceSteps
 					.createInstances();
 			reduceStep = instancesReduce.get(0);
+			reduceStep.configure(conf);
 
 			log.info("Loading Map Steps...");
-			
+
 			// read filter steps
 			String dataMap = context.getConfiguration().get(
 					"cloudflow.steps.map2");
@@ -62,8 +67,13 @@ public class GenericReducer extends
 
 				log.info("Found 1 reduce step.");
 				log.info("Found " + filterSteps.getSize() + " filter steps.");
-				
+
 				instancesFilter = filterSteps.createInstances();
+
+				// configure steps
+				for (int i = 0; i < instancesFilter.size(); i++) {
+					instancesFilter.get(i).configure(conf);
+				}
 
 				// fist step consumes reduce step output records
 				reduceStep.getOutputRecords().addConsumer(
@@ -85,7 +95,7 @@ public class GenericReducer extends
 			} else {
 
 				log.info("Found 1 reduce step.");
-				
+
 				// reduce step writes records to context
 				reduceStep.getOutputRecords().addConsumer(
 						new RecordToContextWriter(context));
@@ -104,7 +114,6 @@ public class GenericReducer extends
 
 		log.info("Input Records are " + inputRecordClassName);
 
-		
 		Class<?> inputRecordClass;
 		try {
 			inputRecordClass = Class.forName(inputRecordClassName);
@@ -117,8 +126,9 @@ public class GenericReducer extends
 	}
 
 	@Override
-	protected void reduce(HadoopRecordKey key, Iterable<HadoopRecordValue> values,
-			Context context) throws IOException, InterruptedException {
+	protected void reduce(HadoopRecordKey key,
+			Iterable<HadoopRecordValue> values, Context context)
+			throws IOException, InterruptedException {
 
 		recordValues.setValues(values);
 		reduceStep.process(key.toString(), recordValues);

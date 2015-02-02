@@ -94,7 +94,7 @@ public class WordCount {
 
 		pipeline.load(input, new TextLoader()).apply(SplitWords.class)
 				.apply(RemoveEmptyKeys.class).groupByKey()
-				.apply(CountWords.class).perform(FilterWords.class)
+				.apply(CountWords.class).apply(FilterWords.class)
 				.save(output);
 
 		boolean result = pipeline.run();

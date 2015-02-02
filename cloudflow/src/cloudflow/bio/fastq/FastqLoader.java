@@ -1,5 +1,6 @@
 package cloudflow.bio.fastq;
 
+import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.io.Writable;
 import org.seqdoop.hadoop_bam.FastqInputFormat;
@@ -29,4 +30,10 @@ public class FastqLoader implements ILoader {
 		return FastqRecord.class;
 	}
 
+
+	@Override
+	public void configure(Configuration conf) {
+	
+	}
+	
 }

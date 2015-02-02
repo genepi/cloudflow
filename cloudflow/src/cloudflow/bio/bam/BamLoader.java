@@ -1,5 +1,6 @@
 package cloudflow.bio.bam;
 
+import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.io.LongWritable;
 import org.apache.hadoop.io.Writable;
 import org.seqdoop.hadoop_bam.BAMInputFormat;
@@ -27,6 +28,12 @@ public class BamLoader implements ILoader {
 	@Override
 	public Class<?> getRecordClass() {
 		return BamRecord.class;
+	}
+	
+
+	@Override
+	public void configure(Configuration conf) {
+	
 	}
 
 }

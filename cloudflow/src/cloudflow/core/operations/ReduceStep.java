@@ -1,5 +1,6 @@
 package cloudflow.core.operations;
 
+import cloudflow.core.PipelineConf;
 import cloudflow.core.hadoop.RecordList;
 import cloudflow.core.hadoop.RecordValues;
 import cloudflow.core.records.Record;
@@ -19,6 +20,10 @@ public abstract class ReduceStep<IN extends Record<?,?>, OUT extends Record<?,?>
 	
 	public abstract void process(String key, RecordValues<IN> values);
 
+	public void configure(PipelineConf conf){
+		
+	}
+	
 	public void emit(OUT record) {
 		records.add(record);
 	}

@@ -3,15 +3,25 @@ package cloudflow.core.io;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.io.Writable;
-import org.apache.hadoop.mapreduce.lib.input.TextInputFormat;
+import org.apache.hadoop.mapreduce.lib.input.NLineInputFormat;
 
 import cloudflow.core.records.TextRecord;
 
-public class TextLoader implements ILoader {
+public class TextLineLoader implements ILoader {
 
+	private int lines = 100;
+
+	public TextLineLoader(){
+		
+	}
+	
+	public TextLineLoader(int lines){
+		this.lines = lines;
+	}
+	
 	@Override
 	public Class getInputFormat() {
-		return TextInputFormat.class;
+		return NLineInputFormat.class;
 	}
 
 	@Override
@@ -31,7 +41,11 @@ public class TextLoader implements ILoader {
 
 	@Override
 	public void configure(Configuration conf) {
-	
+		conf.setInt("mapreduce.input.lineinputformat.linespermap", lines);
+	}
+
+	public void setNumberOfLine(int lines) {
+		this.lines = lines;
 	}
 
 }

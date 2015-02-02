@@ -17,13 +17,13 @@ public class VcfChunkTest {
 		public ChunkInfos() {
 			super(VcfChunk.class, TextRecord.class);
 		}
-		
+
 		@Override
 		public void process(String key, RecordValues<VcfChunk> values) {
 			int noSnps = 0;
 			while (values.hasNextRecord()) {
 				noSnps++;
-				//consume!!
+				// consume!!
 				values.getRecord();
 			}
 

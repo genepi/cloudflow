@@ -36,5 +36,5 @@ public abstract class Record<KEY extends WritableComparable<?>, VALUE extends Wr
 	public Class<?> getWritableValueClass() {
 		return value.getClass();
 	}
-
+	
 }

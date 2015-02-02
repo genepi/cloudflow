@@ -1,10 +1,18 @@
 package cloudflow.core;
 
+import genepi.hadoop.HdfsUtil;
+
 import java.io.IOException;
 import java.util.List;
 
+import org.apache.hadoop.fs.FileUtil;
+
 import cloudflow.core.hadoop.GenericJob;
 import cloudflow.core.io.ILoader;
+import cloudflow.core.io.TextLineLoader;
+import cloudflow.core.io.TextLoader;
+import cloudflow.core.operations.BinaryExecutor;
+import cloudflow.core.operations.LineSplitter;
 import cloudflow.core.operations.MapStep;
 import cloudflow.core.operations.Mean;
 import cloudflow.core.operations.ReduceStep;
@@ -15,6 +23,8 @@ public class Pipeline {
 	private String input;
 
 	private String output;
+
+	private PipelineConf conf;
 
 	private SerializableSteps<MapStep<?, ?>> mapSteps;
 
@@ -36,6 +46,7 @@ public class Pipeline {
 		mapSteps = new SerializableSteps<MapStep<?, ?>>();
 		reduceSteps = new SerializableSteps<ReduceStep<?, ?>>();
 		mapSteps2 = new SerializableSteps<MapStep<?, ?>>();
+		conf = new PipelineConf();
 
 	}
 
@@ -44,6 +55,21 @@ public class Pipeline {
 		this.loader = loader;
 
 		return new MapBuilder(this);
+
+	}
+
+	public MapBuilder loadText(String hdfs) {
+		this.input = hdfs;
+		this.loader = new TextLoader();
+
+		return new MapBuilder(this);
+
+	}
+
+	public ReduceBuilder loadTextAndSplit(String hdfs, int numLines) {
+		this.input = hdfs;
+		this.loader = new TextLineLoader(numLines);
+		return new MapBuilder(this).apply(LineSplitter.class).groupByKey();
 
 	}
 
@@ -100,6 +126,11 @@ public class Pipeline {
 			return new AfterReduceBuilder(pipeline);
 		}
 
+		public AfterReduceBuilder execute(Class<? extends BinaryExecutor> step) {
+			addReduceStep(step);
+			return new AfterReduceBuilder(pipeline);
+		}
+
 		public void save(String hdfs) {
 			output = hdfs;
 		}
@@ -114,7 +145,7 @@ public class Pipeline {
 			this.pipeline = pipeline;
 		}
 
-		public AfterReduceBuilder perform(Class<? extends MapStep<?, ?>> step) {
+		public AfterReduceBuilder apply(Class<? extends MapStep<?, ?>> step) {
 			addMap2Step(step);
 			return new AfterReduceBuilder(pipeline);
 		}
@@ -122,6 +153,24 @@ public class Pipeline {
 		public void save(String hdfs) {
 			output = hdfs;
 		}
+	}
+
+	public void set(String key, String value) {
+		conf.set(key, value);
+	}
+
+	public void set(String key, int value) {
+		conf.set(key, value);
+	}
+
+	public void set(String key, boolean value) {
+		conf.set(key, value);
+	}
+
+	public void distributeFile(String key, String filename) {
+		key = HdfsUtil.path("cloudflow-cache", key);
+		HdfsUtil.put(filename, key);
+		conf.distributeFile(key);
 	}
 
 	public boolean check() {
@@ -213,6 +262,11 @@ public class Pipeline {
 		job.setMapSteps(mapSteps);
 		job.setMap2Steps(mapSteps2);
 		job.setMapperInputRecords(loader.getRecordClass());
+		loader.configure(job.getConfiguration());
+
+		// distribute configuration
+		conf.writeToConfiguration(job.getConfiguration());
+
 		job.setMapperOutputRecords(mapperOutputRecordClass);
 		try {
 

@@ -9,6 +9,7 @@ import org.apache.hadoop.io.WritableComparable;
 import org.apache.hadoop.mapreduce.Mapper;
 import org.apache.log4j.Logger;
 
+import cloudflow.core.PipelineConf;
 import cloudflow.core.SerializableSteps;
 import cloudflow.core.operations.MapStep;
 import cloudflow.core.records.Record;
@@ -24,16 +25,15 @@ public class GenericMapper extends
 
 	private Record<?, ?> record = null;
 
-	private static final Logger log = Logger
-			.getLogger(GenericMapper.class);
-	
+	private static final Logger log = Logger.getLogger(GenericMapper.class);
+
 	@Override
 	public void run(Context context) throws IOException, InterruptedException {
 
 		try {
 
 			log.info("Loading Map Steps...");
-			
+
 			// read mapper steps
 			String data = context.getConfiguration().get("cloudflow.steps.map");
 			steps = new SerializableSteps<MapStep<Record<?, ?>, Record<?, ?>>>();
@@ -41,8 +41,16 @@ public class GenericMapper extends
 
 			instances = steps.createInstances();
 
-			log.info("Found " + instances.size() + " map steps.");
+			PipelineConf conf = new PipelineConf();
+			conf.loadFromConfiguration(context.getConfiguration());
 			
+			// configure steps
+			for (int i = 0; i < instances.size(); i++) {
+				instances.get(i).configure(conf);
+			}
+
+			log.info("Found " + instances.size() + " map steps.");
+
 			// fist step consumes input records
 			inputRecords.addConsumer(instances.get(0));
 
@@ -67,9 +75,9 @@ public class GenericMapper extends
 		try {
 			String inputRecordClassName = context.getConfiguration().get(
 					"cloudflow.steps.map.input");
-			
+
 			log.info("Input Records are " + inputRecordClassName);
-			
+
 			Class<?> recordClass = Class.forName(inputRecordClassName);
 			record = (Record<?, ?>) recordClass.newInstance();
 		} catch (ClassNotFoundException | InstantiationException
