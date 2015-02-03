@@ -9,17 +9,17 @@ import org.apache.hadoop.io.WritableComparable;
 import org.apache.hadoop.mapreduce.Mapper;
 import org.apache.log4j.Logger;
 
+import cloudflow.core.Operations;
 import cloudflow.core.PipelineConf;
-import cloudflow.core.SerializableSteps;
-import cloudflow.core.operations.MapStep;
+import cloudflow.core.operations.MapOperation;
 import cloudflow.core.records.Record;
 
 public class GenericMapper extends
 		Mapper<Object, Writable, HadoopRecordKey, HadoopRecordValue> {
 
-	private SerializableSteps<MapStep<Record<?, ?>, Record<?, ?>>> steps;
+	private Operations<MapOperation<Record<?, ?>, Record<?, ?>>> steps;
 
-	private List<MapStep<Record<?, ?>, Record<?, ?>>> instances = new Vector<>();
+	private List<MapOperation<Record<?, ?>, Record<?, ?>>> instances = new Vector<>();
 
 	private RecordList inputRecords = new RecordList();
 
@@ -32,11 +32,11 @@ public class GenericMapper extends
 
 		try {
 
-			log.info("Loading Map Steps...");
+			log.info("Loading Map Operations...");
 
 			// read mapper steps
 			String data = context.getConfiguration().get("cloudflow.steps.map");
-			steps = new SerializableSteps<MapStep<Record<?, ?>, Record<?, ?>>>();
+			steps = new Operations<MapOperation<Record<?, ?>, Record<?, ?>>>();
 			steps.load(data);
 
 			instances = steps.createInstances();
@@ -49,15 +49,15 @@ public class GenericMapper extends
 				instances.get(i).configure(conf);
 			}
 
-			log.info("Found " + instances.size() + " map steps.");
+			log.info("Found " + instances.size() + " map operations.");
 
 			// fist step consumes input records
 			inputRecords.addConsumer(instances.get(0));
 
 			// step n + 1 consumes records produced by n
 			for (int i = 0; i < instances.size() - 1; i++) {
-				MapStep<Record<?, ?>, Record<?, ?>> step = instances.get(i);
-				MapStep<Record<?, ?>, Record<?, ?>> nextStep = instances
+				MapOperation<Record<?, ?>, Record<?, ?>> step = instances.get(i);
+				MapOperation<Record<?, ?>, Record<?, ?>> nextStep = instances
 						.get(i + 1);
 				step.getOutputRecords().addConsumer(nextStep);
 			}

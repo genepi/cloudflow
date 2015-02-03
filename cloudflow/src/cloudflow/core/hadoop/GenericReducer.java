@@ -4,29 +4,28 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Vector;
 
-import org.apache.hadoop.io.Writable;
 import org.apache.hadoop.mapreduce.Reducer;
 import org.apache.log4j.Logger;
 
-import cloudflow.core.operations.MapStep;
-import cloudflow.core.operations.ReduceStep;
-import cloudflow.core.records.Record;
+import cloudflow.core.Operations;
 import cloudflow.core.PipelineConf;
-import cloudflow.core.SerializableSteps;
+import cloudflow.core.operations.MapOperation;
+import cloudflow.core.operations.ReduceOperation;
+import cloudflow.core.records.Record;
 
 public class GenericReducer
 		extends
 		Reducer<HadoopRecordKey, HadoopRecordValue, HadoopRecordKey, HadoopRecordValue> {
 
-	private SerializableSteps<ReduceStep<Record<?, ?>, Record<?, ?>>> reduceSteps;
+	private Operations<ReduceOperation<Record<?, ?>, Record<?, ?>>> reduceSteps;
 
-	private SerializableSteps<MapStep<Record<?, ?>, Record<?, ?>>> filterSteps;
+	private Operations<MapOperation<Record<?, ?>, Record<?, ?>>> filterSteps;
 
-	private ReduceStep<Record<?, ?>, Record<?, ?>> reduceStep;
+	private ReduceOperation<Record<?, ?>, Record<?, ?>> reduceStep;
 
-	private RecordValues<Record<?, ?>> recordValues;
+	private GroupedRecords<Record<?, ?>> recordValues;
 
-	private List<MapStep<Record<?, ?>, Record<?, ?>>> instancesFilter = new Vector<MapStep<Record<?, ?>, Record<?, ?>>>();
+	private List<MapOperation<Record<?, ?>, Record<?, ?>>> instancesFilter = new Vector<MapOperation<Record<?, ?>, Record<?, ?>>>();
 
 	private static final Logger log = Logger.getLogger(GenericReducer.class);
 
@@ -41,13 +40,13 @@ public class GenericReducer
 			// read reduce step
 			String data = context.getConfiguration().get(
 					"cloudflow.steps.reduce");
-			reduceSteps = new SerializableSteps<ReduceStep<Record<?, ?>, Record<?, ?>>>();
+			reduceSteps = new Operations<ReduceOperation<Record<?, ?>, Record<?, ?>>>();
 			reduceSteps.load(data);
 
 			PipelineConf conf = new PipelineConf();
 			conf.loadFromConfiguration(context.getConfiguration());
 
-			List<ReduceStep<Record<?, ?>, Record<?, ?>>> instancesReduce = reduceSteps
+			List<ReduceOperation<Record<?, ?>, Record<?, ?>>> instancesReduce = reduceSteps
 					.createInstances();
 			reduceStep = instancesReduce.get(0);
 			reduceStep.configure(conf);
@@ -58,7 +57,7 @@ public class GenericReducer
 			String dataMap = context.getConfiguration().get(
 					"cloudflow.steps.map2");
 
-			filterSteps = new SerializableSteps<MapStep<Record<?, ?>, Record<?, ?>>>();
+			filterSteps = new Operations<MapOperation<Record<?, ?>, Record<?, ?>>>();
 			if (dataMap != null) {
 				filterSteps.load(dataMap);
 			}
@@ -81,9 +80,9 @@ public class GenericReducer
 
 				// step n + 1 consumes records produced by n
 				for (int i = 0; i < instancesFilter.size() - 1; i++) {
-					MapStep<Record<?, ?>, Record<?, ?>> step = instancesFilter
+					MapOperation<Record<?, ?>, Record<?, ?>> step = instancesFilter
 							.get(i);
-					MapStep<Record<?, ?>, Record<?, ?>> nextStep = instancesFilter
+					MapOperation<Record<?, ?>, Record<?, ?>> nextStep = instancesFilter
 							.get(i + 1);
 					step.getOutputRecords().addConsumer(nextStep);
 				}
@@ -117,7 +116,7 @@ public class GenericReducer
 		Class<?> inputRecordClass;
 		try {
 			inputRecordClass = Class.forName(inputRecordClassName);
-			recordValues = new RecordValues<Record<?, ?>>();
+			recordValues = new GroupedRecords<Record<?, ?>>();
 			recordValues.setRecordClassName(inputRecordClass);
 		} catch (ClassNotFoundException | InstantiationException
 				| IllegalAccessException e) {

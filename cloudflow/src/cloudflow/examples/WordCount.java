@@ -3,17 +3,17 @@ package cloudflow.examples;
 import java.io.IOException;
 
 import cloudflow.core.Pipeline;
-import cloudflow.core.hadoop.RecordValues;
+import cloudflow.core.hadoop.GroupedRecords;
 import cloudflow.core.io.TextLoader;
 import cloudflow.core.operations.Filter;
-import cloudflow.core.operations.MapStep;
-import cloudflow.core.operations.ReduceStep;
+import cloudflow.core.operations.MapOperation;
+import cloudflow.core.operations.ReduceOperation;
 import cloudflow.core.records.IntegerRecord;
 import cloudflow.core.records.TextRecord;
 
 public class WordCount {
 
-	static public class SplitWords extends MapStep<TextRecord, IntegerRecord> {
+	static public class SplitWords extends MapOperation<TextRecord, IntegerRecord> {
 
 		private IntegerRecord outRecord = new IntegerRecord();
 

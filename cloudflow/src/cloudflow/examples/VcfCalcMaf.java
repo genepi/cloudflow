@@ -7,17 +7,17 @@ import java.io.IOException;
 import cloudflow.bio.BioPipeline;
 import cloudflow.bio.vcf.VcfRecord;
 import cloudflow.core.operations.Filter;
-import cloudflow.core.operations.MapStep;
-import cloudflow.core.records.StringFloatRecord;
+import cloudflow.core.operations.MapOperation;
+import cloudflow.core.records.FloatRecord;
 
 public class VcfCalcMaf {
 
-	static public class CalcMaf extends MapStep<VcfRecord, StringFloatRecord> {
+	static public class CalcMaf extends MapOperation<VcfRecord, FloatRecord> {
 
-		StringFloatRecord outRecord = new StringFloatRecord();
+		FloatRecord outRecord = new FloatRecord();
 
 		public CalcMaf() {
-			super(VcfRecord.class, StringFloatRecord.class);
+			super(VcfRecord.class, FloatRecord.class);
 		}
 
 		@Override
@@ -45,14 +45,14 @@ public class VcfCalcMaf {
 
 	}
 
-	static public class FilterCommonSnps extends Filter<StringFloatRecord> {
+	static public class FilterCommonSnps extends Filter<FloatRecord> {
 
 		public FilterCommonSnps() {
-			super(StringFloatRecord.class);
+			super(FloatRecord.class);
 		}
 
 		@Override
-		public boolean filter(StringFloatRecord record) {
+		public boolean filter(FloatRecord record) {
 			return record.getValue() > 0.05 || record.getValue() == 0;
 		}
 

@@ -4,13 +4,13 @@ import java.io.IOException;
 
 import cloudflow.bio.BioPipeline;
 import cloudflow.bio.vcf.VcfChunk;
-import cloudflow.core.hadoop.RecordValues;
-import cloudflow.core.operations.ReduceStep;
+import cloudflow.core.hadoop.GroupedRecords;
+import cloudflow.core.operations.ReduceOperation;
 import cloudflow.core.records.TextRecord;
 
 public class VcfChunkTest {
 
-	static public class ChunkInfos extends ReduceStep<VcfChunk, TextRecord> {
+	static public class ChunkInfos extends ReduceOperation<VcfChunk, TextRecord> {
 
 		private TextRecord info = new TextRecord();
 
@@ -19,7 +19,7 @@ public class VcfChunkTest {
 		}
 
 		@Override
-		public void process(String key, RecordValues<VcfChunk> values) {
+		public void process(String key, GroupedRecords<VcfChunk> values) {
 			int noSnps = 0;
 			while (values.hasNextRecord()) {
 				noSnps++;

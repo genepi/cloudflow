@@ -2,7 +2,7 @@ package cloudflow.core.operations;
 
 import cloudflow.core.records.TextRecord;
 
-public class LineSplitter extends MapStep<TextRecord, TextRecord> {
+public class LineSplitter extends MapOperation<TextRecord, TextRecord> {
 
 	private TextRecord outRecord = new TextRecord();
 	

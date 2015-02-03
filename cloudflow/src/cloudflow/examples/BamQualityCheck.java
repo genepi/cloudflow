@@ -4,24 +4,24 @@ import java.io.IOException;
 
 import cloudflow.bio.BioPipeline;
 import cloudflow.bio.bam.BamRecord;
-import cloudflow.core.operations.MapStep;
-import cloudflow.core.records.IntIntRecord;
+import cloudflow.core.operations.MapOperation;
+import cloudflow.core.records.IntegerRecord;
 
 public class BamQualityCheck {
 
-	static public class SplitByPos extends MapStep<BamRecord, IntIntRecord> {
+	static public class SplitByPos extends MapOperation<BamRecord, IntegerRecord> {
 
-		IntIntRecord outRecord = new IntIntRecord();
+		IntegerRecord outRecord = new IntegerRecord();
 
 		public SplitByPos() {
-			super(BamRecord.class, IntIntRecord.class);
+			super(BamRecord.class, IntegerRecord.class);
 		}
 
 		@Override
 		public void process(BamRecord record) {
 
 			for (int pos = 0; pos < record.getValue().getReadLength(); pos++) {
-				outRecord.setKey(pos);
+				outRecord.setKey(pos + "");
 				outRecord.setValue(record.getValue().getBaseQualities()[pos]);
 				emit(outRecord);
 			}

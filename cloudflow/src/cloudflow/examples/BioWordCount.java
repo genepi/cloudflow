@@ -5,7 +5,7 @@ import java.io.IOException;
 import cloudflow.core.Pipeline;
 import cloudflow.core.io.TextLoader;
 import cloudflow.core.operations.Filter;
-import cloudflow.core.operations.MapStep;
+import cloudflow.core.operations.MapOperation;
 import cloudflow.core.records.IntegerRecord;
 import cloudflow.core.records.TextRecord;
 
@@ -24,7 +24,7 @@ public class BioWordCount {
 
 	}
 
-	static public class SplitTiTv extends MapStep<TextRecord, IntegerRecord> {
+	static public class SplitTiTv extends MapOperation<TextRecord, IntegerRecord> {
 
 		IntegerRecord outRecord = new IntegerRecord();
 

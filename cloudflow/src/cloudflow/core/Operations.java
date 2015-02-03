@@ -3,7 +3,7 @@ package cloudflow.core;
 import java.util.List;
 import java.util.Vector;
 
-public class SerializableSteps<c> {
+public class Operations<c> {
 
 	private List<Class> steps;
 
@@ -16,11 +16,11 @@ public class SerializableSteps<c> {
 		return (c) steps.get(i).newInstance();
 	}
 
-	public void addStep(Class clazz) {
+	public void add(Class clazz) {
 		steps.add(clazz);
 	}
 
-	public SerializableSteps() {
+	public Operations() {
 		this.steps = new Vector<Class>();
 	}
 

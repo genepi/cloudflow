@@ -2,7 +2,7 @@ package cloudflow.core.operations;
 
 import cloudflow.core.records.Record;
 
-public abstract class Filter<IN extends Record<?, ?>> extends MapStep<IN, IN> {
+public abstract class Filter<IN extends Record<?, ?>> extends MapOperation<IN, IN> {
 
 	public Filter(Class<IN> recordClass) {
 		super(recordClass, recordClass);

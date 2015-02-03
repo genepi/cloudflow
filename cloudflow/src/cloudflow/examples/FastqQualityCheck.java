@@ -6,17 +6,17 @@ import org.apache.hadoop.io.Text;
 
 import cloudflow.bio.BioPipeline;
 import cloudflow.bio.fastq.FastqRecord;
-import cloudflow.core.operations.MapStep;
-import cloudflow.core.records.IntIntRecord;
+import cloudflow.core.operations.MapOperation;
+import cloudflow.core.records.IntegerRecord;
 
 public class FastqQualityCheck {
 
-	static public class SplitByPos extends MapStep<FastqRecord, IntIntRecord> {
+	static public class SplitByPos extends MapOperation<FastqRecord, IntegerRecord> {
 
-		IntIntRecord outRecord = new IntIntRecord();
+		IntegerRecord outRecord = new IntegerRecord();
 
 		public SplitByPos() {
-			super(FastqRecord.class, IntIntRecord.class);
+			super(FastqRecord.class, IntegerRecord.class);
 		}
 
 		@Override
@@ -25,7 +25,7 @@ public class FastqQualityCheck {
 			Text qualities = record.getValue().getQuality();
 
 			for (int pos = 0; pos < qualities.getLength(); pos++) {
-				outRecord.setKey(pos);
+				outRecord.setKey(pos + "");
 				outRecord.setValue(qualities.charAt(pos));
 				emit(outRecord);
 			}

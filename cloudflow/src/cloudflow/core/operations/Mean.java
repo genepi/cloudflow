@@ -1,21 +1,21 @@
 package cloudflow.core.operations;
 
-import cloudflow.core.hadoop.RecordValues;
-import cloudflow.core.records.IntFloatRecord;
-import cloudflow.core.records.IntIntRecord;
+import cloudflow.core.hadoop.GroupedRecords;
+import cloudflow.core.records.FloatRecord;
+import cloudflow.core.records.IntegerRecord;
 
-public class Mean extends ReduceStep<IntIntRecord, IntFloatRecord> {
+public class Mean extends ReduceOperation<IntegerRecord, FloatRecord> {
 
-	private IntFloatRecord outRecord = new IntFloatRecord();
+	private FloatRecord outRecord = new FloatRecord();
 
 	// TODO: atm: key is converted to String. --> change!!
 
 	public Mean() {
-		super(IntIntRecord.class, IntFloatRecord.class);
+		super(IntegerRecord.class, FloatRecord.class);
 	}
 
 	@Override
-	public void process(String key, RecordValues<IntIntRecord> values) {
+	public void process(String key, GroupedRecords<IntegerRecord> values) {
 
 		int sum = 0;
 		int count = 0;
@@ -23,7 +23,7 @@ public class Mean extends ReduceStep<IntIntRecord, IntFloatRecord> {
 			sum += values.getRecord().getValue();
 			count++;
 		}
-		outRecord.setKey(Integer.parseInt(key));
+		outRecord.setKey(key);
 		outRecord.setValue(sum / (float) count);
 		emit(outRecord);
 	}

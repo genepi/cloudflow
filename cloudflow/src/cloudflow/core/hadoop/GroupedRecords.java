@@ -2,17 +2,17 @@ package cloudflow.core.hadoop;
 
 import cloudflow.core.records.Record;
 
-public class RecordValues<IN extends Record<?, ?>> {
+public class GroupedRecords<IN extends Record<?, ?>> {
 
 	protected Iterable<HadoopRecordValue> values;
 
 	private IN record;
 
-	public RecordValues(Iterable<HadoopRecordValue> values) {
+	public GroupedRecords(Iterable<HadoopRecordValue> values) {
 		this.values = values;
 	}
 
-	public RecordValues() {
+	public GroupedRecords() {
 
 	}
 

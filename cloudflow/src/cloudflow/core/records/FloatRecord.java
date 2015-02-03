@@ -1,12 +1,12 @@
 package cloudflow.core.records;
 
 import org.apache.hadoop.io.FloatWritable;
-import org.apache.hadoop.io.IntWritable;
+import org.apache.hadoop.io.Text;
 
-public class IntFloatRecord extends Record<IntWritable, FloatWritable> {
+public class FloatRecord extends Record<Text, FloatWritable> {
 
-	public IntFloatRecord() {
-		setWritableKey(new IntWritable());
+	public FloatRecord() {
+		setWritableKey(new Text());
 		setWritableValue(new FloatWritable());
 	}
 
@@ -18,11 +18,11 @@ public class IntFloatRecord extends Record<IntWritable, FloatWritable> {
 		getWritableValue().set(value);
 	}
 
-	public int getKey() {
-		return getWritableKey().get();
+	public String getKey() {
+		return getWritableKey().toString();
 	}
 
-	public void setKey(int key) {
+	public void setKey(String key) {
 		getWritableKey().set(key);
 	}
 

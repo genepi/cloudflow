@@ -1,9 +1,9 @@
 package cloudflow.bio.vcf;
 
 import cloudflow.core.PipelineConf;
-import cloudflow.core.operations.MapStep;
+import cloudflow.core.operations.MapOperation;
 
-public class VcfChunker extends MapStep<VcfRecord, VcfChunk> {
+public class VcfChunker extends MapOperation<VcfRecord, VcfChunk> {
 
 	private VcfChunk chunk = new VcfChunk();
 

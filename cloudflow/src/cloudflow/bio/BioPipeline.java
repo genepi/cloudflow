@@ -2,7 +2,6 @@ package cloudflow.bio;
 
 import cloudflow.bio.bam.BamLoader;
 import cloudflow.bio.fastq.FastqLoader;
-import cloudflow.bio.vcf.VcfChunk;
 import cloudflow.bio.vcf.VcfChunker;
 import cloudflow.bio.vcf.VcfLoader;
 import cloudflow.core.Pipeline;

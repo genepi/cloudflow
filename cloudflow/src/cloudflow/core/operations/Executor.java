@@ -2,10 +2,10 @@ package cloudflow.core.operations;
 
 import genepi.io.text.LineReader;
 import genepi.io.text.LineWriter;
-import cloudflow.core.hadoop.RecordValues;
+import cloudflow.core.hadoop.GroupedRecords;
 import cloudflow.core.records.TextRecord;
 
-public abstract class Executor extends ReduceStep<TextRecord, TextRecord> {
+public abstract class Executor extends ReduceOperation<TextRecord, TextRecord> {
 
 	private TextRecord outRecord;
 
@@ -17,7 +17,7 @@ public abstract class Executor extends ReduceStep<TextRecord, TextRecord> {
 	public abstract boolean execute(String inputFilename, String outputFilename);
 
 	@Override
-	public void process(String key, RecordValues<TextRecord> values) {
+	public void process(String key, GroupedRecords<TextRecord> values) {
 		String inputFilename = "/tmp/input-" + key + ".txt";
 		String outputFilename = "/tmp/output-" + key + ".txt";
 		try {

@@ -11,9 +11,9 @@ import cloudflow.core.io.TextLineLoader;
 import cloudflow.core.io.TextLoader;
 import cloudflow.core.operations.Executor;
 import cloudflow.core.operations.LineSplitter;
-import cloudflow.core.operations.MapStep;
+import cloudflow.core.operations.MapOperation;
 import cloudflow.core.operations.Mean;
-import cloudflow.core.operations.ReduceStep;
+import cloudflow.core.operations.ReduceOperation;
 import cloudflow.core.operations.Sum;
 import cloudflow.core.records.Record;
 
@@ -25,11 +25,11 @@ public class Pipeline {
 
 	private PipelineConf conf;
 
-	private SerializableSteps<MapStep<?, ?>> mapSteps;
+	private Operations<MapOperation<?, ?>> mapOperations;
 
-	private SerializableSteps<MapStep<?, ?>> mapSteps2;
+	private Operations<MapOperation<?, ?>> afterReduceOperations;
 
-	private SerializableSteps<ReduceStep<?, ?>> reduceSteps;
+	private Operations<ReduceOperation<?, ?>> reduceOperations;
 
 	private String name;
 
@@ -42,9 +42,9 @@ public class Pipeline {
 	public Pipeline(String name, Class<?> driverClass) {
 		this.driverClass = driverClass;
 		this.name = name;
-		mapSteps = new SerializableSteps<MapStep<?, ?>>();
-		reduceSteps = new SerializableSteps<ReduceStep<?, ?>>();
-		mapSteps2 = new SerializableSteps<MapStep<?, ?>>();
+		mapOperations = new Operations<MapOperation<?, ?>>();
+		reduceOperations = new Operations<ReduceOperation<?, ?>>();
+		afterReduceOperations = new Operations<MapOperation<?, ?>>();
 		conf = new PipelineConf();
 
 	}
@@ -72,16 +72,18 @@ public class Pipeline {
 
 	}
 
-	protected void addMapStep(Class<? extends MapStep<?, ?>> step) {
-		mapSteps.addStep(step);
+	protected void addMapOperation(Class<? extends MapOperation<?, ?>> operation) {
+		mapOperations.add(operation);
 	}
 
-	protected void addMap2Step(Class<? extends MapStep<?, ?>> step) {
-		mapSteps2.addStep(step);
+	protected void addAfterReduceOperation(
+			Class<? extends MapOperation<?, ?>> operation) {
+		afterReduceOperations.add(operation);
 	}
 
-	protected void addReduceStep(Class<? extends ReduceStep<?, ?>> step) {
-		reduceSteps.addStep(step);
+	protected void addReduceOperation(
+			Class<? extends ReduceOperation<?, ?>> operation) {
+		reduceOperations.add(operation);
 	}
 
 	public class MapBuilder {
@@ -92,9 +94,8 @@ public class Pipeline {
 			this.pipeline = pipeline;
 		}
 
-		public MapBuilder apply(Class<? extends MapStep<?, ?>> step) {
-
-			addMapStep(step);
+		public MapBuilder apply(Class<? extends MapOperation<?, ?>> operation) {
+			addMapOperation(operation);
 			return new MapBuilder(pipeline);
 		}
 
@@ -105,7 +106,7 @@ public class Pipeline {
 		public AfterReduceBuilder sum() {
 			return groupByKey().apply(Sum.class);
 		}
-		
+
 		public ReduceBuilder groupByKey() {
 			return new ReduceBuilder(pipeline);
 		}
@@ -124,13 +125,14 @@ public class Pipeline {
 			this.pipeline = pipeline;
 		}
 
-		public AfterReduceBuilder apply(Class<? extends ReduceStep<?, ?>> step) {
-			addReduceStep(step);
+		public AfterReduceBuilder apply(
+				Class<? extends ReduceOperation<?, ?>> operation) {
+			addReduceOperation(operation);
 			return new AfterReduceBuilder(pipeline);
 		}
 
-		public AfterReduceBuilder execute(Class<? extends Executor> step) {
-			addReduceStep(step);
+		public AfterReduceBuilder execute(Class<? extends Executor> operation) {
+			addReduceOperation(operation);
 			return new AfterReduceBuilder(pipeline);
 		}
 
@@ -148,8 +150,9 @@ public class Pipeline {
 			this.pipeline = pipeline;
 		}
 
-		public AfterReduceBuilder apply(Class<? extends MapStep<?, ?>> step) {
-			addMap2Step(step);
+		public AfterReduceBuilder apply(
+				Class<? extends MapOperation<?, ?>> operation) {
+			addAfterReduceOperation(operation);
 			return new AfterReduceBuilder(pipeline);
 		}
 
@@ -189,17 +192,18 @@ public class Pipeline {
 
 		System.out.println("  Mapper: ");
 		try {
-			List<MapStep<?, ?>> steps = mapSteps.createInstances();
-			for (int i = 0; i < steps.size(); i++) {
-				MapStep<?, ?> step = steps.get(i);
+			List<MapOperation<?, ?>> operations = mapOperations
+					.createInstances();
+			for (int i = 0; i < operations.size(); i++) {
+				MapOperation<?, ?> operation = operations.get(i);
 				System.out.println("    (" + (i + 1) + ") "
-						+ step.getClass().getName());
-				System.out
-						.println("      input: " + step.getInputRecordClass());
+						+ operation.getClass().getName());
+				System.out.println("      input: "
+						+ operation.getInputRecordClass());
 				System.out.println("      output: "
-						+ step.getOutputRecordClass());
+						+ operation.getOutputRecordClass());
 
-				mapperOutputRecordClass = step.getOutputRecordClass();
+				mapperOutputRecordClass = operation.getOutputRecordClass();
 
 			}
 		} catch (InstantiationException | IllegalAccessException e) {
@@ -207,26 +211,28 @@ public class Pipeline {
 			e.printStackTrace();
 			return false;
 		}
-		if (reduceSteps.getSize() > 0) {
+		if (reduceOperations.getSize() > 0) {
 
 			System.out.println("  Reducer: ");
 			try {
-				List<ReduceStep<?, ?>> reducer = reduceSteps.createInstances();
+				List<ReduceOperation<?, ?>> reducer = reduceOperations
+						.createInstances();
 				System.out.println("    (1) "
 						+ reducer.get(0).getClass().getName());
 				System.out.println("      input: "
 						+ reducer.get(0).getInputRecordClass());
 				System.out.println("      output: "
 						+ reducer.get(0).getOutputRecordClass());
-				List<MapStep<?, ?>> steps = mapSteps2.createInstances();
-				for (int i = 0; i < steps.size(); i++) {
-					MapStep<?, ?> step = steps.get(i);
+				List<MapOperation<?, ?>> operations = afterReduceOperations
+						.createInstances();
+				for (int i = 0; i < operations.size(); i++) {
+					MapOperation<?, ?> operation = operations.get(i);
 					System.out.println("    (" + (i + 2) + ") "
-							+ step.getClass().getName());
+							+ operation.getClass().getName());
 					System.out.println("      input: "
-							+ step.getInputRecordClass());
+							+ operation.getInputRecordClass());
 					System.out.println("      output: "
-							+ step.getOutputRecordClass());
+							+ operation.getOutputRecordClass());
 				}
 			} catch (InstantiationException | IllegalAccessException e) {
 				System.out.println("Pipeline is not executable:");
@@ -262,8 +268,8 @@ public class Pipeline {
 		job.setOutput(output);
 		job.setDriverClass(driverClass);
 		job.setInputFormat(loader.getInputFormat());
-		job.setMapSteps(mapSteps);
-		job.setMap2Steps(mapSteps2);
+		job.setMapOperations(mapOperations);
+		job.setAfterReduceOperations(afterReduceOperations);
 		job.setMapperInputRecords(loader.getRecordClass());
 		loader.configure(job.getConfiguration());
 
@@ -285,7 +291,7 @@ public class Pipeline {
 					+ record.getWritableKeyClass().getName() + ", "
 					+ record.getWritableValueClass().getName() + ")");
 
-			job.setReduceSteps(reduceSteps);
+			job.setReduceOperations(reduceOperations);
 			return job.execute();
 		} catch (InstantiationException e) {
 			// TODO Auto-generated catch block

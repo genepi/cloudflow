@@ -8,9 +8,9 @@ import java.io.IOException;
 import org.apache.hadoop.mapreduce.InputFormat;
 import org.apache.hadoop.mapreduce.Job;
 
-import cloudflow.core.SerializableSteps;
-import cloudflow.core.operations.MapStep;
-import cloudflow.core.operations.ReduceStep;
+import cloudflow.core.Operations;
+import cloudflow.core.operations.MapOperation;
+import cloudflow.core.operations.ReduceOperation;
 
 public class GenericJob extends HadoopJob {
 
@@ -56,15 +56,15 @@ public class GenericJob extends HadoopJob {
 		super(name);
 	}
 
-	public void setMapSteps(SerializableSteps<MapStep<?, ?>> steps) {
+	public void setMapOperations(Operations<MapOperation<?, ?>> steps) {
 		set("cloudflow.steps.map", steps.serialize());
 	}
 
-	public void setMap2Steps(SerializableSteps<MapStep<?, ?>> steps) {
+	public void setAfterReduceOperations(Operations<MapOperation<?, ?>> steps) {
 		set("cloudflow.steps.map2", steps.serialize());
 	}
 
-	public void setReduceSteps(SerializableSteps<ReduceStep<?, ?>> steps) {
+	public void setReduceOperations(Operations<ReduceOperation<?, ?>> steps) {
 		if (steps.getSize() > 0) {
 			needReducer = true;
 			set("cloudflow.steps.reduce", steps.serialize());

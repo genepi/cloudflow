@@ -5,7 +5,7 @@ import cloudflow.core.hadoop.IRecordConsumer;
 import cloudflow.core.hadoop.RecordList;
 import cloudflow.core.records.Record;
 
-public abstract class MapStep<IN extends Record<?, ?>, OUT extends Record<?, ?>>
+public abstract class MapOperation<IN extends Record<?, ?>, OUT extends Record<?, ?>>
 		implements IRecordConsumer<IN> {
 
 	private RecordList records = new RecordList();
@@ -14,7 +14,7 @@ public abstract class MapStep<IN extends Record<?, ?>, OUT extends Record<?, ?>>
 
 	private Class<OUT> outputRecordClass;
 
-	public MapStep(Class<IN> inputRecordClass, Class<OUT> outputRecordClass) {
+	public MapOperation(Class<IN> inputRecordClass, Class<OUT> outputRecordClass) {
 		this.inputRecordClass = inputRecordClass;
 		this.outputRecordClass = outputRecordClass;
 	}

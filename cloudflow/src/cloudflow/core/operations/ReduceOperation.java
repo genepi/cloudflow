@@ -2,10 +2,10 @@ package cloudflow.core.operations;
 
 import cloudflow.core.PipelineConf;
 import cloudflow.core.hadoop.RecordList;
-import cloudflow.core.hadoop.RecordValues;
+import cloudflow.core.hadoop.GroupedRecords;
 import cloudflow.core.records.Record;
 
-public abstract class ReduceStep<IN extends Record<?,?>, OUT extends Record<?,?>> {
+public abstract class ReduceOperation<IN extends Record<?,?>, OUT extends Record<?,?>> {
 
 	private RecordList records = new RecordList();
  
@@ -13,12 +13,12 @@ public abstract class ReduceStep<IN extends Record<?,?>, OUT extends Record<?,?>
 
 	private Class<OUT> outputRecordClass;
 
-	public ReduceStep(Class<IN> inputRecordClass, Class<OUT> outputRecordClass) {
+	public ReduceOperation(Class<IN> inputRecordClass, Class<OUT> outputRecordClass) {
 		this.inputRecordClass = inputRecordClass;
 		this.outputRecordClass = outputRecordClass;
 	}
 	
-	public abstract void process(String key, RecordValues<IN> values);
+	public abstract void process(String key, GroupedRecords<IN> values);
 
 	public void configure(PipelineConf conf){
 		
