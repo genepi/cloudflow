@@ -1,6 +1,10 @@
 package cloudflow.examples;
 
 import java.io.IOException;
+import java.util.Set;
+
+import com.google.common.base.Splitter;
+import com.google.common.collect.ImmutableSet;
 
 import cloudflow.core.Pipeline;
 import cloudflow.core.hadoop.GroupedRecords;
@@ -13,7 +17,11 @@ import cloudflow.core.records.TextRecord;
 
 public class WordCount {
 
-	static public class SplitWords extends MapOperation<TextRecord, IntegerRecord> {
+	static public class SplitWords extends
+			MapOperation<TextRecord, IntegerRecord> {
+
+		private static final Splitter SPLITTER = Splitter.onPattern("\\s+")
+				.omitEmptyStrings();
 
 		private IntegerRecord outRecord = new IntegerRecord();
 
@@ -23,10 +31,8 @@ public class WordCount {
 
 		@Override
 		public void process(TextRecord record) {
-
-			String[] tiles = record.getValue().split(" ");
-			for (String tile : tiles) {
-				outRecord.setKey(tile);
+			for (String word : SPLITTER.split(record.getValue())) {
+				outRecord.setKey(word);
 				outRecord.setValue(1);
 				emit(outRecord);
 			}
@@ -37,13 +43,21 @@ public class WordCount {
 
 	static public class RemoveEmptyKeys extends Filter<IntegerRecord> {
 
+		// English stop words, borrowed from Lucene.
+		private static final Set<String> STOP_WORDS = ImmutableSet
+				.copyOf(new String[] { "a", "and", "are", "as", "at", "be",
+						"but", "by", "for", "if", "in", "into", "is", "it",
+						"no", "not", "of", "on", "or", "s", "such", "t",
+						"that", "the", "their", "then", "there", "these",
+						"they", "this", "to", "was", "will", "with" });
+
 		public RemoveEmptyKeys() {
 			super(IntegerRecord.class);
 		}
 
 		@Override
 		public boolean filter(IntegerRecord record) {
-			return record.getKey().trim().isEmpty();
+			return STOP_WORDS.contains(record.getValue());
 		}
 
 	}
@@ -69,8 +83,7 @@ public class WordCount {
 		Pipeline pipeline = new Pipeline("Wordcount", WordCount.class);
 
 		pipeline.load(input, new TextLoader()).apply(SplitWords.class)
-				.apply(RemoveEmptyKeys.class).sum().apply(FilterWords.class)
-				.save(output);
+				.filter(RemoveEmptyKeys.class).sum().save(output);
 
 		boolean result = pipeline.run();
 		if (!result) {

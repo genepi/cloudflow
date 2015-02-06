@@ -10,6 +10,7 @@ import cloudflow.core.io.ILoader;
 import cloudflow.core.io.TextLineLoader;
 import cloudflow.core.io.TextLoader;
 import cloudflow.core.operations.Executor;
+import cloudflow.core.operations.Filter;
 import cloudflow.core.operations.LineSplitter;
 import cloudflow.core.operations.MapOperation;
 import cloudflow.core.operations.Mean;
@@ -31,6 +32,8 @@ public class Pipeline {
 
 	private Operations<ReduceOperation<?, ?>> reduceOperations;
 
+	private Operations<ReduceOperation<?, ?>> combinerOperations;
+	
 	private String name;
 
 	private ILoader loader;
@@ -44,7 +47,9 @@ public class Pipeline {
 		this.name = name;
 		mapOperations = new Operations<MapOperation<?, ?>>();
 		reduceOperations = new Operations<ReduceOperation<?, ?>>();
+		combinerOperations = new Operations<ReduceOperation<?, ?>>();
 		afterReduceOperations = new Operations<MapOperation<?, ?>>();
+		
 		conf = new PipelineConf();
 
 	}
@@ -86,6 +91,11 @@ public class Pipeline {
 		reduceOperations.add(operation);
 	}
 
+	protected void setCombinerOperation(
+			Class<? extends ReduceOperation<?, ?>> operation) {
+		combinerOperations.add(operation);
+	}
+	
 	public class MapBuilder {
 
 		private Pipeline pipeline;
@@ -99,15 +109,25 @@ public class Pipeline {
 			return new MapBuilder(pipeline);
 		}
 
+		public MapBuilder filter(Class<? extends Filter<?>> operation) {
+			return apply(operation);
+		}
+
 		public AfterReduceBuilder mean() {
 			return groupByKey().apply(Mean.class);
 		}
 
 		public AfterReduceBuilder sum() {
-			return groupByKey().apply(Sum.class);
+			return groupByKey(Sum.class).apply(Sum.class);
 		}
 
 		public ReduceBuilder groupByKey() {
+			return new ReduceBuilder(pipeline);
+		}
+
+		public ReduceBuilder groupByKey(
+				Class<? extends ReduceOperation<?, ?>> operation) {
+				setCombinerOperation(operation);
 			return new ReduceBuilder(pipeline);
 		}
 
@@ -154,6 +174,10 @@ public class Pipeline {
 				Class<? extends MapOperation<?, ?>> operation) {
 			addAfterReduceOperation(operation);
 			return new AfterReduceBuilder(pipeline);
+		}
+
+		public AfterReduceBuilder filter(Class<? extends Filter<?>> operation) {
+			return apply(operation);
 		}
 
 		public void save(String hdfs) {
@@ -270,7 +294,8 @@ public class Pipeline {
 		job.setInputFormat(loader.getInputFormat());
 		job.setMapOperations(mapOperations);
 		job.setAfterReduceOperations(afterReduceOperations);
-		job.setMapperInputRecords(loader.getRecordClass());
+		job.setMapperInputRecords(loader.getRecordClass());		
+		job.setCombinerOperations(combinerOperations);
 		loader.configure(job.getConfiguration());
 
 		// distribute configuration

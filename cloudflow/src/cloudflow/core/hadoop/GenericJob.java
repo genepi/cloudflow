@@ -20,6 +20,8 @@ public class GenericJob extends HadoopJob {
 
 	private boolean needReducer = false;
 
+	private boolean needCombiner = false;
+
 	public void setInputFormat(Class<InputFormat<?, ?>> inputFormat) {
 		this.inputFormat = inputFormat;
 	}
@@ -41,6 +43,10 @@ public class GenericJob extends HadoopJob {
 		} else {
 			// map only
 			job.setNumReduceTasks(0);
+		}
+		
+		if (needCombiner) {
+			job.setCombinerClass(GenericCombiner.class);
 		}
 		job.setSortComparatorClass(HadoopRecordKeyComparator.class);
 	}
@@ -68,6 +74,13 @@ public class GenericJob extends HadoopJob {
 		if (steps.getSize() > 0) {
 			needReducer = true;
 			set("cloudflow.steps.reduce", steps.serialize());
+		}
+	}
+
+	public void setCombinerOperations(Operations<ReduceOperation<?, ?>> steps) {
+		if (steps.getSize() > 0) {
+			needCombiner = true;
+			set("cloudflow.steps.combiner", steps.serialize());
 		}
 	}
 
