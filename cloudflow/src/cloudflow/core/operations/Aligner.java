@@ -39,6 +39,7 @@ public class Aligner extends ReduceOperation<ShortReadRecord, TextRecord> {
 
 	@Override
 	public void configure(PipelineConf conf) {
+		conf.set("mapred.child.java.opts", "-Xmx1000G");
 		jbwaLibLocation = conf.getArchive("jbwa.tar.gz");
 		referencePath = conf.getArchive("reference.tar.gz");
 
@@ -139,7 +140,6 @@ public class Aligner extends ReduceOperation<ShortReadRecord, TextRecord> {
 						outRecord.setKey(sample);
 						outRecord.setValue(out.toString());
 						emit(outRecord);
-						// emit.write(new Text(sample), out);
 
 					}
 

@@ -20,9 +20,6 @@ public class CreateFastqPairs extends MapOperation<FastqRecord, ShortReadRecord>
 
 	}
 
-	@Override
-	public void configure(PipelineConf conf) {
-	}
 
 	@Override
 	public void process(FastqRecord record) {
