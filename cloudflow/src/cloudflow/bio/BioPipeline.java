@@ -65,5 +65,5 @@ public class BioPipeline extends Pipeline {
 
 		// paired reads? mapper seppi mtdna-server
 	}
-
+	
 }
