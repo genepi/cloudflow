@@ -9,6 +9,7 @@ import cloudflow.core.hadoop.GenericJob;
 import cloudflow.core.io.ILoader;
 import cloudflow.core.io.TextLineLoader;
 import cloudflow.core.io.TextLoader;
+import cloudflow.core.operations.Concat;
 import cloudflow.core.operations.Executor;
 import cloudflow.core.operations.Filter;
 import cloudflow.core.operations.LineSplitter;
@@ -121,10 +122,15 @@ public class Pipeline {
 			return groupByKey(Sum.class).apply(Sum.class);
 		}
 
+		public AfterReduceBuilder concat() {
+			return groupByKey().apply(Concat.class);
+		}
+
+		
 		public ReduceBuilder groupByKey() {
 			return new ReduceBuilder(pipeline);
 		}
-
+		
 		public ReduceBuilder groupByKey(
 				Class<? extends ReduceOperation<?, ?>> operation) {
 				setCombinerOperation(operation);
@@ -202,6 +208,13 @@ public class Pipeline {
 		HdfsUtil.put(filename, key);
 		conf.distributeFile(key);
 	}
+	
+	public void distributeArchive(String key, String filename) {
+		String path = HdfsUtil.path("cloudflow-cache", key);
+		HdfsUtil.put(filename, path);
+		conf.distributeArchive(key, path);
+	}
+	
 
 	public boolean check() {
 

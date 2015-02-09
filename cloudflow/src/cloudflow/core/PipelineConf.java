@@ -1,10 +1,14 @@
 package cloudflow.core;
 
 import java.io.IOException;
+import java.util.AbstractMap;
+import java.util.AbstractMap.SimpleEntry;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Vector;
+
+import org.apache.hadoop.fs.Path;
 
 import genepi.hadoop.CacheStore;
 
@@ -19,7 +23,9 @@ public class PipelineConf {
 	private Map<String, Boolean> booleanValues = new HashMap<String, Boolean>();
 
 	private List<String> files = new Vector<String>();
-
+	
+	private HashMap<String,String> archives = new HashMap<String,String>();
+	
 	private CacheStore cacheStore;
 
 	private Configuration conf;
@@ -33,6 +39,9 @@ public class PipelineConf {
 		cacheStore = new CacheStore(conf);
 		for (String filename : files) {
 			cacheStore.addFile(filename);
+		}
+		for (Map.Entry<String, String> entry : archives.entrySet()) {
+			cacheStore.addArchive(entry.getKey(),entry.getValue());
 		}
 		for (String key : intValues.keySet()) {
 			conf.setInt(key, intValues.get(key));
@@ -69,6 +78,10 @@ public class PipelineConf {
 	public void distributeFile(String filename) {
 		files.add(filename);
 	}
+	
+	public void distributeArchive(String key, String path) {
+		archives.put(key, path);
+	}
 
 	public String getFile(String filename){
 		try {
@@ -78,5 +91,15 @@ public class PipelineConf {
 			return null;
 		}
 	}
+	
+	public String getArchive(String filename){
+		try {
+			return cacheStore.getArchive(filename);
+		} catch (IOException e) {
+			e.printStackTrace();
+			return null;
+		}
+	}
+
 
 }
