@@ -5,6 +5,7 @@ import genepi.io.FileUtil;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import org.apache.hadoop.io.Text;
@@ -36,8 +37,8 @@ public class Aligner extends ReduceOperation<ShortReadRecord, TextRecord> {
 	
 	@Override
 	public void configure(PipelineConf conf) {
-		jbwaLibLocation = conf.getArchive("jbwa");
-		referencePath = conf.getArchive("reference");
+		jbwaLibLocation = conf.getArchive("jbwa.tar.gz");
+		referencePath = conf.getArchive("reference.tar.gz");
 		
 		String refString = null;
 		L1 = new ArrayList<ShortRead>();
@@ -45,12 +46,11 @@ public class Aligner extends ReduceOperation<ShortReadRecord, TextRecord> {
 		out = new Text();
 		countReads = 0;
 		System.out.println("path is "+ jbwaLibLocation);
-		try {
-			Thread.sleep(10000);
-		} catch (InterruptedException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		}  
+
+		
+		String[] files = FileUtil.getFiles(jbwaLibLocation, "*.*");
+		System.out.println(Arrays.toString(files));
+		
 		String jbwaLib = FileUtil.path(jbwaLibLocation, "native",
 				"libbwajni.so");
 		/** load JNI */

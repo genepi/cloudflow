@@ -26,8 +26,8 @@ public class FastqMapping {
 		BioPipeline pipeline = new BioPipeline("Bwa-MEM-Mapper",
 				FastqMapping.class);
 
-		pipeline.distributeArchive("jbwa", "jbwa075a.tar.gz");
-		pipeline.distributeArchive("reference", "rcrs.tar.gz");
+		pipeline.distributeArchive("jbwa.tar.gz", "jbwa075a.tar.gz");
+		pipeline.distributeArchive("reference.tar.gz", "rcrs.tar.gz");
 		pipeline.loadFastq(input).apply(CreateFastqPairs.class).groupByKey().apply(Aligner.class).save(output);
 
 		boolean result = pipeline.run();
