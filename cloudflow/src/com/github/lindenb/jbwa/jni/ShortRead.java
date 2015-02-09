@@ -1,5 +1,4 @@
-package cloudflow.bio.fastq.jni;
-
+package com.github.lindenb.jbwa.jni;
 
 public class ShortRead	
 	{

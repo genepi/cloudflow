@@ -1,5 +1,4 @@
-package cloudflow.bio.fastq.jni;
-
+package com.github.lindenb.jbwa.jni;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.FlowLayout;

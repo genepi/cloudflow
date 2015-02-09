@@ -6,7 +6,7 @@ import java.io.IOException;
 
 import org.apache.hadoop.io.Writable;
 
-import cloudflow.bio.fastq.jni.ShortRead;
+import com.github.lindenb.jbwa.jni.ShortRead;
 
 public class SingleRead extends ShortRead implements Writable {
 

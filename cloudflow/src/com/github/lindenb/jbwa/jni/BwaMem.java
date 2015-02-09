@@ -1,5 +1,4 @@
-package cloudflow.bio.fastq.jni;
-
+package com.github.lindenb.jbwa.jni;
 import java.io.*;
 import java.util.List;
 

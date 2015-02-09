@@ -11,12 +11,14 @@ import java.util.List;
 import org.apache.hadoop.io.Text;
 
 import cloudflow.bio.fastq.SingleRead;
-import cloudflow.bio.fastq.jni.BwaIndex;
-import cloudflow.bio.fastq.jni.ShortRead;
 import cloudflow.core.PipelineConf;
 import cloudflow.core.hadoop.GroupedRecords;
 import cloudflow.core.records.ShortReadRecord;
 import cloudflow.core.records.TextRecord;
+
+import com.github.lindenb.jbwa.jni.BwaIndex;
+import com.github.lindenb.jbwa.jni.BwaMem;
+import com.github.lindenb.jbwa.jni.ShortRead;
 
 public class Aligner extends ReduceOperation<ShortReadRecord, TextRecord> {
 
@@ -24,7 +26,7 @@ public class Aligner extends ReduceOperation<ShortReadRecord, TextRecord> {
 	SingleRead first = new SingleRead();
 	SingleRead second = new SingleRead();
 	BwaIndex index;
-	cloudflow.bio.fastq.jni.BwaMem mem;
+	BwaMem mem;
 	List<ShortRead> L1;
 	List<ShortRead> L2;
 	Text out;
@@ -34,32 +36,30 @@ public class Aligner extends ReduceOperation<ShortReadRecord, TextRecord> {
 	int trimBasesEnd;
 	String jbwaLibLocation;
 	String referencePath;
-	
+
 	@Override
 	public void configure(PipelineConf conf) {
 		jbwaLibLocation = conf.getArchive("jbwa.tar.gz");
 		referencePath = conf.getArchive("reference.tar.gz");
-		
+
 		String refString = null;
 		L1 = new ArrayList<ShortRead>();
 		L2 = new ArrayList<ShortRead>();
 		out = new Text();
 		countReads = 0;
-		System.out.println("path is "+ jbwaLibLocation);
+		System.out.println("path is " + jbwaLibLocation);
 
-		
 		String[] files = FileUtil.getFiles(jbwaLibLocation, "*.*");
 		System.out.println(Arrays.toString(files));
-		
+
 		String jbwaLib = FileUtil.path(jbwaLibLocation, "native",
 				"libbwajni.so");
 		/** load JNI */
 		System.load(jbwaLib);
-		
-		
+
 		File reference = new File(referencePath);
 		refString = findFileinReferenceArchive(reference, ".fasta");
-		
+
 		String ref = FileUtil.path(refString);
 
 		/** load index, aligner */
@@ -69,12 +69,12 @@ public class Aligner extends ReduceOperation<ShortReadRecord, TextRecord> {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		mem = new cloudflow.bio.fastq.jni.BwaMem(index);
+		mem = new BwaMem(index);
 	}
 
 	public Aligner() {
 		super(ShortReadRecord.class, TextRecord.class);
-	
+
 	}
 
 	@Override
@@ -109,51 +109,50 @@ public class Aligner extends ReduceOperation<ShortReadRecord, TextRecord> {
 
 			}
 
-		}
+			if (countReads % 99010 == 0) {
 
-		if (countReads % 99010 == 0) {
+				System.out.println("count is " + countReads);
+				/** main JBWA JNI */
+				try {
+					result = mem.align(L1, L2);
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 
-			System.out.println("count is " + countReads);
-			/** main JBWA JNI */
-			try {
-				result = mem.align(L1, L2);
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+				for (int i = 0; i < result.length; i++) {
 
-			for (int i = 0; i < result.length; i++) {
+					String read = result[i];
+					String sample = ((SingleRead) L1.get(i / 2)).getFilename();
 
-				String read = result[i];
-				String sample = ((SingleRead) L1.get(i / 2)).getFilename();
+					/**
+					 * hack to write a valid SAM since BWA MEM outputs tabs at
+					 * the end, samtools can not handle this
+					 */
+					read = read.replaceAll("\\t+$", "");
+					read = read.replaceAll("\\s+$", "");
+					String tiles[] = read.split("\t+\n");
 
-				/**
-				 * hack to write a valid SAM since BWA MEM outputs tabs at the
-				 * end, samtools can not handle this
-				 */
-				read = read.replaceAll("\\t+$", "");
-				read = read.replaceAll("\\s+$", "");
-				String tiles[] = read.split("\t+\n");
+					for (String tile : tiles) {
+						out.clear();
+						out.set(tile);
+						outRecord.setKey(sample);
+						outRecord.setValue(out.toString());
+						emit(outRecord);
+						// emit.write(new Text(sample), out);
 
-				for (String tile : tiles) {
-					out.clear();
-					out.set(tile);
-					outRecord.setKey(sample);
-					outRecord.setValue(out.toString());
-					emit(outRecord);
-					// emit.write(new Text(sample), out);
+					}
 
 				}
 
+				L1.clear();
+				L2.clear();
 			}
-
-			L1.clear();
-			L2.clear();
 		}
-
 	}
-	
-	public static String findFileinReferenceArchive(File reference, String suffix) {
+
+	public static String findFileinReferenceArchive(File reference,
+			String suffix) {
 		String refPath = null;
 		System.out.println(reference);
 		if (reference.isDirectory()) {
@@ -168,16 +167,16 @@ public class Aligner extends ReduceOperation<ShortReadRecord, TextRecord> {
 		System.out.println("path " + refPath);
 		return refPath;
 	}
-	
+
 	public static void showFiles(File[] files) {
-	    for (File file : files) {
-	        if (file.isDirectory()) {
-	            System.out.println("Directory: " + file.getName());
-	            showFiles(file.listFiles()); // Calls same method again.
-	        } else {
-	            System.out.println("File: " + file.getName());
-	        }
-	    }
+		for (File file : files) {
+			if (file.isDirectory()) {
+				System.out.println("Directory: " + file.getName());
+				showFiles(file.listFiles()); // Calls same method again.
+			} else {
+				System.out.println("File: " + file.getName());
+			}
+		}
 	}
 
 }
