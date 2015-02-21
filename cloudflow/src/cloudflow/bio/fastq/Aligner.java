@@ -1,4 +1,4 @@
-package cloudflow.core.operations;
+package cloudflow.bio.fastq;
 
 import genepi.io.FileUtil;
 
@@ -10,9 +10,9 @@ import java.util.List;
 
 import org.apache.hadoop.io.Text;
 
-import cloudflow.bio.fastq.SingleRead;
 import cloudflow.core.PipelineConf;
 import cloudflow.core.hadoop.GroupedRecords;
+import cloudflow.core.operations.Summarizer;
 import cloudflow.core.records.ShortReadRecord;
 import cloudflow.core.records.TextRecord;
 

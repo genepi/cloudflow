@@ -1,10 +1,13 @@
 package cloudflow.bio;
 
 import cloudflow.bio.bam.BamLoader;
+import cloudflow.bio.fastq.Aligner;
+import cloudflow.bio.fastq.CreateFastqPairs;
 import cloudflow.bio.fastq.FastqLoader;
 import cloudflow.bio.vcf.VcfChunker;
 import cloudflow.bio.vcf.VcfLoader;
 import cloudflow.core.Pipeline;
+import cloudflow.core.Pipeline.ReduceBuilder;
 
 public class BioPipeline extends Pipeline {
 
@@ -63,7 +66,26 @@ public class BioPipeline extends Pipeline {
 			super(pipeline);
 		}
 
+		public FastqReduceBuilder findPairs() {
+			apply(CreateFastqPairs.class);
+			return new FastqReduceBuilder(pipeline);
+		}
+
 		// paired reads? mapper seppi mtdna-server
+	}
+
+	public class FastqReduceBuilder extends ReduceBuilder {
+
+		public FastqReduceBuilder(Pipeline pipeline) {
+			super(pipeline);
+		}
+
+		public AfterReduceBuilder align(String reference) {
+			pipeline.distributeArchive("jbwa.tar.gz", "jbwa075a.tar.gz");
+			pipeline.distributeArchive("reference.tar.gz", reference);
+			return apply(Aligner.class);
+		}
+
 	}
 
 }

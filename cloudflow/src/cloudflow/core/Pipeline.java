@@ -99,7 +99,7 @@ public class Pipeline {
 	
 	public class MapBuilder {
 
-		private Pipeline pipeline;
+		protected Pipeline pipeline;
 
 		public MapBuilder(Pipeline pipeline) {
 			this.pipeline = pipeline;
@@ -145,7 +145,7 @@ public class Pipeline {
 
 	public class ReduceBuilder {
 
-		private Pipeline pipeline;
+		protected Pipeline pipeline;
 
 		public ReduceBuilder(Pipeline pipeline) {
 			this.pipeline = pipeline;
