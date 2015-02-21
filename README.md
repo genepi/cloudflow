@@ -56,7 +56,7 @@ pipeline.loadVCF(input)
         .filter(MonomorphicFilter.class)
         .filter(DuplicateFilter.class)
         .filter(InDelFilter.class)
-        .transform(CallRateCalc.class)
+        .apply(CallRateCalc.class)
         .save(output);
 ```
 
@@ -64,7 +64,7 @@ pipeline.loadVCF(input)
 
 ## Supported Operations
 
-Cloudflow provides a variety of already implemented utilities which facilitate the creation of pipelines in the field of Bioinformatics (especially for NGS data in Genetics). For that purpose, we implemented based on HadoopBAM several record types and loader classes in order to process FASTQ, BAM and VCF files. Moreover, we created several operations and filters for the analysis of biological datasets.
+Cloudflow provides a variety of already implemented utilities which facilitate the creation of pipelines in the field of Bioinformatics (especially for NGS data in Genetics). For that purpose, we implemented several record types and loader classes in order to process FASTQ, BAM and VCF files (based on HadoopBAM). Moreover, we created several operations and filters for the analysis of biological datasets.
 
 ### FASTQ
 
