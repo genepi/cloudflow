@@ -2,13 +2,13 @@
 
 Cloudflow is a MapReduce pipeline framework, which is based on a similar concept as JavaFlume or Apache Crunch. In contrast to these existing approaches, Cloudflow was developed to simplify the pipeline creation in biomedical research, especially in the field of Genetics. For that purpose Cloudflow supports a variety of NGS data formats and contains a rich collection of built-in operations for analyzing such kind of datasets (e.g. quality checks, mapping reads or variation calling).
 
-The latest release is 0.0.5, released February 23, 2015.
+The latest release is <b>0.5.0</b>, released February 23, 2015.
 
 
 
 ## Installation
 
-Cloudflow is available in out Maven repository: 
+Cloudflow is available in our Maven repository: 
 
 Maven Repository:
 ```
