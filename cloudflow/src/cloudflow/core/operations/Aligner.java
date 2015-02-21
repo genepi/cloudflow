@@ -20,7 +20,7 @@ import com.github.lindenb.jbwa.jni.BwaIndex;
 import com.github.lindenb.jbwa.jni.BwaMem;
 import com.github.lindenb.jbwa.jni.ShortRead;
 
-public class Aligner extends ReduceOperation<ShortReadRecord, TextRecord> {
+public class Aligner extends Summarizer<ShortReadRecord, TextRecord> {
 
 	private TextRecord outRecord = new TextRecord();
 	SingleRead first = new SingleRead();
@@ -79,7 +79,7 @@ public class Aligner extends ReduceOperation<ShortReadRecord, TextRecord> {
 	}
 
 	@Override
-	public void process(String key, GroupedRecords<ShortReadRecord> values) {
+	public void summarize(String key, GroupedRecords<ShortReadRecord> values) {
 		SingleRead first = new SingleRead();
 		SingleRead second = new SingleRead();
 

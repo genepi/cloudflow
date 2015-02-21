@@ -9,23 +9,23 @@ import org.apache.log4j.Logger;
 
 import cloudflow.core.Operations;
 import cloudflow.core.PipelineConf;
-import cloudflow.core.operations.MapOperation;
-import cloudflow.core.operations.ReduceOperation;
+import cloudflow.core.operations.Transformer;
+import cloudflow.core.operations.Summarizer;
 import cloudflow.core.records.Record;
 
 public class GenericReducer
 		extends
 		Reducer<HadoopRecordKey, HadoopRecordValue, HadoopRecordKey, HadoopRecordValue> {
 
-	private Operations<ReduceOperation<Record<?, ?>, Record<?, ?>>> reduceSteps;
+	private Operations<Summarizer<Record<?, ?>, Record<?, ?>>> reduceSteps;
 
-	private Operations<MapOperation<Record<?, ?>, Record<?, ?>>> filterSteps;
+	private Operations<Transformer<Record<?, ?>, Record<?, ?>>> filterSteps;
 
-	private ReduceOperation<Record<?, ?>, Record<?, ?>> reduceStep;
+	private Summarizer<Record<?, ?>, Record<?, ?>> reduceStep;
 
 	private GroupedRecords<Record<?, ?>> recordValues;
 
-	private List<MapOperation<Record<?, ?>, Record<?, ?>>> instancesFilter = new Vector<MapOperation<Record<?, ?>, Record<?, ?>>>();
+	private List<Transformer<Record<?, ?>, Record<?, ?>>> instancesFilter = new Vector<Transformer<Record<?, ?>, Record<?, ?>>>();
 
 	private static final Logger log = Logger.getLogger(GenericReducer.class);
 
@@ -40,13 +40,13 @@ public class GenericReducer
 			// read reduce step
 			String data = context.getConfiguration().get(
 					"cloudflow.steps.reduce");
-			reduceSteps = new Operations<ReduceOperation<Record<?, ?>, Record<?, ?>>>();
+			reduceSteps = new Operations<Summarizer<Record<?, ?>, Record<?, ?>>>();
 			reduceSteps.load(data);
 
 			PipelineConf conf = new PipelineConf();
 			conf.loadFromConfiguration(context.getConfiguration());
 
-			List<ReduceOperation<Record<?, ?>, Record<?, ?>>> instancesReduce = reduceSteps
+			List<Summarizer<Record<?, ?>, Record<?, ?>>> instancesReduce = reduceSteps
 					.createInstances();
 			reduceStep = instancesReduce.get(0);
 			reduceStep.configure(conf);
@@ -57,7 +57,7 @@ public class GenericReducer
 			String dataMap = context.getConfiguration().get(
 					"cloudflow.steps.map2");
 
-			filterSteps = new Operations<MapOperation<Record<?, ?>, Record<?, ?>>>();
+			filterSteps = new Operations<Transformer<Record<?, ?>, Record<?, ?>>>();
 			if (dataMap != null) {
 				filterSteps.load(dataMap);
 			}
@@ -80,9 +80,9 @@ public class GenericReducer
 
 				// step n + 1 consumes records produced by n
 				for (int i = 0; i < instancesFilter.size() - 1; i++) {
-					MapOperation<Record<?, ?>, Record<?, ?>> step = instancesFilter
+					Transformer<Record<?, ?>, Record<?, ?>> step = instancesFilter
 							.get(i);
-					MapOperation<Record<?, ?>, Record<?, ?>> nextStep = instancesFilter
+					Transformer<Record<?, ?>, Record<?, ?>> nextStep = instancesFilter
 							.get(i + 1);
 					step.getOutputRecords().addConsumer(nextStep);
 				}
@@ -130,7 +130,7 @@ public class GenericReducer
 			throws IOException, InterruptedException {
 
 		recordValues.setValues(values);
-		reduceStep.process(key.toString(), recordValues);
+		reduceStep.summarize(key.toString(), recordValues);
 
 	}
 

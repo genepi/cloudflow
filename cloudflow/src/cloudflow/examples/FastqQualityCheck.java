@@ -6,12 +6,12 @@ import org.apache.hadoop.io.Text;
 
 import cloudflow.bio.BioPipeline;
 import cloudflow.bio.fastq.FastqRecord;
-import cloudflow.core.operations.MapOperation;
+import cloudflow.core.operations.Transformer;
 import cloudflow.core.records.IntegerRecord;
 
 public class FastqQualityCheck {
 
-	static public class SplitByPos extends MapOperation<FastqRecord, IntegerRecord> {
+	static public class SplitByPos extends Transformer<FastqRecord, IntegerRecord> {
 
 		IntegerRecord outRecord = new IntegerRecord();
 
@@ -20,7 +20,7 @@ public class FastqQualityCheck {
 		}
 
 		@Override
-		public void process(FastqRecord record) {
+		public void transform(FastqRecord record) {
 
 			Text qualities = record.getValue().getQuality();
 

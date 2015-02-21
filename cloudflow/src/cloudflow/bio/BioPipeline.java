@@ -25,14 +25,14 @@ public class BioPipeline extends Pipeline {
 			super(pipeline);
 		}
 
-		public ReduceBuilder createChunks() {
+		public ReduceBuilder split() {
 			return apply(VcfChunker.class).groupByKey();
 		}
-		
-		public ReduceBuilder createChunks(int size) {
-			set("chunker.vcf.size", size);
+
+		public ReduceBuilder split(int size, ChunkSize type) {
+			set("chunker.vcf.size", size * type.getSize());
 			return apply(VcfChunker.class).groupByKey();
-		}		
+		}
 
 	}
 
@@ -65,5 +65,5 @@ public class BioPipeline extends Pipeline {
 
 		// paired reads? mapper seppi mtdna-server
 	}
-	
+
 }

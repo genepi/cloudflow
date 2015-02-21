@@ -13,9 +13,9 @@ import cloudflow.core.operations.Concat;
 import cloudflow.core.operations.Executor;
 import cloudflow.core.operations.Filter;
 import cloudflow.core.operations.LineSplitter;
-import cloudflow.core.operations.MapOperation;
+import cloudflow.core.operations.Transformer;
 import cloudflow.core.operations.Mean;
-import cloudflow.core.operations.ReduceOperation;
+import cloudflow.core.operations.Summarizer;
 import cloudflow.core.operations.Sum;
 import cloudflow.core.records.Record;
 
@@ -27,13 +27,13 @@ public class Pipeline {
 
 	private PipelineConf conf;
 
-	private Operations<MapOperation<?, ?>> mapOperations;
+	private Operations<Transformer<?, ?>> mapOperations;
 
-	private Operations<MapOperation<?, ?>> afterReduceOperations;
+	private Operations<Transformer<?, ?>> afterReduceOperations;
 
-	private Operations<ReduceOperation<?, ?>> reduceOperations;
+	private Operations<Summarizer<?, ?>> reduceOperations;
 
-	private Operations<ReduceOperation<?, ?>> combinerOperations;
+	private Operations<Summarizer<?, ?>> combinerOperations;
 	
 	private String name;
 
@@ -46,10 +46,10 @@ public class Pipeline {
 	public Pipeline(String name, Class<?> driverClass) {
 		this.driverClass = driverClass;
 		this.name = name;
-		mapOperations = new Operations<MapOperation<?, ?>>();
-		reduceOperations = new Operations<ReduceOperation<?, ?>>();
-		combinerOperations = new Operations<ReduceOperation<?, ?>>();
-		afterReduceOperations = new Operations<MapOperation<?, ?>>();
+		mapOperations = new Operations<Transformer<?, ?>>();
+		reduceOperations = new Operations<Summarizer<?, ?>>();
+		combinerOperations = new Operations<Summarizer<?, ?>>();
+		afterReduceOperations = new Operations<Transformer<?, ?>>();
 		
 		conf = new PipelineConf();
 
@@ -78,22 +78,22 @@ public class Pipeline {
 
 	}
 
-	protected void addMapOperation(Class<? extends MapOperation<?, ?>> operation) {
+	protected void addMapOperation(Class<? extends Transformer<?, ?>> operation) {
 		mapOperations.add(operation);
 	}
 
 	protected void addAfterReduceOperation(
-			Class<? extends MapOperation<?, ?>> operation) {
+			Class<? extends Transformer<?, ?>> operation) {
 		afterReduceOperations.add(operation);
 	}
 
 	protected void addReduceOperation(
-			Class<? extends ReduceOperation<?, ?>> operation) {
+			Class<? extends Summarizer<?, ?>> operation) {
 		reduceOperations.add(operation);
 	}
 
 	protected void setCombinerOperation(
-			Class<? extends ReduceOperation<?, ?>> operation) {
+			Class<? extends Summarizer<?, ?>> operation) {
 		combinerOperations.add(operation);
 	}
 	
@@ -105,7 +105,7 @@ public class Pipeline {
 			this.pipeline = pipeline;
 		}
 
-		public MapBuilder apply(Class<? extends MapOperation<?, ?>> operation) {
+		public MapBuilder apply(Class<? extends Transformer<?, ?>> operation) {
 			addMapOperation(operation);
 			return new MapBuilder(pipeline);
 		}
@@ -132,7 +132,7 @@ public class Pipeline {
 		}
 		
 		public ReduceBuilder groupByKey(
-				Class<? extends ReduceOperation<?, ?>> operation) {
+				Class<? extends Summarizer<?, ?>> operation) {
 				setCombinerOperation(operation);
 			return new ReduceBuilder(pipeline);
 		}
@@ -152,7 +152,7 @@ public class Pipeline {
 		}
 
 		public AfterReduceBuilder apply(
-				Class<? extends ReduceOperation<?, ?>> operation) {
+				Class<? extends Summarizer<?, ?>> operation) {
 			addReduceOperation(operation);
 			return new AfterReduceBuilder(pipeline);
 		}
@@ -177,7 +177,7 @@ public class Pipeline {
 		}
 
 		public AfterReduceBuilder apply(
-				Class<? extends MapOperation<?, ?>> operation) {
+				Class<? extends Transformer<?, ?>> operation) {
 			addAfterReduceOperation(operation);
 			return new AfterReduceBuilder(pipeline);
 		}
@@ -229,10 +229,10 @@ public class Pipeline {
 
 		System.out.println("  Mapper: ");
 		try {
-			List<MapOperation<?, ?>> operations = mapOperations
+			List<Transformer<?, ?>> operations = mapOperations
 					.createInstances();
 			for (int i = 0; i < operations.size(); i++) {
-				MapOperation<?, ?> operation = operations.get(i);
+				Transformer<?, ?> operation = operations.get(i);
 				System.out.println("    (" + (i + 1) + ") "
 						+ operation.getClass().getName());
 				System.out.println("      input: "
@@ -252,7 +252,7 @@ public class Pipeline {
 
 			System.out.println("  Reducer: ");
 			try {
-				List<ReduceOperation<?, ?>> reducer = reduceOperations
+				List<Summarizer<?, ?>> reducer = reduceOperations
 						.createInstances();
 				System.out.println("    (1) "
 						+ reducer.get(0).getClass().getName());
@@ -260,10 +260,10 @@ public class Pipeline {
 						+ reducer.get(0).getInputRecordClass());
 				System.out.println("      output: "
 						+ reducer.get(0).getOutputRecordClass());
-				List<MapOperation<?, ?>> operations = afterReduceOperations
+				List<Transformer<?, ?>> operations = afterReduceOperations
 						.createInstances();
 				for (int i = 0; i < operations.size(); i++) {
-					MapOperation<?, ?> operation = operations.get(i);
+					Transformer<?, ?> operation = operations.get(i);
 					System.out.println("    (" + (i + 2) + ") "
 							+ operation.getClass().getName());
 					System.out.println("      input: "

@@ -7,12 +7,12 @@ import java.io.IOException;
 import cloudflow.bio.BioPipeline;
 import cloudflow.bio.vcf.VcfRecord;
 import cloudflow.core.operations.Filter;
-import cloudflow.core.operations.MapOperation;
+import cloudflow.core.operations.Transformer;
 import cloudflow.core.records.FloatRecord;
 
 public class VcfCalcMaf {
 
-	static public class CalcMaf extends MapOperation<VcfRecord, FloatRecord> {
+	static public class CalcMaf extends Transformer<VcfRecord, FloatRecord> {
 
 		FloatRecord outRecord = new FloatRecord();
 
@@ -21,7 +21,7 @@ public class VcfCalcMaf {
 		}
 
 		@Override
-		public void process(VcfRecord record) {
+		public void transform(VcfRecord record) {
 
 			VariantContext snp = record.getValue();
 			float maf = calculateMaf(snp);

@@ -12,7 +12,7 @@ import cloudflow.bio.fastq.SingleRead;
 import cloudflow.core.PipelineConf;
 import cloudflow.core.operations.Aligner;
 import cloudflow.core.operations.CreateFastqPairs;
-import cloudflow.core.operations.MapOperation;
+import cloudflow.core.operations.Transformer;
 import cloudflow.core.records.TextRecord;
 
 public class FastqMapping {

@@ -11,7 +11,7 @@ import cloudflow.core.PipelineConf;
 import cloudflow.core.records.ShortReadRecord;
 import cloudflow.core.records.TextRecord;
 
-public class CreateFastqPairs extends MapOperation<FastqRecord, ShortReadRecord> {
+public class CreateFastqPairs extends Transformer<FastqRecord, ShortReadRecord> {
 
 	ShortReadRecord outRecord = new ShortReadRecord();
 
@@ -22,7 +22,7 @@ public class CreateFastqPairs extends MapOperation<FastqRecord, ShortReadRecord>
 
 
 	@Override
-	public void process(FastqRecord record) {
+	public void transform(FastqRecord record) {
 
 		Text key = new Text(record.getKey().toString());
 		Text outKey = new Text();

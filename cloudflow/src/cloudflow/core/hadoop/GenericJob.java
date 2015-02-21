@@ -9,8 +9,8 @@ import org.apache.hadoop.mapreduce.InputFormat;
 import org.apache.hadoop.mapreduce.Job;
 
 import cloudflow.core.Operations;
-import cloudflow.core.operations.MapOperation;
-import cloudflow.core.operations.ReduceOperation;
+import cloudflow.core.operations.Transformer;
+import cloudflow.core.operations.Summarizer;
 
 public class GenericJob extends HadoopJob {
 
@@ -62,22 +62,22 @@ public class GenericJob extends HadoopJob {
 		super(name);
 	}
 
-	public void setMapOperations(Operations<MapOperation<?, ?>> steps) {
+	public void setMapOperations(Operations<Transformer<?, ?>> steps) {
 		set("cloudflow.steps.map", steps.serialize());
 	}
 
-	public void setAfterReduceOperations(Operations<MapOperation<?, ?>> steps) {
+	public void setAfterReduceOperations(Operations<Transformer<?, ?>> steps) {
 		set("cloudflow.steps.map2", steps.serialize());
 	}
 
-	public void setReduceOperations(Operations<ReduceOperation<?, ?>> steps) {
+	public void setReduceOperations(Operations<Summarizer<?, ?>> steps) {
 		if (steps.getSize() > 0) {
 			needReducer = true;
 			set("cloudflow.steps.reduce", steps.serialize());
 		}
 	}
 
-	public void setCombinerOperations(Operations<ReduceOperation<?, ?>> steps) {
+	public void setCombinerOperations(Operations<Summarizer<?, ?>> steps) {
 		if (steps.getSize() > 0) {
 			needCombiner = true;
 			set("cloudflow.steps.combiner", steps.serialize());

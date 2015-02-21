@@ -5,7 +5,7 @@ import java.io.IOException;
 import cloudflow.core.Pipeline;
 import cloudflow.core.io.TextLoader;
 import cloudflow.core.operations.Filter;
-import cloudflow.core.operations.MapOperation;
+import cloudflow.core.operations.Transformer;
 import cloudflow.core.records.IntegerRecord;
 import cloudflow.core.records.TextRecord;
 
@@ -24,7 +24,7 @@ public class BioWordCount {
 
 	}
 
-	static public class SplitTiTv extends MapOperation<TextRecord, IntegerRecord> {
+	static public class SplitTiTv extends Transformer<TextRecord, IntegerRecord> {
 
 		IntegerRecord outRecord = new IntegerRecord();
 
@@ -33,7 +33,7 @@ public class BioWordCount {
 		}
 
 		@Override
-		public void process(TextRecord record) {
+		public void transform(TextRecord record) {
 
 			VcfLine vcfLine = new VcfLine(record.getValue());
 			for (String titv : vcfLine.getTiTv()) {

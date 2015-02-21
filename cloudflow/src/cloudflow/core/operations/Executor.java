@@ -5,7 +5,7 @@ import genepi.io.text.LineWriter;
 import cloudflow.core.hadoop.GroupedRecords;
 import cloudflow.core.records.TextRecord;
 
-public abstract class Executor extends ReduceOperation<TextRecord, TextRecord> {
+public abstract class Executor extends Summarizer<TextRecord, TextRecord> {
 
 	private TextRecord outRecord;
 
@@ -17,7 +17,7 @@ public abstract class Executor extends ReduceOperation<TextRecord, TextRecord> {
 	public abstract boolean execute(String inputFilename, String outputFilename);
 
 	@Override
-	public void process(String key, GroupedRecords<TextRecord> values) {
+	public void summarize(String key, GroupedRecords<TextRecord> values) {
 		String inputFilename = "/tmp/input-" + key + ".txt";
 		String outputFilename = "/tmp/output-" + key + ".txt";
 		try {

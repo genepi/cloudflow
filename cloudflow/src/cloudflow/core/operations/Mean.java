@@ -4,7 +4,7 @@ import cloudflow.core.hadoop.GroupedRecords;
 import cloudflow.core.records.FloatRecord;
 import cloudflow.core.records.IntegerRecord;
 
-public class Mean extends ReduceOperation<IntegerRecord, FloatRecord> {
+public class Mean extends Summarizer<IntegerRecord, FloatRecord> {
 
 	private FloatRecord outRecord = new FloatRecord();
 
@@ -15,7 +15,7 @@ public class Mean extends ReduceOperation<IntegerRecord, FloatRecord> {
 	}
 
 	@Override
-	public void process(String key, GroupedRecords<IntegerRecord> values) {
+	public void summarize(String key, GroupedRecords<IntegerRecord> values) {
 
 		int sum = 0;
 		int count = 0;
