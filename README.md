@@ -21,9 +21,11 @@ TODO
 ```
 ## Getting Started
 
+### Input Records
+
 Cloudflow operates on records consisting of a key/value pair, whereby different record types are available (e.g. `TextRecord`, `IntegerRecord`, `FastqRecord`). A loader class (e.g. `TextLoader`, `FastqLoader`) is responsible to load the input data and to convert it into an appropriate record type.
 
-### Basics
+### Transformer and Summarize
 
 Cloudflow supports three different basic operations, which can be used to analyze and transform records:
 
