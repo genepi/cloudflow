@@ -68,106 +68,86 @@ Cloudflow provides a variety of already implemented utilities which facilitate t
 
 ### FASTQ
 
-Unaligned reads in FASTQ format.
-
-##### Split
+Find pairs (for paired-end reads):
 ```
 split()
 ```
-Find pairs (for paired-end reads)
 
-##### Filter
+Filters reads by quality:
 ```
 filter(LowQualityReads.class)
 ```
-Filters reads by quality
 
-#####	Other
+Aligns sequences against a reference (using jBWA for alignment)
 ```
 align(referenceSequence)
 ```
-Aligns sequences against a reference (using jBWA for alignment)
-
 
 ### BAM
 
-Align reads in BAM format.
-
-##### Split
+Creates fixed size chunks (e.g. 64 MB):
 ```
 split()
 ```
-Creates fixed size chunks (e.g. 64 MB)
 
+Creates logical chunks (e.g. 5MBases):
 ```
 split(5, BamChunk.MBASES)
 ```
-Creates logical chunks (e.g. 5MBases)
 
-##### Filter
+Filters unmapped reads:
 ```
 filter(UnmappedReads.class)
 ```
-Filters unmapped reads
 
+Filters reads by map.quality:
 ```
 filter(LowQualityReads.class)
 ```
-Filters reads by map.quality
 
-##### Other
+Finds variations in aligned reads (using samtools):
 ```
 findVariations()
 ```
 
-Finds variations in aligned reads (using samtools)
-
 ### VCF
 
-Variations stored in VCF files.
-
-##### Split
-
+Creates fixed size chunks (e.g. 64 MB):
 ```
 split()
 ```
-Creates fixed size chunks (e.g. 64 MB)
 
+Creates logical chunks (e.g. 5MBases):
 ```
 split(5, VcfChunk.MBASES)
 ```
-Creates logical chunks (e.g. 5MBases)
 
-##### Filter
-
+Filters monomorphic site:
 ```
 filter(MonomorphicFilter.class)
 ```
-Filters monomorphic site
 
+Filters duplicates:
 ```
 filter(DuplicateFilter.class)
 ```
-Filters duplicates
 
+Filters inDels:
 ```
 filter(InDelFilter.class)
 ```
-Filters inDels
-	
+
+Filters by call rate:
 ```
 filter(CallRateFilter.class)
 ```
-Filters by call rate
 
+Filters by MAF:
 ```
 filter(MafFilter.class)
 ```
-Filters by MAF
 
-#####	Other
-
+Allele frequency check with external reference (e.g. 1000 genomes):
 ```
 checkAlleleFreq(reference)
 ```
-Allele frequency check with external reference (e.g. 1000 genomes)
