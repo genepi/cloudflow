@@ -66,7 +66,7 @@ pipeline.loadText(input)
 pipeline.execute();
 ```
 
-In a first step, the text file is loaded from HDFS (`loadText`). Then, for each record (i.e. line) we execute the application-specific `LineToWords` operation, which splits the line into words and creates for each word a new record. This operation is a extended `Transformer``` class:
+In a first step, the text file is loaded from HDFS (`loadText`). Then, for each record (i.e. line) we execute the application-specific `LineToWords` operation, which splits the line into words and creates for each word a new record. This operation is a extended `Transformer` class:
 
 ```java
 class LineToWords extends Transformer {
@@ -79,7 +79,7 @@ class LineToWords extends Transformer {
 }
 ```
 
-In the last step we execute the predefined sum operation. It extends the pipeline by a group-by operation and a summarize operation in order to sum up all the values for a certain key (the complete examples is avaialable in `src/cloudflow/examples/WordCount.java`).
+In the last step we execute the predefined sum operation. It extends the pipeline by a group-by operation and a summarize operation in order to sum up all the values for a certain key (the complete example is available in `src/cloudflow/examples/WordCount.java`).
 
 
 ## BioPipeline
