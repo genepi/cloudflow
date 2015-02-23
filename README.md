@@ -117,10 +117,31 @@ class VcfQualityCheck {
 }
 ```
 
+### Records
 
-### Supported Operations
+We implemented several record types and loader classes in order to process FASTQ, BAM and VCF files (based on HadoopBAM):
 
-We implemented several record types and loader classes in order to process FASTQ, BAM and VCF files (based on HadoopBAM). Moreover, we created several operations and filters for the analysis of biological datasets.
+#### FASTQ
+
+- class: `FastqRecord`
+- key: `String`
+- value: `SequencedFragment` (see org.seqdoop.hadoop_bam.SequencedFragment)
+
+#### BAM
+
+- class: `BamRecord`
+- key: `Integer`
+- value: `SAMRecord` (see htsjdk.samtools.SAMRecord)
+
+#### VCF
+
+- class: `VcfRecord`
+- key: `Integer`
+- value: `VariantContext` (see htsjdk.variant.variantcontext.VariantContext)
+
+### Operations
+
+Cloudflow provied several built-in operations and filters for the analysis of biological datasets:
 
 #### FASTQ
 
