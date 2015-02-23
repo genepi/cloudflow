@@ -150,9 +150,9 @@ We implemented several record types and loader classes in order to process FASTQ
 
 | Data Format | Operation           | Record            | Key         | Value  |
 |-------------|---------------------|-------------------|-------------|---|
-|  *FASTQ*    | loadFastq(filename) | `FastqRecord`     | `String`    | `SequencedFragment` (see org.seqdoop.hadoop_bam.SequencedFragment)  |
-|  *BAM*      | loadBam(filename)   | `BamRecord`       | `Integer`   | `SAMRecord` (see htsjdk.samtools.SAMRecord)  |
-|  *VCF*      | loadVcf(filename)   | `VcfRecord`       | `Integer`   | `VariantContext` (see htsjdk.variant.variantcontext.VariantContext)  |
+|  **FASTQ**    | loadFastq(filename) | `FastqRecord`     | `String`    | `SequencedFragment` (see org.seqdoop.hadoop_bam.SequencedFragment)  |
+|  **BAM**      | loadBam(filename)   | `BamRecord`       | `Integer`   | `SAMRecord` (see htsjdk.samtools.SAMRecord)  |
+| **VCF**      | loadVcf(filename)   | `VcfRecord`       | `Integer`   | `VariantContext` (see htsjdk.variant.variantcontext.VariantContext)  |
 
 ### Operations
 
@@ -160,17 +160,17 @@ Cloudflow provied several built-in operations and filters for the analysis of bi
 
 | Data Format |        | Pipeline Operation              | Description                                                        |
 |-------------|--------|---------------------------------|--------------------------------------------------------------------|
-| *FASTQ*       | Split  | `split()`                         | Find pairs (for paired-end reads)                                  |
+| **FASTQ**       | Split  | `split()`                         | Find pairs (for paired-end reads)                                  |
 |             | Filter | `filter(LowQualityReads.class)`   | Filters reads by quality                                           |
 |             |        | `filter(SequenceLength.class)`    | Filters reads by sequence length                                   |
 |             | Other  | `findPairedReads()`               | Detects read pairs                                                 |
 |             |        | `align(referenceSequence)`        | Aligns sequences against a reference (using jBWA for alignment)    |
-| *BAM*         | Split  | `split()`                         | Creates fixed size chunks (e.g. 64 MB)                             |
+| **BAM**         | Split  | `split()`                         | Creates fixed size chunks (e.g. 64 MB)                             |
 |             |        | `split(5, BamChunk.MBASES)`       | Creates logical chunks (e.g. 5MBases)                              |
 |             | Filter | `filter(UnmappedReads.class)`     | Filters unmapped reads                                             |
 |             |        | `filter(LowQualityReads.class)`   | Filters reads by map.quality                                       |
 |             | Other  | `findVariations()`                | Finds variations in aligned reads (using samtools)                 |
-| *VCF*         | Split  | `split()`                         | Creates fixed size chunks (e.g. 64 MB)                             |
+| **VCF**         | Split  | `split()`                         | Creates fixed size chunks (e.g. 64 MB)                             |
 |             |        | `split(5, VcfChunk.MBASES)`       | Creates logical chunks (e.g. 5MBases)                              |
 |             | Filter | `filter(MonomorphicFilter.class)` | Filters monomorphic site                                           |
 |             |        | `filter(DuplicateFilter.class)`   | Filters duplicates                                                 |
