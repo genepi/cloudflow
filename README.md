@@ -121,19 +121,19 @@ class VcfQualityCheck {
 
 We implemented several record types and loader classes in order to process FASTQ, BAM and VCF files (based on HadoopBAM):
 
-#### FASTQ
+##### FASTQ
 
 - class: `FastqRecord`
 - key: `String`
 - value: `SequencedFragment` (see org.seqdoop.hadoop_bam.SequencedFragment)
 
-#### BAM
+##### BAM
 
 - class: `BamRecord`
 - key: `Integer`
 - value: `SAMRecord` (see htsjdk.samtools.SAMRecord)
 
-#### VCF
+##### VCF
 
 - class: `VcfRecord`
 - key: `Integer`
@@ -143,7 +143,7 @@ We implemented several record types and loader classes in order to process FASTQ
 
 Cloudflow provied several built-in operations and filters for the analysis of biological datasets:
 
-#### FASTQ
+##### FASTQ
 
 Find pairs (for paired-end reads):
 ```
@@ -160,7 +160,7 @@ Aligns sequences against a reference (using jBWA for alignment)
 align(referenceSequence)
 ```
 
-#### BAM
+##### BAM
 
 Creates fixed size chunks (e.g. 64 MB):
 ```
@@ -187,7 +187,7 @@ Finds variations in aligned reads (using samtools):
 findVariations()
 ```
 
-#### VCF
+##### VCF
 
 Creates fixed size chunks (e.g. 64 MB):
 ```
