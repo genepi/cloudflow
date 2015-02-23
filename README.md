@@ -29,8 +29,10 @@ Maven Dependency:
 	<artifactId>cloudflow</artifactId>
 	<version>0.5.0</version>
 </dependency>
-
 ```
+
+A working example project can be found here: https://github.com/genepi/cloudflow-examples
+
 ## Getting Started
 
 ### Input Records
