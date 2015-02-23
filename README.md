@@ -54,6 +54,7 @@ Maven creates the jar `target/cloudflow.examples-0.5.0.jar`, which includes all 
 hadoop  jar target/cloudflow.examples-0.5.0.jar <input> <output>
 ```
 
+More examples can be found here: https://github.com/seppinho/cloudflow/tree/master/cloudflow/src/cloudflow/examples
 
 ## Documentation
 
