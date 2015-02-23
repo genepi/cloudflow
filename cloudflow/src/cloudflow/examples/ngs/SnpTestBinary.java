@@ -1,4 +1,4 @@
-package cloudflow.examples.snptest;
+package cloudflow.examples.ngs;
 
 import genepi.hadoop.command.Command;
 

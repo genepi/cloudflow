@@ -1,4 +1,4 @@
-package cloudflow.examples;
+package cloudflow.examples.ngs;
 
 import genepi.base.Tool;
 
@@ -9,9 +9,8 @@ import cloudflow.core.PipelineConf;
 import cloudflow.core.operations.Executor;
 import cloudflow.core.operations.Filter;
 import cloudflow.core.records.TextRecord;
-import cloudflow.examples.snptest.SnpTestBinary;
 
-public class SnpTest extends Tool {
+public class GwasPipeline extends Tool {
 
 	// ------------- Execute Snptest
 
@@ -79,7 +78,7 @@ public class SnpTest extends Tool {
 
 	// ----Tool
 
-	public SnpTest(String[] args) {
+	public GwasPipeline(String[] args) {
 		super(args);
 	}
 
@@ -110,7 +109,7 @@ public class SnpTest extends Tool {
 		String method = (String) getValue("method");
 		String pheno = (String) getValue("pheno");
 
-		Pipeline pipeline = new Pipeline("Snptest", SnpTest.class);
+		Pipeline pipeline = new Pipeline("GWAS-Pipeline", GwasPipeline.class);
 		pipeline.set("testPhenotype", pheno);
 		pipeline.set("frequentist", freq);
 		pipeline.set("method", method);
@@ -131,7 +130,7 @@ public class SnpTest extends Tool {
 	}
 
 	public static void main(String[] args) {
-		new SnpTest(args).start();
+		new GwasPipeline(args).start();
 	}
 
 }

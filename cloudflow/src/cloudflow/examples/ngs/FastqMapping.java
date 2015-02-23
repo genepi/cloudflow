@@ -1,4 +1,4 @@
-package cloudflow.examples;
+package cloudflow.examples.ngs;
 
 import java.io.IOException;
 
