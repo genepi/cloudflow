@@ -31,7 +31,7 @@ Cloudflow supports three different basic operations, which can be used to analyz
 
 1. The `Transformer` is used to analyze one input record and to create 0 - n output records. The user implements the computational logic for this operation by extending an abstract class. This class provides a simple function, which is executed by our framework for all input records in parallel:
 ```
-Class MyTransformer extends Tansformer {
+class MyTransformer extends Tansformer {
     public void trasform(Record) {
        doSomething();
        emit(new Record());
@@ -41,7 +41,7 @@ Class MyTransformer extends Tansformer {
 
 2. The `Summarizer` operates on a list of records, whereby records with the similar key are grouped. Thus, the signature of the process method has the key and a list of records as an input: 
 ```
-Class MySummarizer extends Summarizer {
+class MySummarizer extends Summarizer {
    public void summarize(Key, List<Record>) {
        doSomething();
        emit(new Record());
@@ -58,12 +58,16 @@ Pipelines are built by connecting several operations with compatible interfaces.
 This has the advantage that even a default WordCount example can be broken down into a few simple operations and is defined in a single line of code:
 
 ```java
-Pipeline pipeline = new Pipeline();
-pipeline.loadText(input)
-        .transform(LineToWords.class)
-        .sum()
-        .save(output);
-pipeline.execute();
+class WordCount {
+	public static void main(String[] args) throws IOException {
+        Pipeline pipeline = new Pipeline(""WordCount", );
+        pipeline.loadText(input)
+                .transform(LineToWords.class)
+                .sum()
+                .save(output);
+        pipeline.run();
+    }
+}
 ```
 
 In a first step, the text file is loaded from HDFS (`loadText`). Then, for each record (i.e. line) we execute the application-specific `LineToWords` operation, which splits the line into words and creates for each word a new record. This operation is a extended `Transformer` class:
@@ -89,7 +93,7 @@ Cloudflow provides a variety of already implemented utilities which facilitate t
 ### Examples
 
 ```java
-Class CallRateCalc extends Transformer {
+class CallRateCalc extends Transformer {
   public void transform(VcfRecord record) {
     VariantContext snp = record.getValue();
     float call = callRate(snp);
