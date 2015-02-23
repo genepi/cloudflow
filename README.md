@@ -179,7 +179,7 @@ Cloudflow provied several built-in operations and filters for the analysis of bi
 |             |        | `filter(MafFilter.class)`         | Filters by MAF                                                     |
 |             | Other  | `checkAlleleFreq(reference)`      | Allele frequency check with external reference (e.g. 1000 genomes) |
 
-### Contributors
+## Contributors
 
 - Lukas Forer
 - Sebastian Schönherr
