@@ -35,6 +35,29 @@ A working example project can be found here: https://github.com/genepi/cloudflow
 
 ## Getting Started
 
+You can clone our example project to test cloudflow:
+
+```
+git clone https://github.com/genepi/cloudflow-examples
+```
+
+Next, you have to import the project into Eclipse or you can execute maven to build the jar file:
+
+```
+cd cloudflow-examples
+mvn package
+```
+
+Maven creates the jar `target/cloudflow.examples-0.5.0.jar`, which includes all dependencies. The job can be execute with the following command:
+
+```
+hadoop  jar target/cloudflow.examples-0.5.0.jar <input> <output>
+```
+
+More examples can be found here: https://github.com/seppinho/cloudflow/tree/master/cloudflow/src/cloudflow/examples
+
+## Documentation
+
 ### Input Records
 
 Cloudflow operates on records consisting of a key/value pair, whereby different record types are available (e.g. `TextRecord`, `IntegerRecord`, `FastqRecord`). A loader class (e.g. `TextLoader`, `FastqLoader`) is responsible to load the input data and to convert it into an appropriate record type.
@@ -117,7 +140,7 @@ In the last step we execute the predefined sum operation. It extends the pipelin
 
 Cloudflow provides a variety of already implemented utilities which facilitate the creation of pipelines in the field of Bioinformatics (especially for NGS data in Genetics). For that purpose, we create the `BioPipeline` class, which extends the default `Pipeline` class by several domain specific features.
 
-### Example: Vcf Quality Check
+### Example: VCF Quality Check
 
 A simple quality control pipeline for VCF files can be implemented by simple combining several built-in operations. First, we apply predefined filters to discard variations that are monomorphic, marked as duplicates or are Insertions or Deletions (InDels). For all records passing the filters, Cloudflow applies a summarize-operation that calculates the call rate for each variation. The Cloudflow pipeline has the following structure.
 
