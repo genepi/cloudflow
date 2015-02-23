@@ -31,20 +31,20 @@ Cloudflow supports three different basic operations, which can be used to analyz
 
 1. The `Transformer` is used to analyze one input record and to create 0 - n output records. The user implements the computational logic for this operation by extending an abstract class. This class provides a simple function, which is executed by our framework for all input records in parallel:
 ```
-class MyTransformer extends Tansformer {
-    public void trasform(Record) {
+class MyTransformer extends Tansformer<InRecord, OutRecord> {
+    public void trasform(InRecord in) {
        doSomething();
-       emit(new Record());
+       emit(new OutRecord(...));
     }
 }
 ````
 
 2. The `Summarizer` operates on a list of records, whereby records with the similar key are grouped. Thus, the signature of the process method has the key and a list of records as an input: 
 ```
-class MySummarizer extends Summarizer {
-   public void summarize(Key, List<Record>) {
+class MySummarizer extends Summarizer<InRecord, OutRecord>  {
+   public void summarize(String key, List<InRecord> in) {
        doSomething();
-       emit(new Record());
+       emit(new OutRecord(...));
     }
 }
 ```
