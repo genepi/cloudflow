@@ -35,18 +35,18 @@ A working example project can be found here: https://github.com/genepi/cloudflow
 
 ## Getting Started
 
-You can clone our example project:
+You can clone our example project to test cloudflow:
 
 `git clone https://github.com/genepi/cloudflow-examples`
 
-You can import the project into Eclipse or execute maven to build the jar file:
+Next, you have to import the project into Eclipse or you can execute maven to build the jar file:
 
 ```
 cd cloudflow-examples
 mvn package
 ```
 
-Maven creates the jar `target/cloudflow.examples-0.5.0.jar`, which includes all dependencies. Finally,the job can be execute by the following command:
+Maven creates the jar `target/cloudflow.examples-0.5.0.jar`, which includes all dependencies. The job can be execute with the following command:
 
 ```
 hadoop  jar target/cloudflow.examples-0.5.0.jar <input> <output>
