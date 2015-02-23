@@ -9,17 +9,17 @@ import org.apache.log4j.Logger;
 
 import cloudflow.core.Operations;
 import cloudflow.core.PipelineConf;
-import cloudflow.core.operations.MapOperation;
-import cloudflow.core.operations.ReduceOperation;
+import cloudflow.core.operations.Transformer;
+import cloudflow.core.operations.Summarizer;
 import cloudflow.core.records.Record;
 
 public class GenericCombiner
 		extends
 		Reducer<HadoopRecordKey, HadoopRecordValue, HadoopRecordKey, HadoopRecordValue> {
 
-	private Operations<ReduceOperation<Record<?, ?>, Record<?, ?>>> reduceSteps;
+	private Operations<Summarizer<Record<?, ?>, Record<?, ?>>> reduceSteps;
 
-	private ReduceOperation<Record<?, ?>, Record<?, ?>> reduceStep;
+	private Summarizer<Record<?, ?>, Record<?, ?>> reduceStep;
 
 	private GroupedRecords<Record<?, ?>> recordValues;
 
@@ -36,13 +36,13 @@ public class GenericCombiner
 			// read reduce step
 			String data = context.getConfiguration().get(
 					"cloudflow.steps.combiner");
-			reduceSteps = new Operations<ReduceOperation<Record<?, ?>, Record<?, ?>>>();
+			reduceSteps = new Operations<Summarizer<Record<?, ?>, Record<?, ?>>>();
 			reduceSteps.load(data);
 
 			PipelineConf conf = new PipelineConf();
 			conf.loadFromConfiguration(context.getConfiguration());
 
-			List<ReduceOperation<Record<?, ?>, Record<?, ?>>> instancesReduce = reduceSteps
+			List<Summarizer<Record<?, ?>, Record<?, ?>>> instancesReduce = reduceSteps
 					.createInstances();
 			reduceStep = instancesReduce.get(0);
 			reduceStep.configure(conf);
@@ -80,7 +80,7 @@ public class GenericCombiner
 			throws IOException, InterruptedException {
 
 		recordValues.setValues(values);
-		reduceStep.process(key.toString(), recordValues);
+		reduceStep.summarize(key.toString(), recordValues);
 
 	}
 

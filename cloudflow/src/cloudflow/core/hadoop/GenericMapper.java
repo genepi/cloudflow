@@ -11,15 +11,15 @@ import org.apache.log4j.Logger;
 
 import cloudflow.core.Operations;
 import cloudflow.core.PipelineConf;
-import cloudflow.core.operations.MapOperation;
+import cloudflow.core.operations.Transformer;
 import cloudflow.core.records.Record;
 
 public class GenericMapper extends
 		Mapper<Object, Writable, HadoopRecordKey, HadoopRecordValue> {
 
-	private Operations<MapOperation<Record<?, ?>, Record<?, ?>>> steps;
+	private Operations<Transformer<Record<?, ?>, Record<?, ?>>> steps;
 
-	private List<MapOperation<Record<?, ?>, Record<?, ?>>> instances = new Vector<>();
+	private List<Transformer<Record<?, ?>, Record<?, ?>>> instances = new Vector<>();
 
 	private RecordList inputRecords = new RecordList();
 
@@ -36,7 +36,7 @@ public class GenericMapper extends
 
 			// read mapper steps
 			String data = context.getConfiguration().get("cloudflow.steps.map");
-			steps = new Operations<MapOperation<Record<?, ?>, Record<?, ?>>>();
+			steps = new Operations<Transformer<Record<?, ?>, Record<?, ?>>>();
 			steps.load(data);
 
 			instances = steps.createInstances();
@@ -56,8 +56,8 @@ public class GenericMapper extends
 
 			// step n + 1 consumes records produced by n
 			for (int i = 0; i < instances.size() - 1; i++) {
-				MapOperation<Record<?, ?>, Record<?, ?>> step = instances.get(i);
-				MapOperation<Record<?, ?>, Record<?, ?>> nextStep = instances
+				Transformer<Record<?, ?>, Record<?, ?>> step = instances.get(i);
+				Transformer<Record<?, ?>, Record<?, ?>> nextStep = instances
 						.get(i + 1);
 				step.getOutputRecords().addConsumer(nextStep);
 			}

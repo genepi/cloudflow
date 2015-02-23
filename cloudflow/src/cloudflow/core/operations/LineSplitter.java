@@ -2,7 +2,7 @@ package cloudflow.core.operations;
 
 import cloudflow.core.records.TextRecord;
 
-public class LineSplitter extends MapOperation<TextRecord, TextRecord> {
+public class LineSplitter extends Transformer<TextRecord, TextRecord> {
 
 	private TextRecord outRecord = new TextRecord();
 	
@@ -14,7 +14,7 @@ public class LineSplitter extends MapOperation<TextRecord, TextRecord> {
 	}
 
 	@Override
-	public void process(TextRecord record) {
+	public void transform(TextRecord record) {
 		outRecord.setKey(key);
 		outRecord.setValue(record.getValue());
 		emit(outRecord);

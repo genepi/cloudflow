@@ -2,14 +2,14 @@ package cloudflow.core.operations;
 
 import cloudflow.core.records.Record;
 
-public abstract class Filter<IN extends Record<?, ?>> extends MapOperation<IN, IN> {
+public abstract class Filter<IN extends Record<?, ?>> extends Transformer<IN, IN> {
 
 	public Filter(Class<IN> recordClass) {
 		super(recordClass, recordClass);
 	}
 
 	@Override
-	public void process(IN record) {
+	public void transform(IN record) {
 		if (!filter(record)) {
 			emit(record);
 		}

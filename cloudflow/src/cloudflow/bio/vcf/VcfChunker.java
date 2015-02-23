@@ -1,9 +1,9 @@
 package cloudflow.bio.vcf;
 
 import cloudflow.core.PipelineConf;
-import cloudflow.core.operations.MapOperation;
+import cloudflow.core.operations.Transformer;
 
-public class VcfChunker extends MapOperation<VcfRecord, VcfChunk> {
+public class VcfChunker extends Transformer<VcfRecord, VcfChunk> {
 
 	private VcfChunk chunk = new VcfChunk();
 
@@ -24,7 +24,7 @@ public class VcfChunker extends MapOperation<VcfRecord, VcfChunk> {
 	}
 
 	@Override
-	public void process(VcfRecord record) {
+	public void transform(VcfRecord record) {
 
 		int chunkNr = record.getValue().getStart() / chunkSize;
 

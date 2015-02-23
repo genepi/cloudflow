@@ -4,12 +4,12 @@ import java.io.IOException;
 
 import cloudflow.bio.BioPipeline;
 import cloudflow.bio.vcf.VcfRecord;
-import cloudflow.core.operations.MapOperation;
+import cloudflow.core.operations.Transformer;
 import cloudflow.core.records.TextRecord;
 
 public class VcfSplitter {
 
-	static public class SplitByChr extends MapOperation<VcfRecord, TextRecord> {
+	static public class SplitByChr extends Transformer<VcfRecord, TextRecord> {
 
 		TextRecord outRecord = new TextRecord();
 
@@ -18,7 +18,7 @@ public class VcfSplitter {
 		}
 
 		@Override
-		public void process(VcfRecord record) {
+		public void transform(VcfRecord record) {
 
 			String chr = record.getValue().getChr();
 

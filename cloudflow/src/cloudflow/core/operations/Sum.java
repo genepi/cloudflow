@@ -3,7 +3,7 @@ package cloudflow.core.operations;
 import cloudflow.core.hadoop.GroupedRecords;
 import cloudflow.core.records.IntegerRecord;
 
-public class Sum extends ReduceOperation<IntegerRecord, IntegerRecord> {
+public class Sum extends Summarizer<IntegerRecord, IntegerRecord> {
 
 	private IntegerRecord outRecord = new IntegerRecord();
 
@@ -12,7 +12,7 @@ public class Sum extends ReduceOperation<IntegerRecord, IntegerRecord> {
 	}
 
 	@Override
-	public void process(String key, GroupedRecords<IntegerRecord> values) {
+	public void summarize(String key, GroupedRecords<IntegerRecord> values) {
 
 		int sum = 0;
 		while (values.hasNextRecord()) {

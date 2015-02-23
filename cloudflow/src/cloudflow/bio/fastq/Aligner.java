@@ -1,4 +1,4 @@
-package cloudflow.core.operations;
+package cloudflow.bio.fastq;
 
 import genepi.io.FileUtil;
 
@@ -10,9 +10,9 @@ import java.util.List;
 
 import org.apache.hadoop.io.Text;
 
-import cloudflow.bio.fastq.SingleRead;
 import cloudflow.core.PipelineConf;
 import cloudflow.core.hadoop.GroupedRecords;
+import cloudflow.core.operations.Summarizer;
 import cloudflow.core.records.ShortReadRecord;
 import cloudflow.core.records.TextRecord;
 
@@ -20,7 +20,7 @@ import com.github.lindenb.jbwa.jni.BwaIndex;
 import com.github.lindenb.jbwa.jni.BwaMem;
 import com.github.lindenb.jbwa.jni.ShortRead;
 
-public class Aligner extends ReduceOperation<ShortReadRecord, TextRecord> {
+public class Aligner extends Summarizer<ShortReadRecord, TextRecord> {
 
 	private TextRecord outRecord = new TextRecord();
 	SingleRead first = new SingleRead();
@@ -39,6 +39,7 @@ public class Aligner extends ReduceOperation<ShortReadRecord, TextRecord> {
 
 	@Override
 	public void configure(PipelineConf conf) {
+		conf.set("mapred.child.java.opts", "-Xmx1000G");
 		jbwaLibLocation = conf.getArchive("jbwa.tar.gz");
 		referencePath = conf.getArchive("reference.tar.gz");
 
@@ -78,7 +79,7 @@ public class Aligner extends ReduceOperation<ShortReadRecord, TextRecord> {
 	}
 
 	@Override
-	public void process(String key, GroupedRecords<ShortReadRecord> values) {
+	public void summarize(String key, GroupedRecords<ShortReadRecord> values) {
 		SingleRead first = new SingleRead();
 		SingleRead second = new SingleRead();
 
@@ -139,7 +140,6 @@ public class Aligner extends ReduceOperation<ShortReadRecord, TextRecord> {
 						outRecord.setKey(sample);
 						outRecord.setValue(out.toString());
 						emit(outRecord);
-						// emit.write(new Text(sample), out);
 
 					}
 

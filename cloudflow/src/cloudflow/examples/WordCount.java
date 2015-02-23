@@ -10,27 +10,27 @@ import cloudflow.core.Pipeline;
 import cloudflow.core.hadoop.GroupedRecords;
 import cloudflow.core.io.TextLoader;
 import cloudflow.core.operations.Filter;
-import cloudflow.core.operations.MapOperation;
-import cloudflow.core.operations.ReduceOperation;
+import cloudflow.core.operations.Transformer;
+import cloudflow.core.operations.Summarizer;
 import cloudflow.core.records.IntegerRecord;
 import cloudflow.core.records.TextRecord;
 
 public class WordCount {
 
-	static public class SplitWords extends
-			MapOperation<TextRecord, IntegerRecord> {
+	static public class LineToWords extends
+			Transformer<TextRecord, IntegerRecord> {
 
 		private static final Splitter SPLITTER = Splitter.onPattern("\\s+")
 				.omitEmptyStrings();
 
 		private IntegerRecord outRecord = new IntegerRecord();
 
-		public SplitWords() {
+		public LineToWords() {
 			super(TextRecord.class, IntegerRecord.class);
 		}
 
 		@Override
-		public void process(TextRecord record) {
+		public void transform(TextRecord record) {
 			for (String word : SPLITTER.split(record.getValue())) {
 				outRecord.setKey(word);
 				outRecord.setValue(1);
@@ -82,7 +82,7 @@ public class WordCount {
 
 		Pipeline pipeline = new Pipeline("Wordcount", WordCount.class);
 
-		pipeline.load(input, new TextLoader()).apply(SplitWords.class)
+		pipeline.loadText(input).apply(LineToWords.class)
 				.filter(RemoveEmptyKeys.class).sum().save(output);
 
 		boolean result = pipeline.run();

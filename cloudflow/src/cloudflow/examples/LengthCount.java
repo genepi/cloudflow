@@ -4,14 +4,14 @@ import java.io.IOException;
 
 import cloudflow.core.Pipeline;
 import cloudflow.core.io.TextLoader;
-import cloudflow.core.operations.MapOperation;
+import cloudflow.core.operations.Transformer;
 import cloudflow.core.records.IntegerRecord;
 import cloudflow.core.records.TextRecord;
 
 public class LengthCount {
 
 	static public class SplitByWordLength extends
-			MapOperation<TextRecord, IntegerRecord> {
+			Transformer<TextRecord, IntegerRecord> {
 
 		private IntegerRecord outRecord = new IntegerRecord();
 
@@ -20,7 +20,7 @@ public class LengthCount {
 		}
 
 		@Override
-		public void process(TextRecord record) {
+		public void transform(TextRecord record) {
 
 			String[] tiles = record.getValue().split(" ");
 			for (String tile : tiles) {

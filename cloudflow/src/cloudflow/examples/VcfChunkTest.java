@@ -3,14 +3,15 @@ package cloudflow.examples;
 import java.io.IOException;
 
 import cloudflow.bio.BioPipeline;
+import cloudflow.bio.ChunkSize;
 import cloudflow.bio.vcf.VcfChunk;
 import cloudflow.core.hadoop.GroupedRecords;
-import cloudflow.core.operations.ReduceOperation;
+import cloudflow.core.operations.Summarizer;
 import cloudflow.core.records.TextRecord;
 
 public class VcfChunkTest {
 
-	static public class ChunkInfos extends ReduceOperation<VcfChunk, TextRecord> {
+	static public class ChunkInfos extends Summarizer<VcfChunk, TextRecord> {
 
 		private TextRecord info = new TextRecord();
 
@@ -19,7 +20,7 @@ public class VcfChunkTest {
 		}
 
 		@Override
-		public void process(String key, GroupedRecords<VcfChunk> values) {
+		public void summarize(String key, GroupedRecords<VcfChunk> values) {
 			int noSnps = 0;
 			while (values.hasNextRecord()) {
 				noSnps++;
@@ -44,8 +45,8 @@ public class VcfChunkTest {
 		BioPipeline pipeline = new BioPipeline("VCF Chunk test",
 				VcfChunkTest.class);
 
-		pipeline.loadVcf(input).createChunks(1000000).apply(ChunkInfos.class)
-				.save(output);
+		pipeline.loadVcf(input).split(1, ChunkSize.MBASES)
+				.apply(ChunkInfos.class).save(output);
 
 		boolean result = pipeline.run();
 		if (!result) {
