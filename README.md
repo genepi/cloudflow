@@ -60,13 +60,13 @@ This has the advantage that even a default WordCount example can be broken down 
 ```java
 class WordCount {
 	public static void main(String[] args) throws IOException {
-        Pipeline pipeline = new Pipeline(""WordCount", );
-        pipeline.loadText(input)
-                .transform(LineToWords.class)
-                .sum()
-                .save(output);
-        pipeline.run();
-    }
+	        Pipeline pipeline = new Pipeline(""WordCount", );
+	        pipeline.loadText(input)
+	                .transform(LineToWords.class)
+	                .sum()
+	                .save(output);
+	        pipeline.run();
+    	}
 }
 ```
 
@@ -101,12 +101,18 @@ class CallRateCalc extends Transformer {
   }
 }
 
-pipeline.loadVCF(input)
-        .filter(MonomorphicFilter.class)
-        .filter(DuplicateFilter.class)
-        .filter(InDelFilter.class)
-        .apply(CallRateCalc.class)
-        .save(output);
+class VcfQualityCheck {
+	public static void main(String[] args) throws IOException {
+		BioPipeline pipeline = new BioPipeline("VCF-QC", VcfQualityCheck.class);
+		pipeline.loadVCF(input)
+		        .filter(MonomorphicFilter.class)
+		        .filter(DuplicateFilter.class)
+		        .filter(InDelFilter.class)
+		        .apply(CallRateCalc.class)
+		        .save(output);
+		pipeline.run();
+	}
+}
 ```
 
 
