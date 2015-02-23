@@ -172,21 +172,21 @@ Cloudflow provied several built-in operations and filters for the analysis of bi
 
 | Data Format |        | Pipeline Operation              | Description                                                        |
 |-------------|--------|---------------------------------|--------------------------------------------------------------------|
-| _FASTQ_>       | Split  | split()                         | Find pairs (for paired-end reads)                                  |
-|             | Filter | filter(LowQualityReads.class)   | Filters reads by quality                                           |
-|             |        | filter(SequenceLength.class)    | Filters reads by sequence length                                   |
-|             | Other  | findPairedReads()               | Detects read pairs                                                 |
-|             |        | align(referenceSequence)        | Aligns sequences against a reference (using jBWA for alignment)    |
-| _BAM_         | Split  | split()                         | Creates fixed size chunks (e.g. 64 MB)                             |
-|             |        | split(5, BamChunk.MBASES)       | Creates logical chunks (e.g. 5MBases)                              |
-|             | Filter | filter(UnmappedReads.class)     | Filters unmapped reads                                             |
-|             |        | filter(LowQualityReads.class)   | Filters reads by map.quality                                       |
-|             | Other  | findVariations()                | Finds variations in aligned reads (using samtools)                 |
-| _VCF_         | Split  | split()                         | Creates fixed size chunks (e.g. 64 MB)                             |
-|             |        | split(5, VcfChunk.MBASES)       | Creates logical chunks (e.g. 5MBases)                              |
-|             | Filter | filter(MonomorphicFilter.class) | Filters monomorphic site                                           |
-|             |        | filter(DuplicateFilter.class)   | Filters duplicates                                                 |
-|             |        | filter(InDelFilter.class)       | Filters inDels                                                     |
-|             |        | filter(CallRateFilter.class)    | Filters by call rate                                               |
-|             |        | filter(MafFilter.class)         | Filters by MAF                                                     |
-|             | Other  | checkAlleleFreq(reference)      | Allele frequency check with external reference (e.g. 1000 genomes) |
+| _FASTQ_       | Split  | `split()`                         | Find pairs (for paired-end reads)                                  |
+|             | Filter | `filter(LowQualityReads.class)`   | Filters reads by quality                                           |
+|             |        | `filter(SequenceLength.class)`    | Filters reads by sequence length                                   |
+|             | Other  | `findPairedReads()`               | Detects read pairs                                                 |
+|             |        | `align(referenceSequence)`        | Aligns sequences against a reference (using jBWA for alignment)    |
+| _BAM_         | Split  | `split()`                         | Creates fixed size chunks (e.g. 64 MB)                             |
+|             |        | `split(5, BamChunk.MBASES)`       | Creates logical chunks (e.g. 5MBases)                              |
+|             | Filter | `filter(UnmappedReads.class)`     | Filters unmapped reads                                             |
+|             |        | `filter(LowQualityReads.class)`   | Filters reads by map.quality                                       |
+|             | Other  | `findVariations()`                | Finds variations in aligned reads (using samtools)                 |
+| _VCF_         | Split  | `split()`                         | Creates fixed size chunks (e.g. 64 MB)                             |
+|             |        | `split(5, VcfChunk.MBASES)`       | Creates logical chunks (e.g. 5MBases)                              |
+|             | Filter | `filter(MonomorphicFilter.class)` | Filters monomorphic site                                           |
+|             |        | `filter(DuplicateFilter.class)`   | Filters duplicates                                                 |
+|             |        | `filter(InDelFilter.class)`      | Filters inDels                                                     |
+|             |        | `filter(CallRateFilter.class)`    | Filters by call rate                                               |
+|             |        | `filter(MafFilter.class)`         | Filters by MAF                                                     |
+|             | Other  | `checkAlleleFreq(reference)`      | Allele frequency check with external reference (e.g. 1000 genomes) |
