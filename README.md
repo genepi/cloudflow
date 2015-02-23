@@ -13,12 +13,8 @@ Cloudflow is available in our Maven repository:
 Maven Repository:
 ```
 <repository>
-	<id>cloudflow</id>
+	<id>genepi-maven</id>
 	<url>https://raw.github.com/genepi/maven/cloudflow</url>
-	<snapshots>
-		<enabled>true</enabled>
-		<updatePolicy>always</updatePolicy>
-	</snapshots>
 </repository>
 ```
 
