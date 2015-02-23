@@ -12,12 +12,24 @@ Cloudflow is available in our Maven repository:
 
 Maven Repository:
 ```
-TODO
+<repository>
+	<id>cloudflow</id>
+	<url>https://raw.github.com/genepi/maven/cloudflow</url>
+	<snapshots>
+		<enabled>true</enabled>
+		<updatePolicy>always</updatePolicy>
+	</snapshots>
+</repository>
 ```
 
 Maven Dependency:
 ```
-TODO
+<dependency>
+	<groupId>genepi</groupId>
+	<artifactId>cloudflow</artifactId>
+	<version>0.5.0</version>
+</dependency>
+
 ```
 ## Getting Started
 
