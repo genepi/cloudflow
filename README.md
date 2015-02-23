@@ -117,7 +117,7 @@ In the last step we execute the predefined sum operation. It extends the pipelin
 
 Cloudflow provides a variety of already implemented utilities which facilitate the creation of pipelines in the field of Bioinformatics (especially for NGS data in Genetics). For that purpose, we create the `BioPipeline` class, which extends the default `Pipeline` class by several domain specific features.
 
-### Example: Vcf Quality Check
+### Example: VCF Quality Check
 
 A simple quality control pipeline for VCF files can be implemented by simple combining several built-in operations. First, we apply predefined filters to discard variations that are monomorphic, marked as duplicates or are Insertions or Deletions (InDels). For all records passing the filters, Cloudflow applies a summarize-operation that calculates the call rate for each variation. The Cloudflow pipeline has the following structure.
 
