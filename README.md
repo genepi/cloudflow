@@ -11,7 +11,7 @@ The latest release is <b>0.5.0</b>, released February 23, 2015.
 Cloudflow is available in our Maven repository: 
 
 Maven Repository:
-```
+```xml
 <repositories>
 	<repository>
 		<id>genepi-maven</id>
@@ -21,7 +21,7 @@ Maven Repository:
 ```
 
 Maven Dependency:
-```
+```xml
 <dependencies>
 	<dependency>
 		<groupId>genepi</groupId>
@@ -51,7 +51,7 @@ mvn package
 Maven creates the jar `target/cloudflow.examples-0.5.0.jar`, which includes all dependencies. The job can be execute with the following command:
 
 ```
-hadoop  jar target/cloudflow.examples-0.5.0.jar <input> <output>
+hadoop jar target/cloudflow.examples-0.5.0.jar <input> <output>
 ```
 
 More examples can be found here: https://github.com/seppinho/cloudflow/tree/master/cloudflow/src/cloudflow/examples
