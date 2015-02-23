@@ -35,7 +35,7 @@ A working example project can be found here: https://github.com/genepi/cloudflow
 
 ## Getting Started
 
-You can clone our exmple project:
+You can clone our example project:
 
 `git clone https://github.com/genepi/cloudflow-examples`
 
