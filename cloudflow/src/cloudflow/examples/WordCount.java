@@ -3,17 +3,14 @@ package cloudflow.examples;
 import java.io.IOException;
 import java.util.Set;
 
-import com.google.common.base.Splitter;
-import com.google.common.collect.ImmutableSet;
-
 import cloudflow.core.Pipeline;
-import cloudflow.core.hadoop.GroupedRecords;
-import cloudflow.core.io.TextLoader;
 import cloudflow.core.operations.Filter;
 import cloudflow.core.operations.Transformer;
-import cloudflow.core.operations.Summarizer;
 import cloudflow.core.records.IntegerRecord;
 import cloudflow.core.records.TextRecord;
+
+import com.google.common.base.Splitter;
+import com.google.common.collect.ImmutableSet;
 
 public class WordCount {
 

@@ -1,13 +1,14 @@
 package cloudflow.bio;
 
 import cloudflow.bio.bam.BamLoader;
+import cloudflow.bio.bam.CountBasesPerPosition;
+import cloudflow.bio.bam.FindVariants;
 import cloudflow.bio.fastq.Aligner;
 import cloudflow.bio.fastq.CreateFastqPairs;
 import cloudflow.bio.fastq.FastqLoader;
 import cloudflow.bio.vcf.VcfChunker;
 import cloudflow.bio.vcf.VcfLoader;
 import cloudflow.core.Pipeline;
-import cloudflow.core.Pipeline.ReduceBuilder;
 
 public class BioPipeline extends Pipeline {
 
@@ -50,6 +51,12 @@ public class BioPipeline extends Pipeline {
 
 		public BamMapBuilder(Pipeline pipeline) {
 			super(pipeline);
+		}
+
+		public AfterReduceBuilder findVariations(String reference) {
+			pipeline.distributeArchive("reference.tar.gz", reference);
+			return apply(CountBasesPerPosition.class).groupByKey().apply(
+					FindVariants.class);
 		}
 
 	}
