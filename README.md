@@ -37,7 +37,9 @@ A working example project can be found here: https://github.com/genepi/cloudflow
 
 You can clone our example project to test cloudflow:
 
-`git clone https://github.com/genepi/cloudflow-examples`
+```
+git clone https://github.com/genepi/cloudflow-examples
+```
 
 Next, you have to import the project into Eclipse or you can execute maven to build the jar file:
 
