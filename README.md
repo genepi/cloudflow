@@ -35,6 +35,26 @@ A working example project can be found here: https://github.com/genepi/cloudflow
 
 ## Getting Started
 
+You can clone our exmple project:
+
+`git clone https://github.com/genepi/cloudflow-examples`
+
+You can import the project into Eclipse or execute maven to build the jar file:
+
+```
+cd cloudflow-examples
+mvn package
+```
+
+Maven creates the jar `target/cloudflow.examples-0.5.0.jar`, which includes all dependencies. Finally,the job can be execute by the following command:
+
+```
+hadoop  jar target/cloudflow.examples-0.5.0.jar <input> <output>
+```
+
+
+## Documentation
+
 ### Input Records
 
 Cloudflow operates on records consisting of a key/value pair, whereby different record types are available (e.g. `TextRecord`, `IntegerRecord`, `FastqRecord`). A loader class (e.g. `TextLoader`, `FastqLoader`) is responsible to load the input data and to convert it into an appropriate record type.
