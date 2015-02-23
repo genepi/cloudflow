@@ -109,14 +109,21 @@ This has the advantage that even a default WordCount example can be broken down 
 
 ```java
 class WordCount {
+
 	public static void main(String[] args) throws IOException {
-	        Pipeline pipeline = new Pipeline(""WordCount", );
+	
+		String input = args[0];
+		String output = args[1];
+	
+	        Pipeline pipeline = new Pipeline("WordCount", WordCount.class);
 	        pipeline.loadText(input)
-	                .transform(LineToWords.class)
+	                .apply(LineToWords.class)
 	                .sum()
 	                .save(output);
 	        pipeline.run();
+	        
     	}
+    	
 }
 ```
 
