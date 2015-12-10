@@ -1,11 +1,9 @@
-package cloudflow.core.hadoop;
+package cloudflow.core.records;
 
 import java.util.List;
 import java.util.Vector;
 
-import cloudflow.core.records.Record;
-
-public class RecordList {
+public class RecordList implements IRecordProducer{
 
 	private List<IRecordConsumer> consumers = new Vector<IRecordConsumer>();
 

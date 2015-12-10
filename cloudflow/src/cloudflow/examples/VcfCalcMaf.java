@@ -6,6 +6,7 @@ import java.io.IOException;
 
 import cloudflow.bio.BioPipeline;
 import cloudflow.bio.vcf.VcfRecord;
+import cloudflow.core.hadoop.MapReduceRunner;
 import cloudflow.core.operations.Filter;
 import cloudflow.core.operations.Transformer;
 import cloudflow.core.records.FloatRecord;
@@ -68,7 +69,7 @@ public class VcfCalcMaf {
 		pipeline.loadVcf(input).apply(CalcMaf.class)
 				.apply(FilterCommonSnps.class).save(output);
 
-		boolean result = pipeline.run();
+		boolean result = new MapReduceRunner().run(pipeline);
 		if (!result) {
 			System.exit(1);
 		}

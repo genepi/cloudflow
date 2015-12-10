@@ -23,8 +23,8 @@ public class CreateFastqPairs extends Transformer<FastqRecord, ShortReadRecord> 
 	@Override
 	public void transform(FastqRecord record) {
 
-		Text key = new Text(record.getKey().toString());
-		Text outKey = new Text();
+		String key = record.getKey();
+		String outKey = new String();
 		SequencedFragment value = record.getValue();
 
 		// reset builder
@@ -41,10 +41,10 @@ public class CreateFastqPairs extends Transformer<FastqRecord, ShortReadRecord> 
 		 * 
 		 * @SRR062634.1 HWI-EAS110_103327062:6:1:1092:8469/1
 		 */
-		if (key.toString().charAt(key.getLength() - 2) == '/') {
+		if (key.toString().charAt(key.length() - 2) == '/') {
 
 			try {
-				outKey.set(Text.decode(key.getBytes(), 0, key.getLength() - 1));
+				outKey = Text.decode(key.getBytes(), 0, key.length() - 1);
 			} catch (CharacterCodingException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -60,7 +60,7 @@ public class CreateFastqPairs extends Transformer<FastqRecord, ShortReadRecord> 
 		else {
 
 			builder = generateFastqKey(builder, value);
-			outKey.set(builder.toString());
+			outKey = builder.toString();
 
 		}
 
@@ -71,8 +71,8 @@ public class CreateFastqPairs extends Transformer<FastqRecord, ShortReadRecord> 
 		read.setFilename("TestfileXXX");
 		read.setReadNumber(value.getRead());
 
-		outRecord.setWritableKey(outKey);
-		outRecord.setWritableValue(read);
+		outRecord.setKey(outKey);
+		outRecord.setValue(read);
 		emit(outRecord);
 
 	}

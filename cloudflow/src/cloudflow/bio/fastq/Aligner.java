@@ -84,7 +84,7 @@ public class Aligner extends Summarizer<ShortReadRecord, TextRecord> {
 		SingleRead second = new SingleRead();
 
 		while (values.hasNextRecord()) {
-			SingleRead value = values.getRecord().getWritableValue();
+			SingleRead value = values.getRecord().getValue();
 			countReads++;
 
 			if (value.getReadNumber() == 1) {

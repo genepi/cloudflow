@@ -4,12 +4,15 @@ import java.io.IOException;
 
 import cloudflow.bio.BioPipeline;
 import cloudflow.bio.bam.BamRecord;
+import cloudflow.core.Pipeline;
+import cloudflow.core.hadoop.MapReduceRunner;
 import cloudflow.core.operations.Transformer;
 import cloudflow.core.records.IntegerRecord;
 
 public class BamQualityCheck {
 
-	static public class SplitByPos extends Transformer<BamRecord, IntegerRecord> {
+	static public class SplitByPos extends
+			Transformer<BamRecord, IntegerRecord> {
 
 		IntegerRecord outRecord = new IntegerRecord();
 
@@ -40,7 +43,7 @@ public class BamQualityCheck {
 
 		pipeline.loadBam(input).apply(SplitByPos.class).mean().save(output);
 
-		boolean result = pipeline.run();
+		boolean result = new MapReduceRunner().run(pipeline);
 		if (!result) {
 			System.exit(1);
 		}

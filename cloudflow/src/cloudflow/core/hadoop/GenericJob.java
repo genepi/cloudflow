@@ -11,6 +11,7 @@ import org.apache.hadoop.mapreduce.Job;
 import cloudflow.core.Operations;
 import cloudflow.core.operations.Transformer;
 import cloudflow.core.operations.Summarizer;
+import cloudflow.core.records.Record;
 
 public class GenericJob extends HadoopJob {
 
@@ -62,15 +63,15 @@ public class GenericJob extends HadoopJob {
 		super(name);
 	}
 
-	public void setMapOperations(Operations<Transformer<?, ?>> steps) {
+	public void setMapOperations(Operations<Transformer<Record<?, ?>, Record<?, ?>>> steps) {
 		set("cloudflow.steps.map", steps.serialize());
 	}
 
-	public void setAfterReduceOperations(Operations<Transformer<?, ?>> steps) {
+	public void setAfterReduceOperations(Operations<Transformer<Record<?, ?>, Record<?, ?>>> steps) {
 		set("cloudflow.steps.map2", steps.serialize());
 	}
 
-	public void setReduceOperations(Operations<Summarizer<?, ?>> steps) {
+	public void setReduceOperations(Operations<Summarizer<Record<?, ?>, Record<?, ?>>> steps) {
 		if (steps.getSize() > 0) {
 			needReducer = true;
 			set("cloudflow.steps.reduce", steps.serialize());

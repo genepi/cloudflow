@@ -6,9 +6,9 @@ import org.apache.hadoop.io.Writable;
 import org.seqdoop.hadoop_bam.VCFInputFormat;
 import org.seqdoop.hadoop_bam.VariantContextWritable;
 
-import cloudflow.core.io.ILoader;
+import cloudflow.core.hadoop.HadoopRecordFileLoader;
 
-public class VcfLoader implements ILoader {
+public class VcfLoader implements HadoopRecordFileLoader {
 
 	@Override
 	public Class getInputFormat() {

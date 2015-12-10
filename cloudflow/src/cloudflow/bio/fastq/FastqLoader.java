@@ -6,9 +6,12 @@ import org.apache.hadoop.io.Writable;
 import org.seqdoop.hadoop_bam.FastqInputFormat;
 import org.seqdoop.hadoop_bam.SequencedFragment;
 
-import cloudflow.core.io.ILoader;
+import cloudflow.core.hadoop.HadoopRecordFileLoader;
+import cloudflow.core.io.FileRecordReader;
+import cloudflow.core.io.LocalFileLoader;
+import cloudflow.core.local.TextFileRecordReader;
 
-public class FastqLoader implements ILoader {
+public class FastqLoader implements HadoopRecordFileLoader, LocalFileLoader {
 
 	@Override
 	public Class getInputFormat() {
@@ -34,6 +37,13 @@ public class FastqLoader implements ILoader {
 	@Override
 	public void configure(Configuration conf) {
 	
+	}
+
+	@Override
+	public FileRecordReader createFileRecordReader(String filename) {
+		FastqFileRecordReader reader = new FastqFileRecordReader();
+		reader.open(filename);
+		return reader;
 	}
 	
 }

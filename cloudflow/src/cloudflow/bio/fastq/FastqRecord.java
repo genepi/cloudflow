@@ -7,24 +7,24 @@ import cloudflow.core.records.Record;
 
 public class FastqRecord extends Record<Text, SequencedFragment> {
 
-	public FastqRecord() {
-		setWritableKey(new Text());
-		setWritableValue(new SequencedFragment());
-	}
+	private String key;
 
-	public SequencedFragment getValue() {
-		return getWritableValue();
-	}
-
-	public void setValue(SequencedFragment value) {
-		getWritableValue();
-	}
+	private SequencedFragment value;
 
 	public String getKey() {
-		return getWritableKey().toString();
+		return key;
 	}
 
 	public void setKey(String key) {
-		getWritableKey().set(key);
+		this.key = key;
 	}
+
+	public SequencedFragment getValue() {
+		return value;
+	}
+
+	public void setValue(SequencedFragment value) {
+		this.value = value;
+	}
+
 }

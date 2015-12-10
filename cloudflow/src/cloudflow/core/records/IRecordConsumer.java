@@ -1,6 +1,5 @@
-package cloudflow.core.hadoop;
+package cloudflow.core.records;
 
-import cloudflow.core.records.Record;
 
 
 public interface IRecordConsumer<IN extends Record> {

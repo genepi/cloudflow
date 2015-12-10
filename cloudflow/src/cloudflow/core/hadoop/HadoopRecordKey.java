@@ -69,5 +69,16 @@ public class HadoopRecordKey implements WritableComparable<HadoopRecordKey>,
 		WritableComparator.define(HadoopRecordKey.class,
 				new HadoopRecordKeyComparator());
 	}
+	
+	@Override
+	public boolean equals(Object obj) {
+		// TODO Auto-generated method stub
+		return instance.equals(((HadoopRecordKey)obj).instance);
+	}
+	
+	@Override
+	public int hashCode() {
+		return instance.hashCode();
+	}
 
 }

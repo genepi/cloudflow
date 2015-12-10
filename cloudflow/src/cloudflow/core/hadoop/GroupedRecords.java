@@ -1,38 +1,43 @@
 package cloudflow.core.hadoop;
 
+import java.util.Iterator;
+
+import cloudflow.core.hadoop.records.IWritableRecord;
 import cloudflow.core.records.Record;
 
 public class GroupedRecords<IN extends Record<?, ?>> {
 
-	protected Iterable<HadoopRecordValue> values;
+	protected Iterator<HadoopRecordValue> values;
 
-	private IN record;
+	private HadoopRecordKey key;
 
-	public GroupedRecords(Iterable<HadoopRecordValue> values) {
-		this.values = values;
-	}
+	private IWritableRecord writableRecord;
 
 	public GroupedRecords() {
 
 	}
 
-	public void setRecordClassName(Class<?> recordClassName)
+	public void setRecordClassName(Class<? extends Record<?, ?>> recordClass)
 			throws InstantiationException, IllegalAccessException {
-		record = (IN) recordClassName.newInstance();
+		writableRecord = MapReduceRunner.createWritableRecord(recordClass);
 	}
 
-	public void setValues(Iterable<HadoopRecordValue> values) {
+	public void setValues(Iterator<HadoopRecordValue> values) {
 		this.values = values;
 	}
 
+	public void setKey(HadoopRecordKey key) {
+		this.key = key;
+	}
+
 	public boolean hasNextRecord() {
-		return values.iterator().hasNext();
+		return values.hasNext();
 	}
 
 	public IN getRecord() {
-		HadoopRecordValue hadoopRecord = values.iterator().next();
-		record.setWritableValue(hadoopRecord.get());
-		return (IN) record;
+		HadoopRecordValue hadoopRecord = values.next();
+		IN record = (IN) writableRecord.fillRecord(key, hadoopRecord.get());
+		return record;
 	}
 
 }

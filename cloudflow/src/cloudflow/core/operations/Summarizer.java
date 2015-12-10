@@ -1,11 +1,11 @@
 package cloudflow.core.operations;
 
 import cloudflow.core.PipelineConf;
-import cloudflow.core.hadoop.RecordList;
 import cloudflow.core.hadoop.GroupedRecords;
 import cloudflow.core.records.Record;
+import cloudflow.core.records.RecordList;
 
-public abstract class Summarizer<IN extends Record<?,?>, OUT extends Record<?,?>> {
+public abstract class Summarizer<IN extends Record<?,?>, OUT extends Record<?,?>> implements IOperation {
 
 	private RecordList records = new RecordList();
  

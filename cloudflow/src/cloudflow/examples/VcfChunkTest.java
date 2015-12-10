@@ -6,6 +6,7 @@ import cloudflow.bio.BioPipeline;
 import cloudflow.bio.ChunkSize;
 import cloudflow.bio.vcf.VcfChunk;
 import cloudflow.core.hadoop.GroupedRecords;
+import cloudflow.core.hadoop.MapReduceRunner;
 import cloudflow.core.operations.Summarizer;
 import cloudflow.core.records.TextRecord;
 
@@ -48,7 +49,7 @@ public class VcfChunkTest {
 		pipeline.loadVcf(input).split(1, ChunkSize.MBASES)
 				.apply(ChunkInfos.class).save(output);
 
-		boolean result = pipeline.run();
+		boolean result = new MapReduceRunner().run(pipeline);
 		if (!result) {
 			System.exit(1);
 		}

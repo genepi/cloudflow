@@ -1,12 +1,12 @@
 package cloudflow.core.operations;
 
 import cloudflow.core.PipelineConf;
-import cloudflow.core.hadoop.IRecordConsumer;
-import cloudflow.core.hadoop.RecordList;
+import cloudflow.core.records.IRecordConsumer;
 import cloudflow.core.records.Record;
+import cloudflow.core.records.RecordList;
 
 public abstract class Transformer<IN extends Record<?, ?>, OUT extends Record<?, ?>>
-		implements IRecordConsumer<IN> {
+		implements IRecordConsumer<IN>, IOperation {
 
 	private RecordList records = new RecordList();
 

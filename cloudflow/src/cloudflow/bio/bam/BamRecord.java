@@ -9,24 +9,24 @@ import cloudflow.core.records.Record;
 
 public class BamRecord extends Record<IntWritable, SAMRecordWritable> {
 
-	public BamRecord() {
-		setWritableKey(new IntWritable());
-		setWritableValue(new SAMRecordWritable());
+	private String key;
+
+	private SAMRecord value;
+
+	public String getKey() {
+		return key;
+	}
+
+	public void setKey(String key) {
+		this.key = key;
 	}
 
 	public SAMRecord getValue() {
-		return getWritableValue().get();
+		return value;
 	}
 
 	public void setValue(SAMRecord value) {
-		getWritableValue().set(value);
+		this.value = value;
 	}
 
-	public int getKey() {
-		return getWritableKey().get();
-	}
-
-	public void setKey(int key) {
-		getWritableKey().set(key);
-	}
 }

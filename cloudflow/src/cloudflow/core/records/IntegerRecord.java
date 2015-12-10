@@ -5,25 +5,29 @@ import org.apache.hadoop.io.Text;
 
 public class IntegerRecord extends Record<Text, IntWritable> {
 
-	public IntegerRecord() {
-		setWritableKey(new Text());
-		setWritableValue(new IntWritable());
-	}
+	private String key;
 
-	public int getValue() {
-		return getWritableValue().get();
-	}
-
-	public void setValue(int value) {
-		getWritableValue().set(value);
-	}
+	private int value;
 
 	public String getKey() {
-		return getWritableKey().toString();
+		return key;
 	}
 
 	public void setKey(String key) {
-		getWritableKey().set(key);
+		this.key = key;
 	}
 
+	public int getValue() {
+		return value;
+	}
+
+	public void setValue(int value) {
+		this.value = value;
+	}
+
+	@Override
+	public String toString() {
+		return getKey().toString() +"\t" + getValue();
+	}
+	
 }

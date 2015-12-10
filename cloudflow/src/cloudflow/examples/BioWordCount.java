@@ -3,6 +3,7 @@ package cloudflow.examples;
 import java.io.IOException;
 
 import cloudflow.core.Pipeline;
+import cloudflow.core.hadoop.MapReduceRunner;
 import cloudflow.core.io.TextLoader;
 import cloudflow.core.operations.Filter;
 import cloudflow.core.operations.Transformer;
@@ -24,7 +25,8 @@ public class BioWordCount {
 
 	}
 
-	static public class SplitTiTv extends Transformer<TextRecord, IntegerRecord> {
+	static public class SplitTiTv extends
+			Transformer<TextRecord, IntegerRecord> {
 
 		IntegerRecord outRecord = new IntegerRecord();
 
@@ -56,7 +58,7 @@ public class BioWordCount {
 		pipeline.load(input, new TextLoader()).apply(RemoveHeader.class)
 				.apply(SplitTiTv.class).sum().save(output);
 
-		boolean result = pipeline.run();
+		boolean result = new MapReduceRunner().run(pipeline);
 		if (!result) {
 			System.exit(1);
 		}

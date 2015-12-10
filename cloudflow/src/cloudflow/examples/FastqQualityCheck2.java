@@ -6,6 +6,7 @@ import org.apache.hadoop.io.Text;
 
 import cloudflow.bio.BioPipeline;
 import cloudflow.bio.fastq.FastqRecord;
+import cloudflow.core.hadoop.MapReduceRunner;
 import cloudflow.core.operations.Transformer;
 import cloudflow.core.records.IntegerRecord;
 
@@ -47,7 +48,7 @@ public class FastqQualityCheck2 {
 
 		pipeline.loadFastq(input).apply(SequenceQual.class).sum().save(output);
 
-		boolean result = pipeline.run();
+		boolean result = new MapReduceRunner().run(pipeline);
 		if (!result) {
 			System.exit(1);
 		}

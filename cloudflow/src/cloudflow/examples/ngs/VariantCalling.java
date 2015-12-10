@@ -3,6 +3,7 @@ package cloudflow.examples.ngs;
 import java.io.IOException;
 
 import cloudflow.bio.BioPipeline;
+import cloudflow.core.hadoop.MapReduceRunner;
 
 public class VariantCalling {
 
@@ -14,9 +15,10 @@ public class VariantCalling {
 		BioPipeline pipeline = new BioPipeline("Variant Calling",
 				VariantCalling.class);
 
-		pipeline.loadBam(input).findVariations("rcrs.tar.gz").save(output);;
+		pipeline.loadBam(input).findVariations("rcrs.tar.gz").save(output);
+		;
 
-		boolean result = pipeline.run();
+		boolean result = new MapReduceRunner().run(pipeline);
 		if (!result) {
 			System.exit(1);
 		}

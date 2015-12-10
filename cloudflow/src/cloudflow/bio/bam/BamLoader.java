@@ -6,9 +6,9 @@ import org.apache.hadoop.io.Writable;
 import org.seqdoop.hadoop_bam.BAMInputFormat;
 import org.seqdoop.hadoop_bam.SAMRecordWritable;
 
-import cloudflow.core.io.ILoader;
+import cloudflow.core.hadoop.HadoopRecordFileLoader;
 
-public class BamLoader implements ILoader {
+public class BamLoader implements HadoopRecordFileLoader {
 
 	@Override
 	public Class getInputFormat() {

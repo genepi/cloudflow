@@ -6,24 +6,24 @@ import cloudflow.core.records.Record;
 
 public class BasePositionRecord extends Record<IntWritable, BasePosition> {
 
-	public BasePositionRecord() {
-		setWritableKey(new IntWritable());
-		setWritableValue(new BasePosition());
-	}
+	private int key;
 
-	public BasePosition getValue() {
-		return getWritableValue();
-	}
-
-	public void setValue(BasePosition value) {
-		setWritableValue(value);
-	}
+	private BasePosition value;
 
 	public int getKey() {
-		return getWritableKey().get();
+		return key;
 	}
 
 	public void setKey(int key) {
-		getWritableKey().set(key);
+		this.key = key;
 	}
+
+	public BasePosition getValue() {
+		return value;
+	}
+
+	public void setValue(BasePosition value) {
+		this.value = value;
+	}
+
 }

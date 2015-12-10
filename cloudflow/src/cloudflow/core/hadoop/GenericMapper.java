@@ -11,8 +11,10 @@ import org.apache.log4j.Logger;
 
 import cloudflow.core.Operations;
 import cloudflow.core.PipelineConf;
+import cloudflow.core.hadoop.records.IWritableRecord;
 import cloudflow.core.operations.Transformer;
 import cloudflow.core.records.Record;
+import cloudflow.core.records.RecordList;
 
 public class GenericMapper extends
 		Mapper<Object, Writable, HadoopRecordKey, HadoopRecordValue> {
@@ -23,7 +25,7 @@ public class GenericMapper extends
 
 	private RecordList inputRecords = new RecordList();
 
-	private Record<?, ?> record = null;
+	private IWritableRecord writableRecord;
 
 	private static final Logger log = Logger.getLogger(GenericMapper.class);
 
@@ -39,32 +41,18 @@ public class GenericMapper extends
 			steps = new Operations<Transformer<Record<?, ?>, Record<?, ?>>>();
 			steps.load(data);
 
-			instances = steps.createInstances();
+			instances = steps.createInstances(inputRecords,
+					new RecordToContextWriter(context));
 
 			PipelineConf conf = new PipelineConf();
 			conf.loadFromConfiguration(context.getConfiguration());
-			
+
 			// configure steps
 			for (int i = 0; i < instances.size(); i++) {
 				instances.get(i).configure(conf);
 			}
 
 			log.info("Found " + instances.size() + " map operations.");
-
-			// fist step consumes input records
-			inputRecords.addConsumer(instances.get(0));
-
-			// step n + 1 consumes records produced by n
-			for (int i = 0; i < instances.size() - 1; i++) {
-				Transformer<Record<?, ?>, Record<?, ?>> step = instances.get(i);
-				Transformer<Record<?, ?>, Record<?, ?>> nextStep = instances
-						.get(i + 1);
-				step.getOutputRecords().addConsumer(nextStep);
-			}
-
-			// last step writes records to context
-			instances.get(instances.size() - 1).getOutputRecords()
-					.addConsumer(new RecordToContextWriter(context));
 
 		} catch (ClassNotFoundException | InstantiationException
 				| IllegalAccessException e) {
@@ -78,10 +66,11 @@ public class GenericMapper extends
 
 			log.info("Input Records are " + inputRecordClassName);
 
-			Class<?> recordClass = Class.forName(inputRecordClassName);
-			record = (Record<?, ?>) recordClass.newInstance();
-		} catch (ClassNotFoundException | InstantiationException
-				| IllegalAccessException e) {
+			Class<? extends Record<?, ?>> recordClass = (Class<? extends Record<?, ?>>) Class
+					.forName(inputRecordClassName);
+
+			writableRecord = MapReduceRunner.createWritableRecord(recordClass);
+		} catch (ClassNotFoundException e) {
 			throw new IOException(e);
 		}
 
@@ -89,13 +78,13 @@ public class GenericMapper extends
 
 			// Fill record with values
 
-			record.setWritableKey((WritableComparable) context.getCurrentKey());
-			record.setWritableValue(context.getCurrentValue());
+			Record record = writableRecord.fillRecord(
+					(WritableComparable) context.getCurrentKey(),
+					context.getCurrentValue());
 
 			inputRecords.add(record);
 
 		}
 
 	}
-
 }

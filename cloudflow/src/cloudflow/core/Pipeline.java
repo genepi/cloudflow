@@ -2,10 +2,9 @@ package cloudflow.core;
 
 import genepi.hadoop.HdfsUtil;
 
-import java.io.IOException;
 import java.util.List;
 
-import cloudflow.core.hadoop.GenericJob;
+import cloudflow.core.hadoop.HadoopRecordFileLoader;
 import cloudflow.core.io.ILoader;
 import cloudflow.core.io.TextLineLoader;
 import cloudflow.core.io.TextLoader;
@@ -13,10 +12,10 @@ import cloudflow.core.operations.Concat;
 import cloudflow.core.operations.Executor;
 import cloudflow.core.operations.Filter;
 import cloudflow.core.operations.LineSplitter;
-import cloudflow.core.operations.Transformer;
 import cloudflow.core.operations.Mean;
-import cloudflow.core.operations.Summarizer;
 import cloudflow.core.operations.Sum;
+import cloudflow.core.operations.Summarizer;
+import cloudflow.core.operations.Transformer;
 import cloudflow.core.records.Record;
 
 public class Pipeline {
@@ -27,14 +26,14 @@ public class Pipeline {
 
 	private PipelineConf conf;
 
-	private Operations<Transformer<?, ?>> mapOperations;
+	private Operations<Transformer<Record<?, ?>, Record<?, ?>>> mapOperations;
 
-	private Operations<Transformer<?, ?>> afterReduceOperations;
+	private Operations<Transformer<Record<?, ?>, Record<?, ?>>> afterReduceOperations;
 
-	private Operations<Summarizer<?, ?>> reduceOperations;
+	private Operations<Summarizer<Record<?, ?>, Record<?, ?>>> reduceOperations;
 
 	private Operations<Summarizer<?, ?>> combinerOperations;
-	
+
 	private String name;
 
 	private ILoader loader;
@@ -46,16 +45,16 @@ public class Pipeline {
 	public Pipeline(String name, Class<?> driverClass) {
 		this.driverClass = driverClass;
 		this.name = name;
-		mapOperations = new Operations<Transformer<?, ?>>();
-		reduceOperations = new Operations<Summarizer<?, ?>>();
+		mapOperations = new Operations<Transformer<Record<?, ?>, Record<?, ?>>>();
+		reduceOperations = new Operations<Summarizer<Record<?, ?>, Record<?, ?>>>();
 		combinerOperations = new Operations<Summarizer<?, ?>>();
-		afterReduceOperations = new Operations<Transformer<?, ?>>();
-		
+		afterReduceOperations = new Operations<Transformer<Record<?, ?>, Record<?, ?>>>();
+
 		conf = new PipelineConf();
 
 	}
 
-	public MapBuilder load(String hdfs, ILoader loader) {
+	public MapBuilder load(String hdfs, HadoopRecordFileLoader loader) {
 		this.input = hdfs;
 		this.loader = loader;
 
@@ -96,7 +95,51 @@ public class Pipeline {
 			Class<? extends Summarizer<?, ?>> operation) {
 		combinerOperations.add(operation);
 	}
-	
+
+	public String getName() {
+		return name;
+	}
+
+	public Operations<Transformer<Record<?, ?>, Record<?, ?>>> getAfterReduceOperations() {
+		return afterReduceOperations;
+	}
+
+	public Operations<Summarizer<?, ?>> getCombinerOperations() {
+		return combinerOperations;
+	}
+
+	public PipelineConf getConf() {
+		return conf;
+	}
+
+	public Class<?> getDriverClass() {
+		return driverClass;
+	}
+
+	public String getInput() {
+		return input;
+	}
+
+	public ILoader getLoader() {
+		return loader;
+	}
+
+	public Operations<Transformer<Record<?, ?>, Record<?, ?>>> getMapOperations() {
+		return mapOperations;
+	}
+
+	public Class<?> getMapperOutputRecordClass() {
+		return mapperOutputRecordClass;
+	}
+
+	public String getOutput() {
+		return output;
+	}
+
+	public Operations<Summarizer<Record<?, ?>, Record<?, ?>>> getReduceOperations() {
+		return reduceOperations;
+	}
+
 	public class MapBuilder {
 
 		protected Pipeline pipeline;
@@ -126,14 +169,13 @@ public class Pipeline {
 			return groupByKey().apply(Concat.class);
 		}
 
-		
 		public ReduceBuilder groupByKey() {
 			return new ReduceBuilder(pipeline);
 		}
-		
+
 		public ReduceBuilder groupByKey(
 				Class<? extends Summarizer<?, ?>> operation) {
-				setCombinerOperation(operation);
+			setCombinerOperation(operation);
 			return new ReduceBuilder(pipeline);
 		}
 
@@ -208,13 +250,12 @@ public class Pipeline {
 		HdfsUtil.put(filename, key);
 		conf.distributeFile(key);
 	}
-	
+
 	public void distributeArchive(String key, String filename) {
 		String path = HdfsUtil.path("cloudflow-cache", key);
 		HdfsUtil.put(filename, path);
 		conf.distributeArchive(key, path);
 	}
-	
 
 	public boolean check() {
 
@@ -229,7 +270,7 @@ public class Pipeline {
 
 		System.out.println("  Mapper: ");
 		try {
-			List<Transformer<?, ?>> operations = mapOperations
+			List<Transformer<Record<?, ?>, Record<?, ?>>> operations = mapOperations
 					.createInstances();
 			for (int i = 0; i < operations.size(); i++) {
 				Transformer<?, ?> operation = operations.get(i);
@@ -252,7 +293,7 @@ public class Pipeline {
 
 			System.out.println("  Reducer: ");
 			try {
-				List<Summarizer<?, ?>> reducer = reduceOperations
+				List<Summarizer<Record<?, ?>, Record<?, ?>>> reducer = reduceOperations
 						.createInstances();
 				System.out.println("    (1) "
 						+ reducer.get(0).getClass().getName());
@@ -260,7 +301,7 @@ public class Pipeline {
 						+ reducer.get(0).getInputRecordClass());
 				System.out.println("      output: "
 						+ reducer.get(0).getOutputRecordClass());
-				List<Transformer<?, ?>> operations = afterReduceOperations
+				List<Transformer<Record<?, ?>, Record<?, ?>>> operations = afterReduceOperations
 						.createInstances();
 				for (int i = 0; i < operations.size(); i++) {
 					Transformer<?, ?> operation = operations.get(i);
@@ -288,58 +329,6 @@ public class Pipeline {
 		}
 
 		return true;
-
-	}
-
-	public boolean run() throws IOException {
-
-		// TODO: check compatibility: output record step n = input record step n
-		// +1
-
-		if (!check()) {
-			return false;
-		}
-
-		GenericJob job = new GenericJob(name);
-		job.setInput(input);
-		job.setOutput(output);
-		job.setDriverClass(driverClass);
-		job.setInputFormat(loader.getInputFormat());
-		job.setMapOperations(mapOperations);
-		job.setAfterReduceOperations(afterReduceOperations);
-		job.setMapperInputRecords(loader.getRecordClass());		
-		job.setCombinerOperations(combinerOperations);
-		loader.configure(job.getConfiguration());
-
-		// distribute configuration
-		conf.writeToConfiguration(job.getConfiguration());
-
-		job.setMapperOutputRecords(mapperOutputRecordClass);
-		try {
-
-			// TODO: without instance!
-
-			Record<?, ?> record = (Record<?, ?>) mapperOutputRecordClass
-					.newInstance();
-			job.setMapperOutputRecordsKey(record.getWritableKeyClass());
-			job.setMapperOutputRecordsValue(record.getWritableValueClass());
-
-			System.out.println("Mapper output records: "
-					+ mapperOutputRecordClass.getName() + "  ("
-					+ record.getWritableKeyClass().getName() + ", "
-					+ record.getWritableValueClass().getName() + ")");
-
-			job.setReduceOperations(reduceOperations);
-			return job.execute();
-		} catch (InstantiationException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IllegalAccessException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-
-		return false;
 
 	}
 

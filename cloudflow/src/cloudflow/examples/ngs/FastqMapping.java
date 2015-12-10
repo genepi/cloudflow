@@ -3,6 +3,7 @@ package cloudflow.examples.ngs;
 import java.io.IOException;
 
 import cloudflow.bio.BioPipeline;
+import cloudflow.core.hadoop.MapReduceRunner;
 
 public class FastqMapping {
 
@@ -16,7 +17,7 @@ public class FastqMapping {
 
 		pipeline.loadFastq(input).findPairs().align("rcrs.tar.gz").save(output);
 
-		boolean result = pipeline.run();
+		boolean result = new MapReduceRunner().run(pipeline);
 		if (!result) {
 			System.exit(1);
 		}

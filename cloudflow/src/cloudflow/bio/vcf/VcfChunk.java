@@ -9,32 +9,36 @@ import cloudflow.core.records.Record;
 
 public class VcfChunk extends Record<Text, VariantContextWritable> {
 
+	private String key;
+	
+	private VariantContext value;
+	
 	private String chr = "";
 
 	private int start = 0;
 
 	private int end = 0;
 
-	public VcfChunk() {
-		setWritableKey(new Text());
-		setWritableValue(new VariantContextWritable());
+	public void setKey(String key) {
+		this.key = key;
 	}
-
-	public VariantContext getValue() {
-		return getWritableValue().get();
+	public String getKey() {
+		return key;
 	}
-
 	public void setValue(VariantContext value) {
-		getWritableValue().set(value);
+		this.value = value;
 	}
-
+	public VariantContext getValue() {
+		return value;
+	}
+	
 	public String getChr() {
 		return chr;
 	}
 
 	public void setChr(String chr) {
 		this.chr = chr;
-		getWritableKey().set(chr + ":" + start + "-" + end);
+		setKey(chr + ":" + start + "-" + end);
 	}
 
 	public int getStart() {
@@ -43,7 +47,7 @@ public class VcfChunk extends Record<Text, VariantContextWritable> {
 
 	public void setStart(int start) {
 		this.start = start;
-		getWritableKey().set(chr + ":" + start + "-" + end);
+		setKey(chr + ":" + start + "-" + end);
 	}
 
 	public int getEnd() {
@@ -52,7 +56,7 @@ public class VcfChunk extends Record<Text, VariantContextWritable> {
 
 	public void setEnd(int end) {
 		this.end = end;
-		getWritableKey().set(chr + ":" + start + "-" + end);
+		setKey(chr + ":" + start + "-" + end);
 	}
 
 }

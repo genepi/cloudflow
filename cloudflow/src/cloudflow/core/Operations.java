@@ -3,7 +3,11 @@ package cloudflow.core;
 import java.util.List;
 import java.util.Vector;
 
-public class Operations<c> {
+import cloudflow.core.operations.IOperation;
+import cloudflow.core.records.IRecordConsumer;
+import cloudflow.core.records.IRecordProducer;
+
+public class Operations<c extends IOperation> {
 
 	private List<Class> steps;
 
@@ -44,10 +48,44 @@ public class Operations<c> {
 	public List<c> createInstances() throws InstantiationException,
 			IllegalAccessException {
 
+		return createInstances(null, null);
+	}
+
+	public List<c> createInstances(IRecordProducer producer,
+			IRecordConsumer finalConsumer) throws InstantiationException,
+			IllegalAccessException {
+
 		List<c> instances = new Vector<c>();
 		for (int i = 0; i < steps.size(); i++) {
 			instances.add((c) steps.get(i).newInstance());
 		}
+
+		if (instances.size() > 0) {
+
+			// fist step consumes input records from producer
+			if (producer != null) {
+				producer.addConsumer((IRecordConsumer)instances.get(0));
+			}
+
+			// step n + 1 consumes records produced by n
+			for (int i = 0; i < instances.size() - 1; i++) {
+				c step = instances.get(i);
+				c nextStep = instances.get(i + 1);
+				step.getOutputRecords().addConsumer((IRecordConsumer)nextStep);
+			}
+
+			// last step writes records to final consumer
+			if (finalConsumer != null) {
+				instances.get(instances.size() - 1).getOutputRecords()
+						.addConsumer(finalConsumer);
+			}
+
+		} else {
+			if (producer != null && finalConsumer != null) {
+				producer.addConsumer(finalConsumer);
+			}
+		}
+
 		return instances;
 	}
 

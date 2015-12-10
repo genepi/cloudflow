@@ -9,24 +9,24 @@ import cloudflow.core.records.Record;
 
 public class VcfRecord extends Record<IntWritable, VariantContextWritable> {
 
-	public VcfRecord() {
-		setWritableKey(new IntWritable());
-		setWritableValue(new VariantContextWritable());
+	private String key;
+
+	private VariantContext value;
+
+	public String getKey() {
+		return key;
+	}
+
+	public void setKey(String key) {
+		this.key = key;
 	}
 
 	public VariantContext getValue() {
-		return getWritableValue().get();
+		return value;
 	}
 
-	public void setValue(VariantContext value) {
-		getWritableValue().set(value);
+	public void setValue(VariantContext variantContext) {
+		this.value = value;
 	}
 
-	public int getKey() {
-		return getWritableKey().get();
-	}
-
-	public void setKey(int key) {
-		getWritableKey().set(key);
-	}
 }

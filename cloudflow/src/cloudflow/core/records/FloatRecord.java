@@ -5,25 +5,29 @@ import org.apache.hadoop.io.Text;
 
 public class FloatRecord extends Record<Text, FloatWritable> {
 
-	public FloatRecord() {
-		setWritableKey(new Text());
-		setWritableValue(new FloatWritable());
-	}
+	private String key;
 
-	public float getValue() {
-		return getWritableValue().get();
-	}
-
-	public void setValue(float value) {
-		getWritableValue().set(value);
-	}
+	private float value;
 
 	public String getKey() {
-		return getWritableKey().toString();
+		return key;
 	}
 
 	public void setKey(String key) {
-		getWritableKey().set(key);
+		this.key = key;
+	}
+
+	public float getValue() {
+		return value;
+	}
+
+	public void setValue(float value) {
+		this.value = value;
+	}
+	
+	@Override
+	public String toString() {
+		return getKey().toString() +"\t" + getValue();
 	}
 
 }

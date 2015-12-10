@@ -25,7 +25,7 @@ public class CountBasesPerPosition extends
 
 			if (samRecord.getBaseQualities()[i] >= 30) {
 
-				BasePosition basePos = output.getWritableValue();
+				BasePosition basePos = output.getValue();
 				basePos.clear();
 				
 				char base = readString.charAt(i);

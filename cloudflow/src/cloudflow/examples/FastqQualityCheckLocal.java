@@ -7,10 +7,11 @@ import org.apache.hadoop.io.Text;
 import cloudflow.bio.BioPipeline;
 import cloudflow.bio.fastq.FastqRecord;
 import cloudflow.core.hadoop.MapReduceRunner;
+import cloudflow.core.local.LocalRunner;
 import cloudflow.core.operations.Transformer;
 import cloudflow.core.records.IntegerRecord;
 
-public class FastqQualityCheck {
+public class FastqQualityCheckLocal {
 
 	static public class SplitByPos extends Transformer<FastqRecord, IntegerRecord> {
 
@@ -37,15 +38,15 @@ public class FastqQualityCheck {
 
 	public static void main(String[] args) throws IOException {
 
-		String input = args[0];
-		String output = args[1];
+		String input = "../test-data/test.bam";
+		String output = "output.txt";
 
 		BioPipeline pipeline = new BioPipeline("Bam Quality Check",
-				FastqQualityCheck.class);
+				FastqQualityCheckLocal.class);
 
 		pipeline.loadFastq(input).apply(SplitByPos.class).mean().save(output);
 
-		boolean result = new MapReduceRunner().run(pipeline);
+		boolean result = new LocalRunner().run(pipeline);
 		if (!result) {
 			System.exit(1);
 		}

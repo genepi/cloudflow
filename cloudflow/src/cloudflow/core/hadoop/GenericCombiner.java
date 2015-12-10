@@ -63,9 +63,10 @@ public class GenericCombiner
 
 		log.info("Input Records are " + inputRecordClassName);
 
-		Class<?> inputRecordClass;
+		Class<? extends Record<?, ?>> inputRecordClass;
 		try {
-			inputRecordClass = Class.forName(inputRecordClassName);
+			inputRecordClass = (Class<? extends Record<?, ?>>) Class
+					.forName(inputRecordClassName);
 			recordValues = new GroupedRecords<Record<?, ?>>();
 			recordValues.setRecordClassName(inputRecordClass);
 		} catch (ClassNotFoundException | InstantiationException
@@ -79,7 +80,8 @@ public class GenericCombiner
 			Iterable<HadoopRecordValue> values, Context context)
 			throws IOException, InterruptedException {
 
-		recordValues.setValues(values);
+		recordValues.setKey(key);
+		recordValues.setValues(values.iterator());
 		reduceStep.summarize(key.toString(), recordValues);
 
 	}

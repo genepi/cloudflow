@@ -6,6 +6,7 @@ import java.io.IOException;
 
 import cloudflow.core.Pipeline;
 import cloudflow.core.PipelineConf;
+import cloudflow.core.hadoop.MapReduceRunner;
 import cloudflow.core.operations.Executor;
 import cloudflow.core.operations.Filter;
 import cloudflow.core.records.TextRecord;
@@ -121,7 +122,7 @@ public class GwasPipeline extends Tool {
 				.apply(FilterInvalidSnps.class).save(output);
 
 		try {
-			return pipeline.run() ? 0 : 1;
+			return new MapReduceRunner().run(pipeline) ? 1 : 0;
 		} catch (IOException e) {
 			e.printStackTrace();
 			return 1;
