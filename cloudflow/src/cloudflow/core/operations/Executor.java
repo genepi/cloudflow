@@ -2,7 +2,7 @@ package cloudflow.core.operations;
 
 import genepi.io.text.LineReader;
 import genepi.io.text.LineWriter;
-import cloudflow.core.hadoop.GroupedRecords;
+import cloudflow.core.records.GroupedRecords;
 import cloudflow.core.records.TextRecord;
 
 public abstract class Executor extends Summarizer<TextRecord, TextRecord> {

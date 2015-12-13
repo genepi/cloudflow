@@ -4,6 +4,10 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.commons.lang.NotImplementedException;
+
+import cloudflow.bio.bam.BamRecord;
+import cloudflow.bio.bam.BamWritableRecord;
 import cloudflow.core.Pipeline;
 import cloudflow.core.PipelineRunner;
 import cloudflow.core.hadoop.records.FloatWritableRecord;
@@ -32,6 +36,7 @@ public class MapReduceRunner extends PipelineRunner {
 		registerWritableRecord(IntegerRecord.class, IntegerWritableRecord.class);
 		registerWritableRecord(FloatRecord.class, FloatWritableRecord.class);
 		registerWritableRecord(TextRecord.class, TextWritableRecord.class);
+		registerWritableRecord(BamRecord.class, BamWritableRecord.class);
 
 	}
 	public static IWritableRecord createWritableRecord(
@@ -47,7 +52,10 @@ public class MapReduceRunner extends PipelineRunner {
 				e.printStackTrace();
 			}
 		}
-		return null;
+		
+		
+		//return null;
+		throw new NotImplementedException("no support for hadoop for record " + recordClass.getName() + " implemented!");
 
 	}
 

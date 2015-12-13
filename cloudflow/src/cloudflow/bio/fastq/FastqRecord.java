@@ -5,7 +5,7 @@ import org.seqdoop.hadoop_bam.SequencedFragment;
 
 import cloudflow.core.records.Record;
 
-public class FastqRecord extends Record<Text, SequencedFragment> {
+public class FastqRecord extends Record<String, SequencedFragment> {
 
 	private String key;
 

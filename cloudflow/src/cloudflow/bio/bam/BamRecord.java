@@ -7,7 +7,7 @@ import org.seqdoop.hadoop_bam.SAMRecordWritable;
 
 import cloudflow.core.records.Record;
 
-public class BamRecord extends Record<IntWritable, SAMRecordWritable> {
+public class BamRecord extends Record<String, SAMRecord> {
 
 	private String key;
 

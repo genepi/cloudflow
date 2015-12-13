@@ -4,13 +4,13 @@ import org.apache.hadoop.io.IntWritable;
 
 import cloudflow.core.records.Record;
 
-public class BasePositionRecord extends Record<IntWritable, BasePosition> {
+public class BasePositionRecord extends Record<Integer, BasePosition> {
 
 	private int key;
 
 	private BasePosition value;
 
-	public int getKey() {
+	public Integer getKey() {
 		return key;
 	}
 

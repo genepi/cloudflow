@@ -9,7 +9,7 @@ import java.util.Vector;
 import cloudflow.core.Operations;
 import cloudflow.core.Pipeline;
 import cloudflow.core.PipelineRunner;
-import cloudflow.core.hadoop.GroupedRecords;
+import cloudflow.core.hadoop.HadoopGroupedRecords;
 import cloudflow.core.hadoop.HadoopRecordKey;
 import cloudflow.core.hadoop.HadoopRecordValue;
 import cloudflow.core.io.FileRecordReader;
@@ -21,7 +21,7 @@ import cloudflow.core.records.RecordList;
 
 public class LocalRunner extends PipelineRunner {
 
-	private List<Transformer<Record<?, ?>, Record<?, ?>>> instances = new Vector<>();
+	private List<Transformer<Record<?,?>, Record<?,?>>> instances = new Vector<>();
 
 	private RecordList inputRecords = new RecordList();
 
@@ -74,13 +74,13 @@ public class LocalRunner extends PipelineRunner {
 	private boolean reduce(Pipeline pipeline,
 			Map<HadoopRecordKey, List<HadoopRecordValue>> memory) {
 
-		Operations<Transformer<Record<?, ?>, Record<?, ?>>> filterSteps;
+		Operations<Transformer<Record<?,?>, Record<?,?>>> filterSteps;
 
-		Summarizer<Record<?, ?>, Record<?, ?>> reduceStep;
+		Summarizer<Record<?,?>, Record<?,?>> reduceStep;
 
-		GroupedRecords<Record<?, ?>> recordValues = new GroupedRecords<>();
+		HadoopGroupedRecords<Record<?,?>> recordValues = new HadoopGroupedRecords<Record<?,?>>();
 
-		List<Transformer<Record<?, ?>, Record<?, ?>>> instancesFilter = new Vector<Transformer<Record<?, ?>, Record<?, ?>>>();
+		List<Transformer<Record<?,?>, Record<?,?>>> instancesFilter = new Vector<Transformer<Record<?,?>, Record<?,?>>>();
 
 		try {
 
@@ -95,11 +95,11 @@ public class LocalRunner extends PipelineRunner {
 			System.out.println("Input Records are "
 					+ pipeline.getMapperOutputRecordClass().getName());
 
-			Class<? extends Record<?, ?>> inputRecordClass;
+			Class<? extends Record<?,?>> inputRecordClass;
 			try {
-				inputRecordClass = (Class<? extends Record<?, ?>>) pipeline
+				inputRecordClass = (Class<? extends Record<?,?>>) pipeline
 						.getMapperOutputRecordClass();
-				recordValues = new GroupedRecords<Record<?, ?>>();				
+				recordValues = new HadoopGroupedRecords<Record<?,?>>();				
 				recordValues.setRecordClassName(inputRecordClass);
 			} catch (InstantiationException | IllegalAccessException e) {
 				e.printStackTrace();
@@ -110,7 +110,7 @@ public class LocalRunner extends PipelineRunner {
 
 			// read reduce step
 
-			List<Summarizer<Record<?, ?>, Record<?, ?>>> instancesReduce = pipeline
+			List<Summarizer<Record<?,?>, Record<?,?>>> instancesReduce = pipeline
 					.getReduceOperations().createInstances();
 
 			reduceStep = instancesReduce.get(0);

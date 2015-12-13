@@ -4,8 +4,8 @@ import java.io.File;
 
 import cloudflow.bio.util.ReferenceUtil;
 import cloudflow.core.PipelineConf;
-import cloudflow.core.hadoop.GroupedRecords;
 import cloudflow.core.operations.Summarizer;
+import cloudflow.core.records.GroupedRecords;
 import cloudflow.core.records.TextRecord;
 
 public class FindVariants extends Summarizer<BasePositionRecord, TextRecord> {

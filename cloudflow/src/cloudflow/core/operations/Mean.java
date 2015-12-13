@@ -1,7 +1,7 @@
 package cloudflow.core.operations;
 
-import cloudflow.core.hadoop.GroupedRecords;
 import cloudflow.core.records.FloatRecord;
+import cloudflow.core.records.GroupedRecords;
 import cloudflow.core.records.IntegerRecord;
 
 public class Mean extends Summarizer<IntegerRecord, FloatRecord> {

@@ -1,9 +1,10 @@
 package cloudflow.core.records;
 
+import java.io.Serializable;
 import java.util.List;
 import java.util.Vector;
 
-public class RecordList implements IRecordProducer{
+public class RecordList implements IRecordProducer, Serializable{
 
 	private List<IRecordConsumer> consumers = new Vector<IRecordConsumer>();
 

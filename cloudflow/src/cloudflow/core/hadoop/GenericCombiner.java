@@ -21,7 +21,7 @@ public class GenericCombiner
 
 	private Summarizer<Record<?, ?>, Record<?, ?>> reduceStep;
 
-	private GroupedRecords<Record<?, ?>> recordValues;
+	private HadoopGroupedRecords<Record<?, ?>> recordValues;
 
 	private static final Logger log = Logger.getLogger(GenericCombiner.class);
 
@@ -67,7 +67,7 @@ public class GenericCombiner
 		try {
 			inputRecordClass = (Class<? extends Record<?, ?>>) Class
 					.forName(inputRecordClassName);
-			recordValues = new GroupedRecords<Record<?, ?>>();
+			recordValues = new HadoopGroupedRecords<Record<?, ?>>();
 			recordValues.setRecordClassName(inputRecordClass);
 		} catch (ClassNotFoundException | InstantiationException
 				| IllegalAccessException e) {

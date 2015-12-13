@@ -7,7 +7,7 @@ import org.seqdoop.hadoop_bam.VariantContextWritable;
 
 import cloudflow.core.records.Record;
 
-public class VcfRecord extends Record<IntWritable, VariantContextWritable> {
+public class VcfRecord extends Record<String, VariantContext> {
 
 	private String key;
 

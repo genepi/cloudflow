@@ -1,6 +1,7 @@
 package cloudflow.core;
 
 import java.io.IOException;
+import java.io.Serializable;
 import java.util.AbstractMap;
 import java.util.AbstractMap.SimpleEntry;
 import java.util.HashMap;
@@ -14,7 +15,7 @@ import genepi.hadoop.CacheStore;
 
 import org.apache.hadoop.conf.Configuration;
 
-public class PipelineConf {
+public class PipelineConf implements Serializable{
 
 	private Map<String, Integer> intValues = new HashMap<String, Integer>();
 

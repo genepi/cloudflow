@@ -4,12 +4,11 @@ import java.io.IOException;
 
 import cloudflow.bio.BioPipeline;
 import cloudflow.bio.bam.BamRecord;
-import cloudflow.core.hadoop.MapReduceRunner;
+import cloudflow.core.local.LocalRunner;
 import cloudflow.core.operations.Transformer;
 import cloudflow.core.records.IntegerRecord;
-import cloudflow.core.spark.SparkRunner;
 
-public class BamQualityCheck {
+public class BamQualityCheckLocal {
 
 	static public class SplitByPos extends
 			Transformer<BamRecord, IntegerRecord> {
@@ -36,33 +35,19 @@ public class BamQualityCheck {
 
 	public static void main(String[] args) throws IOException {
 
-		String mode = args[0];
-		String input = args[1];
-		String output = args[2];
+		String input = "../test-data/test.bam";
+		String output = "output-bam-local";
+		;
 
-		BioPipeline pipeline = new BioPipeline("Bam Quality Check",
-				BamQualityCheck.class);
+		BioPipeline pipeline = new BioPipeline(
+				"Bam Quality Check running on Spark",
+				BamQualityCheckLocal.class);
 
 		pipeline.loadBam(input).apply(SplitByPos.class).mean().save(output);
 
-		if (mode.equals("mapreduce")) {
-			System.out.println("Running pipeline using mapreduce");
-			boolean result = new MapReduceRunner().run(pipeline);
-			if (!result) {
-				System.exit(1);
-			}
-			return;
+		boolean result = new LocalRunner().run(pipeline);
+		if (!result) {
+			System.exit(1);
 		}
-		if (mode.equals("spark")) {
-			System.out.println("Running pipeline using spark");
-			boolean result = new SparkRunner("local").run(pipeline);
-			if (!result) {
-				System.exit(1);
-			}
-			return;
-		}
-		
-		System.out.println("unknown mode.");
-		
 	}
 }

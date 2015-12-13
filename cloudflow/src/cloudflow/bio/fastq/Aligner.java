@@ -11,8 +11,8 @@ import java.util.List;
 import org.apache.hadoop.io.Text;
 
 import cloudflow.core.PipelineConf;
-import cloudflow.core.hadoop.GroupedRecords;
 import cloudflow.core.operations.Summarizer;
+import cloudflow.core.records.GroupedRecords;
 import cloudflow.core.records.ShortReadRecord;
 import cloudflow.core.records.TextRecord;
 

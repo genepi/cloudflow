@@ -23,7 +23,7 @@ public class GenericReducer
 
 	private Summarizer<Record<?, ?>, Record<?, ?>> reduceStep;
 
-	private GroupedRecords<Record<?, ?>> recordValues;
+	private HadoopGroupedRecords<Record<?, ?>> recordValues;
 
 	private List<Transformer<Record<?, ?>, Record<?, ?>>> instancesFilter = new Vector<Transformer<Record<?, ?>, Record<?, ?>>>();
 
@@ -118,7 +118,7 @@ public class GenericReducer
 			inputRecordClass = (Class<? extends Record<?, ?>>) Class
 					.forName(inputRecordClassName);
 
-			recordValues = new GroupedRecords<Record<?, ?>>();
+			recordValues = new HadoopGroupedRecords<Record<?, ?>>();
 			recordValues.setRecordClassName(inputRecordClass);
 		} catch (ClassNotFoundException | InstantiationException
 				| IllegalAccessException e) {

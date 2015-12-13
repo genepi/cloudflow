@@ -1,5 +1,6 @@
 package cloudflow.core;
 
+import java.io.Serializable;
 import java.util.List;
 import java.util.Vector;
 
@@ -7,7 +8,7 @@ import cloudflow.core.operations.IOperation;
 import cloudflow.core.records.IRecordConsumer;
 import cloudflow.core.records.IRecordProducer;
 
-public class Operations<c extends IOperation> {
+public class Operations<c extends IOperation>  implements Serializable{
 
 	private List<Class> steps;
 

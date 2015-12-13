@@ -3,9 +3,10 @@ package cloudflow.core.hadoop;
 import java.util.Iterator;
 
 import cloudflow.core.hadoop.records.IWritableRecord;
+import cloudflow.core.records.GroupedRecords;
 import cloudflow.core.records.Record;
 
-public class GroupedRecords<IN extends Record<?, ?>> {
+public class HadoopGroupedRecords<IN extends Record<?, ?>> implements GroupedRecords<IN>{
 
 	protected Iterator<HadoopRecordValue> values;
 
@@ -13,7 +14,7 @@ public class GroupedRecords<IN extends Record<?, ?>> {
 
 	private IWritableRecord writableRecord;
 
-	public GroupedRecords() {
+	public HadoopGroupedRecords() {
 
 	}
 

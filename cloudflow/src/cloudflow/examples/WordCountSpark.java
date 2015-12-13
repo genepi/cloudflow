@@ -9,11 +9,12 @@ import cloudflow.core.operations.Filter;
 import cloudflow.core.operations.Transformer;
 import cloudflow.core.records.IntegerRecord;
 import cloudflow.core.records.TextRecord;
+import cloudflow.core.spark.SparkRunner;
 
 import com.google.common.base.Splitter;
 import com.google.common.collect.ImmutableSet;
 
-public class WordCountLocal {
+public class WordCountSpark {
 
 	static public class LineToWords extends
 			Transformer<TextRecord, IntegerRecord> {
@@ -76,14 +77,14 @@ public class WordCountLocal {
 	public static void main(String[] args) throws IOException {
 
 		String input = "input.txt";
-		String output = "output2.txt";
+		String output = "output.txt";
 
-		Pipeline pipeline = new Pipeline("Wordcount", WordCountLocal.class);
+		Pipeline pipeline = new Pipeline("Wordcount", WordCountSpark.class);
 
 		pipeline.loadText(input).apply(LineToWords.class)
 				.filter(RemoveEmptyKeys.class).sum().save(output);
 
-		boolean result = new LocalRunner().run(pipeline);
+		boolean result = new SparkRunner("local").run(pipeline);
 		if (!result) {
 			System.exit(1);
 		}

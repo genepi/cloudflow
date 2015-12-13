@@ -1,6 +1,8 @@
 package cloudflow.core.io;
 
-public interface ILoader {
+import java.io.Serializable;
+
+public interface ILoader  extends Serializable{
 	public Class<?> getRecordClass();
 
 }

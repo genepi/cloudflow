@@ -2,6 +2,7 @@ package cloudflow.core;
 
 import genepi.hadoop.HdfsUtil;
 
+import java.io.Serializable;
 import java.util.List;
 
 import cloudflow.core.hadoop.HadoopRecordFileLoader;
@@ -18,7 +19,7 @@ import cloudflow.core.operations.Summarizer;
 import cloudflow.core.operations.Transformer;
 import cloudflow.core.records.Record;
 
-public class Pipeline {
+public class Pipeline implements Serializable{
 
 	private String input;
 
