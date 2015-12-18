@@ -9,26 +9,24 @@ import cloudflow.core.operations.Transformer;
 import cloudflow.core.records.IntegerRecord;
 import cloudflow.core.spark.SparkRunner;
 
-public class BamQualityCheck {
+public class BamQualityCheckReadLength {
 
-	static public class SplitByPos extends
+	static public class CalcReadLength extends
 			Transformer<BamRecord, IntegerRecord> {
 
 		IntegerRecord outRecord = new IntegerRecord();
 
-		public SplitByPos() {
+		public CalcReadLength() {
 			super(BamRecord.class, IntegerRecord.class);
 		}
 
 		@Override
 		public void transform(BamRecord record) {
 
-			for (int pos = 0; pos < record.getValue().getReadLength(); pos++) {
-				outRecord.setKey(pos + "");
-				outRecord
-						.setValue((int) record.getValue().getBaseQualities()[pos]);
-				emit(outRecord);
-			}
+			outRecord.setKey(record.getValue().getBaseQualityString().length()
+					+ "");
+			outRecord.setValue(1);
+			emit(outRecord);
 
 		}
 
@@ -40,10 +38,10 @@ public class BamQualityCheck {
 		String input = args[1];
 		String output = args[2];
 
-		BioPipeline pipeline = new BioPipeline("Bam Quality Check",
-				BamQualityCheck.class);
+		BioPipeline pipeline = new BioPipeline("Bam Quality Check Read Length",
+				BamQualityCheckReadLength.class);
 
-		pipeline.loadBam(input).apply(SplitByPos.class).mean().save(output);
+		pipeline.loadBam(input).apply(CalcReadLength.class).sum().save(output);
 
 		if (mode.equals("mapreduce")) {
 			System.out.println("Running pipeline using mapreduce");
@@ -53,7 +51,7 @@ public class BamQualityCheck {
 			}
 			return;
 		}
-		
+
 		if (mode.equals("spark")) {
 			System.out.println("Running pipeline using spark");
 			boolean result = new SparkRunner("yarn").run(pipeline);
@@ -62,8 +60,8 @@ public class BamQualityCheck {
 			}
 			return;
 		}
-		
+
 		System.out.println("unknown mode.");
-		
+
 	}
 }

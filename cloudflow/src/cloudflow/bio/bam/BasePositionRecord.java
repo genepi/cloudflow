@@ -1,7 +1,5 @@
 package cloudflow.bio.bam;
 
-import org.apache.hadoop.io.IntWritable;
-
 import cloudflow.core.records.Record;
 
 public class BasePositionRecord extends Record<Integer, BasePosition> {

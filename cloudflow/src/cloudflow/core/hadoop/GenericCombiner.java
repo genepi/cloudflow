@@ -2,14 +2,12 @@ package cloudflow.core.hadoop;
 
 import java.io.IOException;
 import java.util.List;
-import java.util.Vector;
 
 import org.apache.hadoop.mapreduce.Reducer;
 import org.apache.log4j.Logger;
 
 import cloudflow.core.Operations;
 import cloudflow.core.PipelineConf;
-import cloudflow.core.operations.Transformer;
 import cloudflow.core.operations.Summarizer;
 import cloudflow.core.records.Record;
 

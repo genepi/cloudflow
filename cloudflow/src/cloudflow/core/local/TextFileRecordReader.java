@@ -1,8 +1,9 @@
 package cloudflow.core.local;
 
+import genepi.io.text.LineReader;
+
 import java.io.IOException;
 
-import genepi.io.text.LineReader;
 import cloudflow.core.io.FileRecordReader;
 import cloudflow.core.records.TextRecord;
 

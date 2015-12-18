@@ -7,16 +7,17 @@ import cloudflow.core.records.Record;
 
 public class SparkGroupedRecords<IN extends Record<?, ?>> implements GroupedRecords<IN>{
 
-	protected Iterator<Record> values;
+	protected Iterator<Object> values;
 
 	private Object key;
 
-
-	public SparkGroupedRecords() {
-
+	private Record record;
+	
+	public SparkGroupedRecords(Class inputRecordClass) throws InstantiationException, IllegalAccessException {
+		record = (Record) inputRecordClass.newInstance();
 	}
 	
-	public void setValues(Iterator<Record> values) {
+	public void setValues(Iterator<Object> values) {
 		this.values = values;
 	}
 
@@ -29,8 +30,9 @@ public class SparkGroupedRecords<IN extends Record<?, ?>> implements GroupedReco
 	}
 
 	public IN getRecord() {
-		Record record = (Record) values.next();
+		Object value = values.next();
 		record.setKey(key);
+		record.setValue(value);
 		return (IN) record;
 	}
 

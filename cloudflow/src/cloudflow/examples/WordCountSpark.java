@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.util.Set;
 
 import cloudflow.core.Pipeline;
-import cloudflow.core.local.LocalRunner;
 import cloudflow.core.operations.Filter;
 import cloudflow.core.operations.Transformer;
 import cloudflow.core.records.IntegerRecord;
@@ -76,8 +75,9 @@ public class WordCountSpark {
 
 	public static void main(String[] args) throws IOException {
 
-		String input = "input.txt";
-		String output = "output.txt";
+		String input = args[0];
+		String output = args[1];
+
 
 		Pipeline pipeline = new Pipeline("Wordcount", WordCountSpark.class);
 

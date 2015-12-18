@@ -1,10 +1,8 @@
 package cloudflow.core.records;
 
-import java.io.IOException;
-import java.text.NumberFormat;
-
-import genepi.hadoop.HdfsUtil;
 import genepi.hadoop.io.HdfsLineWriter;
+
+import java.io.IOException;
 
 import org.apache.hadoop.io.Writable;
 

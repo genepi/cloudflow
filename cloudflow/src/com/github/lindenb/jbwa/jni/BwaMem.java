@@ -1,5 +1,5 @@
 package com.github.lindenb.jbwa.jni;
-import java.io.*;
+import java.io.IOException;
 import java.util.List;
 
 public class BwaMem	

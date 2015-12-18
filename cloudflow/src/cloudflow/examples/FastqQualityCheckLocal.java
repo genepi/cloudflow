@@ -6,7 +6,6 @@ import org.apache.hadoop.io.Text;
 
 import cloudflow.bio.BioPipeline;
 import cloudflow.bio.fastq.FastqRecord;
-import cloudflow.core.hadoop.MapReduceRunner;
 import cloudflow.core.local.LocalRunner;
 import cloudflow.core.operations.Transformer;
 import cloudflow.core.records.IntegerRecord;

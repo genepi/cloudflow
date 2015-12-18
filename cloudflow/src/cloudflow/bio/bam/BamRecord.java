@@ -1,10 +1,6 @@
 package cloudflow.bio.bam;
 
 import htsjdk.samtools.SAMRecord;
-
-import org.apache.hadoop.io.IntWritable;
-import org.seqdoop.hadoop_bam.SAMRecordWritable;
-
 import cloudflow.core.records.Record;
 
 public class BamRecord extends Record<String, SAMRecord> {

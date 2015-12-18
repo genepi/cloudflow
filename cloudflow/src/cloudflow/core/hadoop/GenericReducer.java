@@ -9,8 +9,8 @@ import org.apache.log4j.Logger;
 
 import cloudflow.core.Operations;
 import cloudflow.core.PipelineConf;
-import cloudflow.core.operations.Transformer;
 import cloudflow.core.operations.Summarizer;
+import cloudflow.core.operations.Transformer;
 import cloudflow.core.records.Record;
 
 public class GenericReducer
@@ -90,14 +90,14 @@ public class GenericReducer
 				// last step writes records to context
 				instancesFilter.get(instancesFilter.size() - 1)
 						.getOutputRecords()
-						.addConsumer(new RecordToContextWriter(context));
+						.addConsumer(new RecordToContextWriter2(context));
 			} else {
 
 				log.info("Found 1 reduce step.");
 
 				// reduce step writes records to context
 				reduceStep.getOutputRecords().addConsumer(
-						new RecordToContextWriter(context));
+						new RecordToContextWriter2(context));
 
 			}
 

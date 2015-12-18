@@ -9,7 +9,6 @@ import org.seqdoop.hadoop_bam.SequencedFragment;
 import cloudflow.core.hadoop.HadoopRecordFileLoader;
 import cloudflow.core.io.FileRecordReader;
 import cloudflow.core.io.LocalFileLoader;
-import cloudflow.core.local.TextFileRecordReader;
 
 public class FastqLoader implements HadoopRecordFileLoader, LocalFileLoader {
 

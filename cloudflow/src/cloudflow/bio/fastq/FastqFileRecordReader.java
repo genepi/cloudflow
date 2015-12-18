@@ -1,13 +1,10 @@
 package cloudflow.bio.fastq;
 
+import genepi.io.text.LineReader;
+
 import java.io.IOException;
 
-import org.seqdoop.hadoop_bam.FastqInputFormat;
-import org.seqdoop.hadoop_bam.SequencedFragment;
-
-import genepi.io.text.LineReader;
 import cloudflow.core.io.FileRecordReader;
-import cloudflow.core.records.TextRecord;
 
 public class FastqFileRecordReader extends FileRecordReader<FastqRecord> {
 

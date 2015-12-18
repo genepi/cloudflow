@@ -5,10 +5,8 @@ import java.nio.charset.CharacterCodingException;
 import org.apache.hadoop.io.Text;
 import org.seqdoop.hadoop_bam.SequencedFragment;
 
-import cloudflow.core.PipelineConf;
 import cloudflow.core.operations.Transformer;
 import cloudflow.core.records.ShortReadRecord;
-import cloudflow.core.records.TextRecord;
 
 public class CreateFastqPairs extends Transformer<FastqRecord, ShortReadRecord> {
 

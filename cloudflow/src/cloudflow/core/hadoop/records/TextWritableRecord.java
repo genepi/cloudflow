@@ -4,8 +4,6 @@ import org.apache.hadoop.io.Text;
 import org.apache.hadoop.io.Writable;
 import org.apache.hadoop.io.WritableComparable;
 
-import cloudflow.core.hadoop.MapReduceRunner;
-import cloudflow.core.records.FloatRecord;
 import cloudflow.core.records.Record;
 import cloudflow.core.records.TextRecord;
 

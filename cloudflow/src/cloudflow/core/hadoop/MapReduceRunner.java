@@ -5,6 +5,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.commons.lang.NotImplementedException;
+import org.apache.hadoop.io.Writable;
+import org.apache.hadoop.io.WritableComparable;
 
 import cloudflow.bio.bam.BamRecord;
 import cloudflow.bio.bam.BamWritableRecord;
@@ -96,14 +98,29 @@ public class MapReduceRunner extends PipelineRunner {
 
 		job.setMapperOutputRecords(pipeline.getMapperOutputRecordClass());
 
-		job.setMapperOutputRecordsKey(hadoopLoader.getInputKeyClass());
-		job.setMapperOutputRecordsValue(hadoopLoader.getInputValueClass());
+		Record record;
+		try {
+			record = (Record) pipeline.getMapperOutputRecordClass().newInstance();
+	
+		IWritableRecord writable = MapReduceRunner.createWritableRecord((Class<? extends Record<?, ?>>)pipeline.getMapperOutputRecordClass());
+		WritableComparable key = writable.fillWritableKey(record);
+		Writable value = writable.fillWritableValue(record);
+		
+		
+		job.setMapperOutputRecordsKey(key.getClass());
+		job.setMapperOutputRecordsValue(value.getClass());
 
 		System.out.println("Mapper output records: "
 				+ pipeline.getMapperOutputRecordClass().getName() + "  ("
-				+ hadoopLoader.getInputKeyClass().getName() + ", "
-				+ hadoopLoader.getInputValueClass().getName() + ")");
+				+ key.getClass().getName() + ", "
+				+ value.getClass().getName() + ")");
 
+		} catch (InstantiationException | IllegalAccessException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			System.exit(1);
+		}
+		
 		job.setReduceOperations(pipeline.getReduceOperations());
 		return job.execute();
 

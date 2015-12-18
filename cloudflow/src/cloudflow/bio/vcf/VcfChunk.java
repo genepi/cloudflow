@@ -1,10 +1,6 @@
 package cloudflow.bio.vcf;
 
 import htsjdk.variant.variantcontext.VariantContext;
-
-import org.apache.hadoop.io.Text;
-import org.seqdoop.hadoop_bam.VariantContextWritable;
-
 import cloudflow.core.records.Record;
 
 public class VcfChunk extends Record<String, VariantContext> {

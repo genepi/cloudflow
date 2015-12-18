@@ -37,7 +37,7 @@ public class BamQualityCheckLocal {
 
 		String input = "../test-data/test.bam";
 		String output = "output-bam-local";
-		;
+
 
 		BioPipeline pipeline = new BioPipeline(
 				"Bam Quality Check running on Spark",

@@ -43,6 +43,8 @@ public class Pipeline implements Serializable{
 
 	private Class<?> driverClass;
 
+	private boolean count = false;
+	
 	public Pipeline(String name, Class<?> driverClass) {
 		this.driverClass = driverClass;
 		this.name = name;
@@ -163,6 +165,7 @@ public class Pipeline implements Serializable{
 		}
 
 		public AfterReduceBuilder sum() {
+			count = true;
 			return groupByKey(Sum.class).apply(Sum.class);
 		}
 
@@ -283,6 +286,8 @@ public class Pipeline implements Serializable{
 						+ operation.getOutputRecordClass());
 
 				mapperOutputRecordClass = operation.getOutputRecordClass();
+				
+				
 
 			}
 		} catch (InstantiationException | IllegalAccessException e) {
@@ -331,6 +336,10 @@ public class Pipeline implements Serializable{
 
 		return true;
 
+	}
+	
+	public boolean hasCountOperation(){
+		return count;
 	}
 
 }

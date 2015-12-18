@@ -3,7 +3,6 @@ package cloudflow.core.spark;
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.List;
-import java.util.Vector;
 
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.io.Writable;
@@ -13,6 +12,7 @@ import org.apache.spark.api.java.JavaPairRDD;
 import org.apache.spark.api.java.JavaRDD;
 import org.apache.spark.api.java.JavaSparkContext;
 import org.apache.spark.api.java.function.Function;
+import org.apache.spark.api.java.function.Function2;
 import org.apache.spark.api.java.function.PairFlatMapFunction;
 import org.apache.spark.broadcast.Broadcast;
 
@@ -25,17 +25,18 @@ import cloudflow.core.hadoop.MapReduceRunner;
 import cloudflow.core.hadoop.records.IWritableRecord;
 import cloudflow.core.operations.Summarizer;
 import cloudflow.core.operations.Transformer;
+import cloudflow.core.records.IntegerRecord;
 import cloudflow.core.records.Record;
 import cloudflow.core.records.RecordList;
 
 public class SparkRunner extends PipelineRunner implements Serializable {
 
-	private Broadcast<Pipeline> pipelineBroadcast;	
+	private Broadcast<Pipeline> pipelineBroadcast;
 
 	PairFlatMapFunction PSEUDO_MAPPER = new PairFlatMapFunction<Tuple2<WritableComparable, Writable>, String, Object>() {
 
 		@Override
-		public Iterable<Tuple2<String,  Object>> call(
+		public Iterable<Tuple2<String, Object>> call(
 				Tuple2<WritableComparable, Writable> tupel) throws Exception {
 
 			Pipeline pipeline = pipelineBroadcast.getValue();
@@ -51,7 +52,6 @@ public class SparkRunner extends PipelineRunner implements Serializable {
 				pipeline.getMapOperations().createInstances(inputRecords,
 						listWriter);
 			} catch (InstantiationException | IllegalAccessException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 
@@ -75,14 +75,8 @@ public class SparkRunner extends PipelineRunner implements Serializable {
 
 			Summarizer<Record<?, ?>, Record<?, ?>> reduceStep;
 
-			SparkGroupedRecords<Record<?, ?>> recordValues = new SparkGroupedRecords<Record<?, ?>>();
-
-			List<Transformer<Record<?, ?>, Record<?, ?>>> instancesFilter = new Vector<Transformer<Record<?, ?>, Record<?, ?>>>();
-
-			System.out.println("Input Records are "
-					+ pipeline.getMapperOutputRecordClass().getName());
-
-			System.out.println("Loading Reduce Step...");
+			SparkGroupedRecords<Record<?, ?>> recordValues = new SparkGroupedRecords<Record<?, ?>>(
+					pipeline.getMapperOutputRecordClass());
 
 			// read reduce step
 
@@ -91,43 +85,55 @@ public class SparkRunner extends PipelineRunner implements Serializable {
 
 			reduceStep = instancesReduce.get(0);
 
-			System.out.println("Loading Map Steps...");
-
 			// read filter steps
 
 			filterSteps = pipeline.getAfterReduceOperations();
 
 			RecordToListWriter2 listWriter = new RecordToListWriter2();
 
-			instancesFilter = filterSteps.createInstances(
-					reduceStep.getOutputRecords(), listWriter);
-
-			Class<? extends Record<?, ?>> inputRecordClass = (Class<? extends Record<?, ?>>) pipeline
-					.getMapperOutputRecordClass();
-
-			//TODO: recordvalues should wrap value iterator
-			List<Record> values = new Vector<Record>();
-			for (Object value : paramT1._2()) {
-				Record record = inputRecordClass.newInstance();
-				record.setKey(key);
-				record.setValue(value);
-				values.add(record);
-
-			}
+			filterSteps.createInstances(reduceStep.getOutputRecords(),
+					listWriter);
 
 			recordValues.setKey(key);
-			recordValues.setValues(values.iterator());
+			recordValues.setValues(paramT1._2().iterator());
 			reduceStep.summarize(key.toString(), recordValues);
 
 			return listWriter.toString();
 		}
 
 	};
-	
+
+	Function PSEUDO_REDUCER_WITHOUT_REDUCER = new Function<Tuple2<String, Integer>, Object>() {
+
+		@Override
+		public Object call(Tuple2<String, Integer> tupel) throws Exception {
+
+			Pipeline pipeline = pipelineBroadcast.getValue();
+
+			RecordList inputRecords = new RecordList();
+
+			RecordToListWriter2 listWriter = new RecordToListWriter2();
+
+			try {
+				pipeline.getAfterReduceOperations().createInstances(
+						inputRecords, listWriter);
+			} catch (InstantiationException | IllegalAccessException e) {
+				e.printStackTrace();
+			}
+
+			IntegerRecord record = new IntegerRecord();
+			record.setKey(tupel._1());
+			record.setValue(tupel._2());
+			inputRecords.add(record);
+
+			return listWriter.toString();
+		}
+	};
+
 	private String master = "";
-	
-	public SparkRunner(String master){
-		this.master= master;
+
+	public SparkRunner(String master) {
+		this.master = master;
 	}
 
 	@Override
@@ -140,8 +146,7 @@ public class SparkRunner extends PipelineRunner implements Serializable {
 			return false;
 		}
 
-		SparkConf conf = new SparkConf().setAppName(
-				"PerSequenceQual.FastQ_PerSequenceQual_Job").setMaster(master);
+		SparkConf conf = new SparkConf().setAppName("cloudflow-pipeline");
 		JavaSparkContext context = new JavaSparkContext(conf);
 
 		HadoopRecordFileLoader loader = ((HadoopRecordFileLoader) pipeline
@@ -155,8 +160,35 @@ public class SparkRunner extends PipelineRunner implements Serializable {
 						loader.getInputKeyClass(), loader.getInputValueClass(),
 						hadoopConf);
 
-		final JavaRDD<?> values = inputPairRDD.flatMapToPair(PSEUDO_MAPPER)
-				.groupByKey().sortByKey().map(PSEUDO_REDUCER);
+		final JavaRDD<?> values;
+
+		//if (!pipeline.hasCountOperation()) {
+
+			values = inputPairRDD.flatMapToPair(PSEUDO_MAPPER).groupByKey()
+					.map(PSEUDO_REDUCER);
+		/*} else {
+
+			System.out
+					.println("Count operation detected. switching to sparks internal version.");
+
+			values = inputPairRDD.flatMapToPair(PSEUDO_MAPPER)
+					.reduceByKey(new Function2<Integer, Integer, Integer>() {
+
+						private static final long serialVersionUID = 1L;
+
+						@Override
+						public Integer call(Integer i1, Integer i2) {
+							return i1 + i2;
+						}
+					}).map(PSEUDO_REDUCER_WITHOUT_REDUCER);
+
+		}*/
+
+		// TODO: sorted keys needed?
+		/*
+		 * final JavaRDD<?> values = inputPairRDD.flatMapToPair(PSEUDO_MAPPER)
+		 * .groupByKey().sortByKey().map(PSEUDO_REDUCER);
+		 */
 
 		values.saveAsTextFile(pipeline.getOutput());
 

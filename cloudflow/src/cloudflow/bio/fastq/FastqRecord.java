@@ -1,6 +1,5 @@
 package cloudflow.bio.fastq;
 
-import org.apache.hadoop.io.Text;
 import org.seqdoop.hadoop_bam.SequencedFragment;
 
 import cloudflow.core.records.Record;

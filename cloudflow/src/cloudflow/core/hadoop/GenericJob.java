@@ -9,8 +9,8 @@ import org.apache.hadoop.mapreduce.InputFormat;
 import org.apache.hadoop.mapreduce.Job;
 
 import cloudflow.core.Operations;
-import cloudflow.core.operations.Transformer;
 import cloudflow.core.operations.Summarizer;
+import cloudflow.core.operations.Transformer;
 import cloudflow.core.records.Record;
 
 public class GenericJob extends HadoopJob {

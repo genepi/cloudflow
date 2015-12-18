@@ -1,7 +1,6 @@
 package cloudflow.core.operations;
 
 import cloudflow.core.PipelineConf;
-import cloudflow.core.hadoop.HadoopGroupedRecords;
 import cloudflow.core.records.GroupedRecords;
 import cloudflow.core.records.Record;
 import cloudflow.core.records.RecordList;
