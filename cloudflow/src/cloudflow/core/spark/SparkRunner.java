@@ -44,6 +44,7 @@ public class SparkRunner extends PipelineRunner implements Serializable {
 			IWritableRecord writableRecord = MapReduceRunner
 					.createWritableRecord((Class<Record<?, ?>>) pipeline
 							.getLoader().getRecordClass());
+			
 			RecordList inputRecords = new RecordList();
 
 			RecordToListWriter listWriter = new RecordToListWriter();
@@ -105,15 +106,15 @@ public class SparkRunner extends PipelineRunner implements Serializable {
 
 	Function PSEUDO_REDUCER_WITHOUT_REDUCER = new Function<Tuple2<String, Integer>, Object>() {
 
+		IntegerRecord record = new IntegerRecord();
+
 		@Override
 		public Object call(Tuple2<String, Integer> tupel) throws Exception {
 
 			Pipeline pipeline = pipelineBroadcast.getValue();
 
-			RecordList inputRecords = new RecordList();
-
 			RecordToListWriter2 listWriter = new RecordToListWriter2();
-
+			RecordList inputRecords = new RecordList();
 			try {
 				pipeline.getAfterReduceOperations().createInstances(
 						inputRecords, listWriter);
@@ -121,7 +122,6 @@ public class SparkRunner extends PipelineRunner implements Serializable {
 				e.printStackTrace();
 			}
 
-			IntegerRecord record = new IntegerRecord();
 			record.setKey(tupel._1());
 			record.setValue(tupel._2());
 			inputRecords.add(record);
@@ -146,7 +146,8 @@ public class SparkRunner extends PipelineRunner implements Serializable {
 			return false;
 		}
 
-		SparkConf conf = new SparkConf().setAppName("cloudflow-pipeline");
+		SparkConf conf = new SparkConf().setAppName(pipeline.getName());
+		conf.set("spark.executor.memory", "4g");
 		JavaSparkContext context = new JavaSparkContext(conf);
 
 		HadoopRecordFileLoader loader = ((HadoopRecordFileLoader) pipeline
@@ -162,11 +163,11 @@ public class SparkRunner extends PipelineRunner implements Serializable {
 
 		final JavaRDD<?> values;
 
-		//if (!pipeline.hasCountOperation()) {
+		if (!pipeline.hasCountOperation()) {
 
-			values = inputPairRDD.flatMapToPair(PSEUDO_MAPPER).groupByKey()
+			values = inputPairRDD.flatMapToPair(PSEUDO_MAPPER).groupByKey(400)
 					.map(PSEUDO_REDUCER);
-		/*} else {
+		} else {
 
 			System.out
 					.println("Count operation detected. switching to sparks internal version.");
@@ -182,8 +183,10 @@ public class SparkRunner extends PipelineRunner implements Serializable {
 						}
 					}).map(PSEUDO_REDUCER_WITHOUT_REDUCER);
 
-		}*/
+		}
 
+		
+		
 		// TODO: sorted keys needed?
 		/*
 		 * final JavaRDD<?> values = inputPairRDD.flatMapToPair(PSEUDO_MAPPER)

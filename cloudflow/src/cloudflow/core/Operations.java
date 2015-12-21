@@ -8,7 +8,7 @@ import cloudflow.core.operations.IOperation;
 import cloudflow.core.records.IRecordConsumer;
 import cloudflow.core.records.IRecordProducer;
 
-public class Operations<c extends IOperation>  implements Serializable{
+public class Operations<c extends IOperation> implements Serializable {
 
 	private List<Class> steps;
 
@@ -50,6 +50,7 @@ public class Operations<c extends IOperation>  implements Serializable{
 			IllegalAccessException {
 
 		return createInstances(null, null);
+
 	}
 
 	public List<c> createInstances(IRecordProducer producer,
@@ -65,14 +66,14 @@ public class Operations<c extends IOperation>  implements Serializable{
 
 			// fist step consumes input records from producer
 			if (producer != null) {
-				producer.addConsumer((IRecordConsumer)instances.get(0));
+				producer.addConsumer((IRecordConsumer) instances.get(0));
 			}
 
 			// step n + 1 consumes records produced by n
 			for (int i = 0; i < instances.size() - 1; i++) {
 				c step = instances.get(i);
 				c nextStep = instances.get(i + 1);
-				step.getOutputRecords().addConsumer((IRecordConsumer)nextStep);
+				step.getOutputRecords().addConsumer((IRecordConsumer) nextStep);
 			}
 
 			// last step writes records to final consumer

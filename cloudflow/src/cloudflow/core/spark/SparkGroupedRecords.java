@@ -1,11 +1,12 @@
 package cloudflow.core.spark;
 
+import java.io.Serializable;
 import java.util.Iterator;
 
 import cloudflow.core.records.GroupedRecords;
 import cloudflow.core.records.Record;
 
-public class SparkGroupedRecords<IN extends Record<?, ?>> implements GroupedRecords<IN>{
+public class SparkGroupedRecords<IN extends Record<?, ?>> implements GroupedRecords<IN>, Serializable{
 
 	protected Iterator<Object> values;
 

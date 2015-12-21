@@ -1,9 +1,11 @@
 package cloudflow.core.spark;
 
+import java.io.Serializable;
+
 import cloudflow.core.records.IRecordConsumer;
 import cloudflow.core.records.Record;
 
-public class RecordToListWriter2 implements IRecordConsumer<Record<?, ?>> {
+public class RecordToListWriter2 implements IRecordConsumer<Record<?, ?>>, Serializable {
 
 	private StringBuffer string = new StringBuffer();
 	
