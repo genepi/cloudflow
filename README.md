@@ -12,12 +12,10 @@ Cloudflow is available in our Maven repository:
 
 Maven Repository:
 ```xml
-<repositories>
-	<repository>
-		<id>genepi-maven</id>
-		<url>https://raw.github.com/genepi/maven/cloudflow</url>
-	</repository>
-</repositories>	
+        <repository>
+            <id>genepi-maven</id>
+            <url>https://raw.github.com/genepi/maven-repository/mvn-repo/</url>
+        </repository>
 ```
 
 Maven Dependency:
@@ -31,27 +29,27 @@ Maven Dependency:
 </dependencies>
 ```
 
-A working example project can be found here: https://github.com/genepi/cloudflow-examples
+A working example project can be found here: https://github.com/genepi/cloudflow-wordcount
 
 ## Getting Started
 
 You can clone our example project to test cloudflow:
 
 ```shell
-git clone https://github.com/genepi/cloudflow-examples
+git clone https://github.com/genepi/cloudflow-wordcount
 ```
 
 Next, you have to import the project into Eclipse or you can execute maven to build the jar file:
 
 ```shell
-cd cloudflow-examples
+cd cloudflow-wordcount
 mvn package
 ```
 
-Maven creates the jar `target/cloudflow.examples-0.6.0.jar`, which includes all dependencies. The job can be execute with the following command:
+Maven creates the jar `target/cloudflow-wordcount-hadoop/cloudflow-0.6.0-wordcount.jar`, which includes all dependencies. The job can be execute with the following command:
 
 ```shell
-hadoop jar target/cloudflow.examples-0.6.0.jar <input> <output>
+hadoop jar cloudflow-0.6.0-wordcount.jar <input> <output>
 ```
 
 More examples can be found here: https://github.com/seppinho/cloudflow/tree/master/cloudflow/src/cloudflow/examples
