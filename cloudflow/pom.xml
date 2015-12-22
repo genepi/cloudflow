@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>genepi</groupId>
 	<artifactId>cloudflow</artifactId>
-	<version>0.5.0</version>
+	<version>0.6.0</version>
 
 	<properties>
 		<github.global.server>github</github.global.server>
@@ -17,15 +17,13 @@
         </repository>
 
         <repository>
-            <id>genepi-hadoop</id>
+            <id>genepi-maven</id>
             <url>https://raw.github.com/genepi/maven-repository/mvn-repo/</url>
             <snapshots>
                 <enabled>true</enabled>
                 <updatePolicy>always</updatePolicy>
             </snapshots>
         </repository>
-
-
 
 		<repository>
 			<id>hadoop-bam-sourceforge</id>
@@ -95,20 +93,21 @@
 					</execution>
 				</executions>
 			</plugin>
-
+ 
 			<plugin>
 				<groupId>com.github.github</groupId>
 				<artifactId>site-maven-plugin</artifactId>
-				<version>0.11</version>
+				<version>0.12</version>
 				<configuration>
-					<message>Maven artifacts for ${project.version}</message>  <!-- git commit message -->
+					<message>Maven artifacts for ${project.artifactId} ${project.version}</message>  <!-- git commit message -->
 					<noJekyll>true</noJekyll>                                  <!-- disable webpage processing -->
 					<outputDirectory>${project.build.directory}/mvn-repo</outputDirectory> <!-- matches distribution management repository url above -->
-					<branch>refs/heads/cloudflow</branch>                       <!-- remote branch name -->
+					<branch>refs/heads/mvn-repo</branch>                           <!-- remote branch name -->
+					<merge>true</merge> <!-- keep old artifacts -->
 					<includes>
 						<include>**/*</include>
 					</includes>
-					<repositoryName>maven</repositoryName>      <!-- github repo name -->
+					<repositoryName>maven-repository</repositoryName>      <!-- github repo name -->
 					<repositoryOwner>genepi</repositoryOwner>    <!-- github username -->
 				</configuration>
 				<executions>
@@ -129,22 +128,7 @@
 
 	<dependencies>
 
-		<dependency>
-			<groupId>org.apache.hadoop</groupId>
-			<artifactId>hadoop-client</artifactId>
-			<version>2.5.0-cdh5.3.0</version>
-			<exclusions>
-				<exclusion>
-					<artifactId>servlet-api</artifactId>
-					<groupId>javax.servlet</groupId>
-				</exclusion>
-				<exclusion>
-					<artifactId>hadoop-aws</artifactId>
-					<groupId>org.apache.hadoop</groupId>
-				</exclusion>
-			</exclusions>
-		</dependency>
-
+	
 		<dependency>
 			<groupId>net.lingala.zip4j</groupId>
 			<artifactId>zip4j</artifactId>
@@ -152,25 +136,19 @@
 		</dependency>
 
 		<dependency>
-			<groupId>genepi-io</groupId>
+			<groupId>genepi</groupId>
 			<artifactId>genepi-io</artifactId>
-			<version>0.6.4</version>
+			<version>1.0.0</version>
 		</dependency>
-
-	  <dependency>
-            <groupId>org.apache.spark</groupId>
-            <artifactId>spark-core_2.10</artifactId>
-            <version>1.4.1</version>
-        </dependency>
-
-
+ 
+ 
         <dependency>
-            <groupId>genepi-hadoop</groupId>
+            <groupId>genepi</groupId>
             <artifactId>genepi-hadoop</artifactId>
-            <version>0.7.9</version>
+            <version>yarn-1.0.0</version>
         </dependency>
 
-<dependency>
+		<dependency>
 			<groupId>hadoopbam</groupId>
 			<artifactId>hadoopbam-jar</artifactId>
 			<version>7.0.1</version>
