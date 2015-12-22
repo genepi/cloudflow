@@ -60,6 +60,12 @@ hadoop jar, cloudflow-wordcount.jar mapreduce <hdfs_input> <hdfs_output>
 /usr/bin/spark-submit --class genepi.cloudflow.examples.WordCount --master yarn cloudflow-wordcount.jar spark <hdfs_input> <hdfs_output>
 ```
 
+or without YARN
+
+```shell
+/usr/bin/spark-submit --class genepi.cloudflow.examples.WordCount --master local cloudflow-wordcount.jar spark <local_input> <local_output>
+```
+
 More examples can be found here: https://github.com/seppinho/cloudflow/tree/master/cloudflow/src/cloudflow/examples
 
 ## Documentation
