@@ -48,8 +48,16 @@ mvn package
 
 Maven creates the jar `target/cloudflow-wordcount-hadoop/cloudflow-0.6.0-wordcount.jar`, which includes all dependencies. The job can be execute with the following command:
 
+### Running on MapReduce
+
 ```shell
-hadoop jar cloudflow-0.6.0-wordcount.jar <input> <output>
+hadoop jar, cloudflow-wordcount.jar mapreduce <hdfs_input> <hdfs_output>
+```
+
+### Running on Spark
+
+```shell
+/usr/bin/spark-submit --class genepi.cloudflow.examples.WordCount --master yarn cloudflow-wordcount.jar spark <hdfs_input> <hdfs_output>
 ```
 
 More examples can be found here: https://github.com/seppinho/cloudflow/tree/master/cloudflow/src/cloudflow/examples
