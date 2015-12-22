@@ -1,8 +1,8 @@
 # Cloudflow
 
-Cloudflow is a MapReduce pipeline framework, which is based on a similar concept as JavaFlume or Apache Crunch. In contrast to these existing approaches, Cloudflow was developed to simplify the pipeline creation in biomedical research, especially in the field of Genetics. For that purpose Cloudflow supports a variety of NGS data formats and contains a rich collection of built-in operations for analyzing such kind of datasets (e.g. quality checks, mapping reads or variation calling).
+Cloudflow is a MapReduce and Spark pipeline framework, which is based on a similar concept as JavaFlume or Apache Crunch. In contrast to these existing approaches, Cloudflow was developed to simplify the pipeline creation in biomedical research, especially in the field of Genetics. For that purpose Cloudflow supports a variety of NGS data formats and contains a rich collection of built-in operations for analyzing such kind of datasets (e.g. quality checks, mapping reads or variation calling).
 
-The latest release is <b>0.5.0</b>, released February 23, 2015.
+The latest release is <b>0.6.0</b>, released December 21, 2015.
 
 
 
@@ -26,7 +26,7 @@ Maven Dependency:
 	<dependency>
 		<groupId>genepi</groupId>
 		<artifactId>cloudflow</artifactId>
-		<version>0.5.0</version>
+		<version>0.6.0</version>
 	</dependency>
 </dependencies>
 ```
@@ -48,10 +48,10 @@ cd cloudflow-examples
 mvn package
 ```
 
-Maven creates the jar `target/cloudflow.examples-0.5.0.jar`, which includes all dependencies. The job can be execute with the following command:
+Maven creates the jar `target/cloudflow.examples-0.6.0.jar`, which includes all dependencies. The job can be execute with the following command:
 
 ```shell
-hadoop jar target/cloudflow.examples-0.5.0.jar <input> <output>
+hadoop jar target/cloudflow.examples-0.6.0.jar <input> <output>
 ```
 
 More examples can be found here: https://github.com/seppinho/cloudflow/tree/master/cloudflow/src/cloudflow/examples
